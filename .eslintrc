@@ -1,0 +1,42 @@
+{
+    "parser": "babel-eslint",
+    "rules": {
+        "max-len": [1, 120, 2, {"ignoreComments": true}],
+        "indent": [1, 4, { "SwitchCase": 1 }],
+        "arrow-body-style": ["error", "as-needed", { "requireReturnForObjectLiteral": true }],
+        "react/jsx-indent": [1, 4],
+        "linebreak-style": 0,
+        "react/jsx-filename-extension": 0,
+        "react/prefer-stateless-function": 0,
+        "react/prop-types": 0,
+        "react/jsx-indent-props": [2, 4],
+        "react/forbid-prop-types": 0,
+        "react/require-default-props": [0, { "forbidDefaultForRequired": false }],
+        "no-mixed-operators": [
+            "error",
+            {
+                "groups": [
+                    ["+", "-", "*", "/", "%", "**"],
+                    ["&", "|", "^", "~", "<<", ">>", ">>>"],
+                    ["==", "!=", "===", "!==", ">", ">=", "<", "<="],
+                    ["&&", "||"],
+                    ["in", "instanceof"]
+                ],
+                "allowSamePrecedence": false
+            }
+        ],
+        "object-curly-newline": 0,
+        "import/extensions": [0, "never", { "ts": "never" }]
+    },
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "settings": {
+        "import/resolver": {
+            "node": true,
+            "eslint-import-resolver-typescript": true
+        }
+    },
+    "extends": ["airbnb"]
+}
