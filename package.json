@@ -35,6 +35,7 @@
     "@types/react": "^16.7.22",
     "@types/react-dom": "^16.0.11",
     "@types/react-helmet": "^5.0.8",
+    "@types/uuid": "^3.4.4",
     "antd": "^3.13.0",
     "classnames": "^2.2.6",
     "css-element-queries": "^1.1.1",

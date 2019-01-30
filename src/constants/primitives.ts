@@ -19,6 +19,7 @@ export type PrimitiveType = 'a-box'
 | 'a-plane'
 | 'a-ring'
 | 'a-sky'
+| 'a-scene'
 | 'a-sound'
 | 'a-sphere'
 | 'a-tetrahedron'
@@ -30,10 +31,16 @@ export type PrimitiveType = 'a-box'
 | 'a-videosphere'
 ;
 
+export type ArType = 'a-marker';
+
+export type CoreType = 'a-animation'
+| 'a-entity';
+
 export interface IAttribute {
     attribute: string;
     componentMapping: string;
     defaultValue?: string | number | boolean;
+    value?: string | number | boolean;
 }
 
 export interface IPrimitive {

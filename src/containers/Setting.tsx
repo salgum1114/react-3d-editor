@@ -1,33 +1,30 @@
 import React, { Component } from 'react';
 import { Tabs, Icon } from 'antd';
+import { Property } from '../components/property';
+import { Asset } from '../components/asset';
 
 class Setting extends Component {
     render() {
         return (
-            <div className="editor-setting-container">
-                <Tabs
-                    tabPosition="right"
+            <Tabs
+                style={{
+                    height: '100%',
+                }}
+                tabPosition="right"
+            >
+                <Tabs.TabPane
+                    key="setting"
+                    tab={<Icon type="setting" style={{ marginRight: 0 }}/>}
                 >
-                    <Tabs.TabPane
-                        key="setting"
-                        tab={<Icon type="setting" style={{ marginRight: 0 }}/>}
-                    >
-                        <div>
-                            <div></div>
-                            <div>Setting</div>
-                        </div>
-                    </Tabs.TabPane>
-                    <Tabs.TabPane
-                        key="asset"
-                        tab={<Icon type="shop" style={{ marginRight: 0 }}/>}
-                    >
-                        <div>
-                            <div></div>
-                            <div>Asset</div>
-                        </div>
-                    </Tabs.TabPane>
-                </Tabs>
-            </div>
+                    <Property />
+                </Tabs.TabPane>
+                <Tabs.TabPane
+                    key="asset"
+                    tab={<Icon type="shop" style={{ marginRight: 0 }}/>}
+                >
+                    <Asset />
+                </Tabs.TabPane>
+            </Tabs>
         );
     }
 }

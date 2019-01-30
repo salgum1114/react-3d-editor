@@ -31,7 +31,9 @@ module.exports = {
                 test: /\.(css|less)$/,
                 use: [
                     'style-loader',
-                    'css-loader',
+                    {
+                        loader: 'css-loader',
+                    },
                     {
                         loader: 'less-loader',
                         options: {
@@ -66,7 +68,7 @@ module.exports = {
     },
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
-        extensions: ['.ts', '.tsx', '.js', '.jsx'],
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.less'],
     },
     node: {
         net: 'empty',
