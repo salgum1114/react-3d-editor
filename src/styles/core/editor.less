@@ -1,0 +1,58 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body, #root, .container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+}
+
+.editor-view-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .editor-view-header {
+        background-color: #fff;
+        height: 40px;
+    }
+    .editor-view-content {
+        flex: 1;
+    }
+}
+
+.editor-item-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .editor-item-tools {
+        height: 40px;
+        margin: 0 8px;
+        display: flex;
+        align-items: center;
+    }
+    .editor-item-search {
+        margin: 8px;
+    }
+    .editor-item-tree {
+        font-weight: 900;
+    }
+}
+
+.editor-setting-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-icon {
+    transition: color .3s;
+    &:hover {
+        color: @primary-color;
+    }
+}

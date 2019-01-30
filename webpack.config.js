@@ -29,7 +29,16 @@ module.exports = {
             },
             {
                 test: /\.(css|less)$/,
-                use: ['style-loader', 'css-loader', 'less-loader'],
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    {
+                        loader: 'less-loader',
+                        options: {
+                            javascriptEnabled: true,
+                        },
+                    },
+                ],
             },
             {
                 test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,

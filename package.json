@@ -4,7 +4,13 @@
   "description": "A-frame based 3D visualization editing tool.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack -p --config webpack.config.prod.js",
+    "start": "npm install && npm run start:dev",
+    "start:dev": "webpack-dev-server --config webpack.config.dev.js --inline",
+    "deploy": "npm install && npm run build && gh-pages -d public",
+    "tsc": "tsc",
+    "lint": "tslint '**/*.ts'"
   },
   "repository": {
     "type": "git",
@@ -24,6 +30,11 @@
   },
   "homepage": "https://github.com/salgum1114/react-3d-editor#readme",
   "dependencies": {
+    "@types/antd": "^1.0.0",
+    "@types/node": "^10.12.19",
+    "@types/react": "^16.7.22",
+    "@types/react-dom": "^16.0.11",
+    "@types/react-helmet": "^5.0.8",
     "antd": "^3.13.0",
     "classnames": "^2.2.6",
     "css-element-queries": "^1.1.1",
@@ -33,6 +44,7 @@
     "react-color": "^2.17.0",
     "react-dom": "^16.7.0",
     "react-dom-factories": "^1.0.2",
+    "react-helmet": "^5.2.0",
     "react-hot-loader": "4.6.3",
     "react-json-view": "^1.19.1",
     "store": "^2.0.12",
@@ -49,8 +61,6 @@
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.1.0",
-    "@types/react": "^16.7.22",
-    "@types/react-dom": "^16.0.11",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "babel-plugin-dynamic-import-webpack": "^1.1.0",

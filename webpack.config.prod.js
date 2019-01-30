@@ -22,7 +22,7 @@ const plugins = [
     }),
     // index.html 로 의존성 파일들 inject해주는 플러그인
     new HtmlWebpackPlugin({
-        template: './src/index.html',
+        filename: 'index.html',
     }),
     new WorkboxPlugin.InjectManifest({
         swSrc: './src/sw.js',
