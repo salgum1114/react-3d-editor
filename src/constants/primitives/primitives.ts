@@ -12,14 +12,11 @@ export type PrimitiveType = 'a-box'
 | 'a-image'
 | 'a-light'
 | 'a-link'
-| 'a-marker'
-| 'a-marker-camera'
 | 'a-obj-model'
 | 'a-octahedron'
 | 'a-plane'
 | 'a-ring'
 | 'a-sky'
-| 'a-scene'
 | 'a-sound'
 | 'a-sphere'
 | 'a-tetrahedron'
@@ -31,10 +28,62 @@ export type PrimitiveType = 'a-box'
 | 'a-videosphere'
 ;
 
-export type ArType = 'a-marker';
+export type ArType = 'a-marker'
+| 'a-marker-camera'
+;
 
 export type CoreType = 'a-animation'
-| 'a-entity';
+| 'a-entity'
+| 'a-scene'
+;
+
+export type AssetType = 'a-mixin'
+| 'a-asset-item'
+| 'video'
+| 'audio'
+| 'img'
+;
+
+export type ComponentType = 'background'
+| 'camera'
+| 'collada-model'
+| 'cursor'
+| 'daydream-controls'
+| 'debug'
+| 'embedded'
+| 'fog'
+| 'gearvr-controls'
+| 'geometry'
+| 'gltf-model'
+| 'hand-controls'
+| 'keyboard-shortcuts'
+| 'laser-controls'
+| 'light'
+| 'line'
+| 'link'
+| 'loo-controls'
+| 'material'
+| 'obj-model'
+| 'oculus-touch-controls'
+| 'pool'
+| 'position'
+| 'raycaster'
+| 'rotation'
+| 'scale'
+| 'screenshot'
+| 'shadow'
+| 'sound'
+| 'stats'
+| 'text'
+| 'tracked-controls'
+| 'visible'
+| 'vive-controls'
+| 'vr-mode-ui'
+| 'wasd-controls'
+| 'windows-motion-controls'
+;
+
+export type ElementType = PrimitiveType | CoreType;
 
 export interface IAttribute {
     attribute: string;
@@ -54,7 +103,7 @@ export interface IPrimitive {
     attributes?: IAttribute[];
 }
 
-const primitives: IPrimitive[] = [
+export const primitives: IPrimitive[] = [
     {
         key: 'a-box',
         type: 'a-box',
@@ -206,28 +255,6 @@ const primitives: IPrimitive[] = [
         description: 'The link primitive provides a compact API to define links that resembles the traditional <a> tag.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-link.html',
-        attributes: [
-            
-        ],
-    },
-    {
-        key: 'a-marker',
-        type: 'a-marker',
-        title: '<a-marker>',
-        description: '',
-        icon: 'eye',
-        url: 'https://aframe.io/blog/arjs/',
-        attributes: [
-            
-        ],
-    },
-    {
-        key: 'a-marker-camera',
-        type: 'a-marker-camera',
-        title: '<a-marker-camera>',
-        description: '',
-        icon: 'eye',
-        url: 'https://aframe.io/blog/arjs/',
         attributes: [
             
         ],
@@ -387,5 +414,3 @@ const primitives: IPrimitive[] = [
         ],
     },
 ];
-
-export default primitives;

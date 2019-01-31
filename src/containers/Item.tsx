@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Tree, Icon, Button, Input, Modal, List, Avatar, Divider } from 'antd';
-
-import { primitives } from '../components/constants';
-import { IPrimitive } from '../components/constants/primitives';
+import { Tree, Icon, Input, Modal, List, Avatar } from 'antd';
+import { IPrimitive, primitives } from '../constants';
 
 interface IItemProps {
 

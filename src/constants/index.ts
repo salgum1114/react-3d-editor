@@ -1,1 +1,2 @@
-export { default as primitives } from './primitives';
+export * from './primitives/primitives';
+export * from './component/component';

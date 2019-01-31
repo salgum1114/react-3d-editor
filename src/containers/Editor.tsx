@@ -11,6 +11,7 @@ class Editor extends Component {
         return (
             <Layout>
                 <Layout.Sider
+                    style={{ zIndex: 9999 }}
                     theme="light"
                 >
                     <Item />
@@ -20,6 +21,7 @@ class Editor extends Component {
                 </Layout.Content>
                 <Layout.Sider
                     theme="light"
+                    style={{ zIndex: 9999 }}
                     width={400}
                 >
                     <Setting />
