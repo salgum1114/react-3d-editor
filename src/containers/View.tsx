@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Scene } from '../components/Scene';
+import { Inspector } from '../components/inspector';
 
 class View extends Component {
     render() {
@@ -8,7 +8,7 @@ class View extends Component {
                 <div className="editor-view-header">
                 </div>
                 <div className="editor-view-content">
-                    <Scene />
+                    <Inspector />
                 </div>
             </div>
         );
