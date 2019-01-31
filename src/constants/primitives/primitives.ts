@@ -83,24 +83,33 @@ export type ComponentType = 'background'
 | 'windows-motion-controls'
 ;
 
-export type ElementType = PrimitiveType | CoreType;
+export type EntityType = PrimitiveType | CoreType;
 
 export interface IAttribute {
     attribute: string;
-    componentMapping: string;
+    componentMapping?: string;
     defaultValue?: string | number | boolean;
     value?: string | number | boolean;
 }
 
 export interface IPrimitive {
-    key: PrimitiveType;
-    type: PrimitiveType;
+    key: PrimitiveType | string;
+    type: PrimitiveType | string;
     title?: string;
     description?: string;
     icon?: string;
     image?: string;
     url?: string;
     attributes?: IAttribute[];
+}
+
+export interface IEntity {
+    id?: string;
+    key?: string;
+    type?: string;
+    title?: string;
+    icon?: string;
+    children?: IEntity[];
 }
 
 export const primitives: IPrimitive[] = [

@@ -5,7 +5,7 @@ class Inspector extends Component {
     sceneEl: Scene;
 
     componentDidMount() {
-        this.initRender(document.body);
+        this.initScene(document.body);
         this.waitForScene();
     }
 
@@ -23,29 +23,25 @@ class Inspector extends Component {
             }, 100);
             return;
         }
-        if (!this.sceneEl.camera) {
-            setTimeout(() => {
-                this.waitForScene();
-            }, 100);
-            return;
-        }
+        this.initAssets();
         this.initEntity();
-        // this.sceneEl.addEventListener('loaded', this.init.bind(this), {
-        //     once: true,
-        // });
     }
 
-    initRender = (inspector: HTMLElement) => {
+    initScene = (inspector: HTMLElement) => {
         const scene = document.createElement('a-scene');
         inspector.appendChild(scene);
+        scene.id = 'scene';
         scene.style.position = 'fixed';
         scene.style.top = '0';
         scene.style.left = '0';
     }
 
+    initAssets = () => {
+        const assets = document.createElement('a-assets');
+        this.sceneEl.appendChild(assets);
+    }
+
     initEntity = () => {
-        console.log(AFRAME.scenes.length);
-        //<a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4">
         const plane = document.createElement('a-plane');
         plane.setAttribute('position', '0 0 -4');
         plane.setAttribute('rotation', '-90 0 0');
@@ -53,10 +49,12 @@ class Inspector extends Component {
         plane.setAttribute('height', '4');
         plane.setAttribute('color', '#7BC8A4');
         plane.addEventListener('loaded', () => {
-            // box.setAttribute('position', '0 0 0');
-            // box.setAttribute('scale', '1 1 1');
-            console.log('box loaded', plane.attributes);
+            console.log('box loaded', plane);
         });
+        // <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+        // <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+        // <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+        // <a-sky color="#ECECEC"></a-sky
         this.sceneEl.appendChild(plane);
     }
 

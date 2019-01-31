@@ -15,7 +15,8 @@
       "jsx-no-multiline-js": false,
       "semicolon": false,
       "arrow-parens": [true, "ban-single-arg-parens"],
-      "no-shadowed-variable": false
+      "no-shadowed-variable": false,
+      "jsx-no-lambda": false
     },
     "linterOptions": {
 		"exclude": ["**/node_modules/**"]

@@ -1,1 +1,7 @@
-export { default as GeneralTools } from './GeneralTools';
+import * as EntityTools from './EntityTools';
+import EventTools from './EventTools';
+
+export {
+    EntityTools,
+    EventTools,
+}
