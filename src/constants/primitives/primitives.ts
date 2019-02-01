@@ -1,3 +1,5 @@
+import ABox from './a-box';
+
 export type PrimitiveType = 'a-box'
 | 'a-camera'
 | 'a-circle'
@@ -83,13 +85,17 @@ export type ComponentType = 'background'
 | 'windows-motion-controls'
 ;
 
-export type EntityType = PrimitiveType | CoreType;
+export type EntityType = PrimitiveType | CoreType | string;
 
 export interface IAttribute {
     attribute: string;
     componentMapping?: string;
     defaultValue?: string | number | boolean;
     value?: string | number | boolean;
+}
+
+export interface IAttributes {
+    [key: string]: IAttribute;
 }
 
 export interface IPrimitive {
@@ -120,9 +126,7 @@ export const primitives: IPrimitive[] = [
         description: 'The box primitive creates shapes such as boxes, cubes, or walls.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-box.html',
-        attributes: [
-
-        ],
+        attributes: Object.keys(ABox.attributes).map(key => ABox.attributes[key]),
     },
     {
         key: 'a-camera',

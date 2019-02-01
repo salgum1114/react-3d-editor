@@ -1,18 +1,22 @@
 import uuid from 'uuid/v4';
 import { Entity } from 'aframe';
 
-import { IAttribute, EntityType } from '../constants/primitives/primitives';
+import { IPrimitive } from '../constants/primitives/primitives';
 import EventTools from './EventTools';
 
-export const createEntity = (type: EntityType | string, attriubtes: IAttribute[]) => {
+export const createEntity = (primitive: IPrimitive) => {
+    const { type, title, attributes } = primitive;
     const entity = document.createElement(type);
     entity.setAttribute('id', `${type}_${uuid()}`);
+    entity.setAttribute('title', title);
     if (type === 'a-entity') {
         AFRAME.scenes[0].appendChild(entity);
         return entity;
     }
-    attriubtes.forEach(attr => {
-        entity.setAttribute(attr.attribute, `${attr.defaultValue}`);
+    attributes.forEach(attr => {
+        if (attr.defaultValue) {
+            entity.setAttribute(attr.attribute, `${attr.defaultValue}`);
+        }
     });
     entity.addEventListener('loaded', () => {
         EventTools.emit('entitycreate', entity);

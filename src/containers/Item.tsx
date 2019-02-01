@@ -20,7 +20,7 @@ class Item extends Component<IItemProps, IItemState> {
         visible: false,
         treeNodes: [],
         selectedKeys: [],
-        expandedKeys: ['scene'],
+        expandedKeys: [],
     }
 
     componentDidMount() {
@@ -38,8 +38,8 @@ class Item extends Component<IItemProps, IItemState> {
                 });
             } else {
                 if (this.state.selectedKeys.length) {
-                    console.log(this.state.selectedKeys[0]);
-                    const parentNode = this.findTreeNode(this.state.selectedKeys[0], this.state.treeNodes);
+                    const selectedKey = this.state.selectedKeys[0];
+                    const parentNode = this.findTreeNode(selectedKey, this.state.treeNodes);
                     if (!this.state.expandedKeys.some(key => key === parentNode.key)) {
                         this.state.expandedKeys.push(parentNode.key)
                     }
@@ -54,26 +54,24 @@ class Item extends Component<IItemProps, IItemState> {
             }
             this.setState({
                 treeNodes: this.state.treeNodes,
-            }, () => {
-                console.log(this.state.treeNodes);
-                this.setState({
-                    expandedKeys: this.state.expandedKeys,
-                })
+                expandedKeys: Array.from(this.state.expandedKeys),
             });
         });
     }
 
-    findTreeNode = (id: string, treeNodes?: any[]): any => {
+    findTreeNode = (id: string, treeNodes?: IEntity[]): any => {
         let parentNode;
         for (let i = 0; i < treeNodes.length; i++) {
             const node = treeNodes[i];
             if (node.key === id) {
                 parentNode = node;
-                break;
+                return parentNode;
             }
-            if (node.children) {
+            if (node.children.length) {
                 parentNode = this.findTreeNode(id, node.children);
-                break;
+                if (parentNode) {
+                    return parentNode;
+                }
             }
         }
         return parentNode;
@@ -91,21 +89,7 @@ class Item extends Component<IItemProps, IItemState> {
 
     handleAddEntity = (item: IPrimitive) => {
         this.handleModalVisible();
-        // EntityTools.createEntity(item.type, item.attributes);
-        EntityTools.createEntity(item.type, [
-            {
-                attribute: 'position',
-                defaultValue: '0 0 -4',
-            },
-            {
-                attribute: 'color',
-                defaultValue: 'red',
-            },
-            {
-                attribute: 'title',
-                defaultValue: item.title,
-            },
-        ]);
+        EntityTools.createEntity(item);
     }
 
     handleModalVisible = () => {
@@ -126,7 +110,7 @@ class Item extends Component<IItemProps, IItemState> {
         });
     }
 
-    handleExpand = (expandedKeys: string[]) => {
+    handleExpandEntity = (expandedKeys: string[]) => {
         this.setState({
             expandedKeys,
         });
@@ -154,7 +138,7 @@ class Item extends Component<IItemProps, IItemState> {
     renderTreeNodes = (treeNodes: IEntity[]) => treeNodes.map(item => {
         if (item.children) {
             return (
-                <Tree.TreeNode title={item.title} key={item.key} icon={<Icon type={item.icon} />} dataRef={item}>
+                <Tree.TreeNode key={item.key} title={item.title} icon={<Icon type={item.icon} />} dataRef={item}>
                     {this.renderTreeNodes(item.children)}
                 </Tree.TreeNode>
             );
@@ -163,16 +147,6 @@ class Item extends Component<IItemProps, IItemState> {
     })
 
     render() {
-        // <Tree.TreeNode
-        //                 key="scene"
-        //                 icon={<Icon type="eye" />}
-        //                 title="<a-scene>"
-        //             >
-        //                 <Tree.TreeNode
-        //                     icon={<Icon type="eye" />}
-        //                     title="<a-circle>"
-        //                 />
-        //             </Tree.TreeNode>
         const { visible, treeNodes, selectedKeys, expandedKeys } = this.state;
         return (
             <div className="editor-item-container">
@@ -193,9 +167,10 @@ class Item extends Component<IItemProps, IItemState> {
                 <Tree
                     className="editor-item-tree"
                     showIcon={true}
+                    defaultExpandParent={true}
                     selectedKeys={selectedKeys}
                     expandedKeys={expandedKeys}
-                    onExpand={this.handleExpand}
+                    onExpand={this.handleExpandEntity}
                     onSelect={this.handleSelectEntity}
                 >
                     <Tree.TreeNode
