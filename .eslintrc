@@ -38,5 +38,10 @@
             "eslint-import-resolver-typescript": true
         }
     },
+    "globals": {
+        "AFRAME": true,
+        "ga": true,
+        "THREE": true
+    },
     "extends": ["airbnb"]
 }

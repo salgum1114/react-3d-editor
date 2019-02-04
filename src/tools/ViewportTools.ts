@@ -1,0 +1,236 @@
+import EventTools from './EventTools';
+import { IInspector, ICamera } from '../components/inspector/Inspector';
+
+import '../lib/TransformControls';
+import '../lib/EditorControls';
+import RaycasterTools, { IRaycaster } from './RaycasterTools';
+
+class ViewportTools {
+    selectionBox?: THREE.BoxHelper;
+    transformControls?: THREE.TransformControls;
+    controls?: THREE.EditorControls;
+    grid?: THREE.GridHelper;
+    mouseCursor?: IRaycaster;
+    constructor(inspector: IInspector) {
+        this.init(inspector);
+    }
+
+    init(inspector: IInspector) {
+        const sceneEl = inspector.sceneEl;
+        let originalCamera = inspector.cameras.original;
+        sceneEl.addEventListener('camera-set-active', event => {
+            // If we're in edit mode, save the newly active camera and activate when exiting.
+            if (inspector.opened) {
+                originalCamera = event.detail.cameraEl;
+            }
+        });
+        this.initRaycaster(inspector);
+        // Helpers.
+        this.initGrid(inspector);
+        this.initSelectionBox(inspector);
+        this.initTransformControls(inspector);
+        this.initControls(inspector);
+
+        this.initEvents(inspector);
+    }
+
+    initRaycaster(inspector: IInspector) {
+        const raycasterTools = new RaycasterTools(inspector);
+        this.mouseCursor = raycasterTools.init(inspector);
+    }
+
+    initGrid(inspector: IInspector) {
+        const sceneHelpers = inspector.sceneHelpers;
+        const grid = new AFRAME.THREE.GridHelper(30, 60, 0xaaaaaa, 0x262626);
+        sceneHelpers.add(grid);
+        this.grid = grid;
+    }
+
+    initSelectionBox(inspector: IInspector) {
+        const sceneHelpers = inspector.sceneHelpers;
+        this.selectionBox = new AFRAME.THREE.BoxHelper();
+        this.selectionBox.material.depthTest = false;
+        this.selectionBox.material.transparent = true;
+        this.selectionBox.material.color.set(0x1faaf2);
+        this.selectionBox.visible = false;
+        sceneHelpers.add(this.selectionBox);
+    }
+
+    initTransformControls(inspector: IInspector) {
+        const sceneHelpers = inspector.sceneHelpers;
+        const camera = inspector.camera;
+        const transformControls = new AFRAME.THREE.TransformControls(
+            camera,
+            inspector.container,
+        );
+        transformControls.size = 0.75;
+        transformControls.addEventListener('objectChange', evt => {
+            const object = transformControls.object;
+            if (object === undefined) {
+                return;
+            }
+            this.selectionBox.setFromObject(object).update();
+            this.updateHelpers(inspector, object);
+            EventTools.emit('refreshsidebarobject3d', object);
+            // Emit update event for watcher.
+            let component;
+            let value;
+            if (evt.mode === 'translate') {
+                component = 'position';
+                value = `${object.position.x} ${object.position.y} ${object.position.z}`;
+            } else if (evt.mode === 'rotate') {
+                component = 'rotation';
+                const d = AFRAME.THREE.Math.radToDeg;
+                value = `${d(object.rotation.x)} ${d(object.rotation.y)} ${d(object.rotation.z)}`;
+            } else if (evt.mode === 'scale') {
+                component = 'scale';
+                value = `${object.scale.x} ${object.scale.y} ${object.scale.z}`;
+            }
+            // EventTools.emit('entityupdate', {
+            //     component,
+            //     entity: transformControls.object.el,
+            //     property: '',
+            //     value: value,
+            // });
+            // EventTools.emit('entitytransformed', transformControls.object.el);
+        });
+        transformControls.addEventListener('mouseDown', () => {
+            this.controls.enabled = false;
+        });
+        transformControls.addEventListener('mouseUp', () => {
+            this.controls.enabled = true;
+        });
+        sceneHelpers.add(transformControls);
+        EventTools.on('entityupdate', detail => {
+            if (inspector.selectedEntity.object3DMap['mesh']) {
+                this.selectionBox.update(inspector.selected);
+            }
+        });
+        this.transformControls = transformControls;
+    }
+
+    initControls(inspector: IInspector) {
+        const { camera, container, sceneEl } = inspector;
+        const controls = new AFRAME.THREE.EditorControls(camera, container);
+        controls.center.set(0, 1.6, 0);
+        controls.rotationSpeed = 0.0035;
+        controls.zoomSpeed = 0.05;
+        controls.setAspectRatio(sceneEl.canvas.width / sceneEl.canvas.height);
+        EventTools.on('cameratoggle', data => {
+            controls.setCamera(data.camera);
+            this.transformControls.setCamera(data.camera);
+        });
+        this.controls = controls;
+        this.enableControls();
+    }
+
+    initEvents(inspector: IInspector) {
+        const { camera } = inspector;
+        EventTools.on('inspectorcleared', () => {
+            this.controls.center.set(0, 0, 0);
+        });
+        EventTools.on('transformmodechange', mode => {
+            this.transformControls.setMode(mode);
+        });
+        EventTools.on('snapchanged', dist => {
+            this.transformControls.setTranslationSnap(dist);
+        });
+        EventTools.on('transformspacechanged', space => {
+            this.transformControls.setSpace(space);
+        });
+        EventTools.on('objectselect', object3D => {
+            console.log(object3D);
+            this.selectionBox.visible = false;
+            this.transformControls.detach();
+            if (object3D && object3D.el) {
+                if (object3D.el.getObject3D('mesh')) {
+                    this.selectionBox.setFromObject(object3D).update();
+                    this.selectionBox.visible = true;
+                }
+                this.transformControls.attach(object3D);
+            }
+        });
+        EventTools.on('objectfocus', object => {
+            this.controls.focus(object, false);
+            this.transformControls.update();
+        });
+        EventTools.on('geometrychanged', object => {
+            if (object !== null) {
+                this.selectionBox.setFromObject(object).update();
+            }
+        });
+        EventTools.on('entityupdate', detail => {
+            const object = detail.entity.object3D;
+            if (inspector.selected === object) {
+                // Hack because object3D always has geometry :(
+                if (
+                    object.geometry &&
+                    ((object.geometry.vertices && object.geometry.vertices.length > 0) ||
+                    (object.geometry.attributes &&
+                        object.geometry.attributes.position &&
+                        object.geometry.attributes.position.array.length))
+                ) {
+                    this.selectionBox.setFromObject(object).update();
+                }
+            }
+            this.transformControls.update();
+            if (object instanceof AFRAME.THREE.PerspectiveCamera) {
+                object.updateProjectionMatrix();
+            }
+            this.updateHelpers(inspector, object);
+        });
+        EventTools.on('windowresize', () => {
+            camera.aspect = inspector.container.offsetWidth / inspector.container.offsetHeight;
+            camera.updateProjectionMatrix();
+        });
+        EventTools.on('gridvisibilitychanged', showGrid => {
+            this.grid.visible = showGrid;
+        });
+        EventTools.on('togglegrid', () => {
+            this.grid.visible = !this.grid.visible;
+        });
+        EventTools.on('inspectortoggle', active => {
+            if (active) {
+                this.enableControls();
+                AFRAME.scenes[0].camera = inspector.camera;
+                Array.prototype.slice
+                .call(document.querySelectorAll('.a-enter-vr,.rs-base'))
+                .forEach(element => {
+                    element.style.display = 'none';
+                });
+            } else {
+                this.disableControls();
+                inspector.cameras.original.setAttribute('camera', 'active', 'true');
+                AFRAME.scenes[0].camera = inspector.cameras.original.getObject3D('camera') as ICamera;
+                Array.prototype.slice
+                .call(document.querySelectorAll('.a-enter-vr,.rs-base'))
+                .forEach(element => {
+                    element.style.display = 'block';
+                });
+            }
+            // ga('send', 'event', 'Viewport', 'toggleEditor', active);
+        });
+    }
+
+    updateHelpers(inspector: IInspector, object: THREE.Object3D) {
+        object.traverse(node => {
+            if (inspector.helpers[node.uuid]) {
+                inspector.helpers[node.uuid].update();
+            }
+        });
+    }
+
+    enableControls() {
+        this.mouseCursor.enable();
+        this.transformControls.activate();
+        this.controls.enabled = true;
+    }
+
+    disableControls() {
+        this.mouseCursor.disable();
+        this.transformControls.dispose();
+        this.controls.enabled = false;
+    }
+}
+
+export default ViewportTools;

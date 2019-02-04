@@ -32,6 +32,7 @@
   "dependencies": {
     "@types/aframe": "^0.8.2",
     "@types/antd": "^1.0.0",
+    "@types/lodash": "^4.14.120",
     "@types/node": "^10.12.19",
     "@types/react": "^16.7.22",
     "@types/react-dom": "^16.0.11",

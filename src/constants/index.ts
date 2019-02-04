@@ -1,2 +1,3 @@
 export * from './primitives/primitives';
-export * from './component/component';
+export * from './components/components';
+export * from './events/events';

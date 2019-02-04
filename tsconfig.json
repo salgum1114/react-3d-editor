@@ -18,6 +18,9 @@
         "lib": [
             "dom",
             "esnext"
+        ],
+        "types": [
+            "three"
         ]
     },
     "include": [
