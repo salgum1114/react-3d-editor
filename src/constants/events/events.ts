@@ -4,4 +4,8 @@ export type EventType = 'entitycreate'
 | 'entityselect'
 | 'cameraperspectivetoggle'
 | 'cameraorthographictoggle'
+| 'objectselect'
+| 'objectfocus'
+| 'objectremove'
+| 'helperremove'
 ;

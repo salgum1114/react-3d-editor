@@ -15,6 +15,12 @@ class ViewportTools {
         this.init(inspector);
     }
 
+    /**
+     * Viewport init
+     *
+     * @param {IInspector} inspector
+     * @memberof ViewportTools
+     */
     init(inspector: IInspector) {
         const sceneEl = inspector.sceneEl;
         let originalCamera = inspector.cameras.original;
@@ -34,11 +40,23 @@ class ViewportTools {
         this.initEvents(inspector);
     }
 
+    /**
+     *
+     *
+     * @param {IInspector} inspector
+     * @memberof ViewportTools
+     */
     initRaycaster(inspector: IInspector) {
         const raycasterTools = new RaycasterTools(inspector);
         this.mouseCursor = raycasterTools.init(inspector);
     }
 
+    /**
+     *
+     *
+     * @param {IInspector} inspector
+     * @memberof ViewportTools
+     */
     initGrid(inspector: IInspector) {
         const sceneHelpers = inspector.sceneHelpers;
         const grid = new AFRAME.THREE.GridHelper(30, 60, 0xaaaaaa, 0x262626);
@@ -46,6 +64,12 @@ class ViewportTools {
         this.grid = grid;
     }
 
+    /**
+     *
+     *
+     * @param {IInspector} inspector
+     * @memberof ViewportTools
+     */
     initSelectionBox(inspector: IInspector) {
         const sceneHelpers = inspector.sceneHelpers;
         this.selectionBox = new AFRAME.THREE.BoxHelper();
@@ -56,6 +80,12 @@ class ViewportTools {
         sceneHelpers.add(this.selectionBox);
     }
 
+    /**
+     *
+     *
+     * @param {IInspector} inspector
+     * @memberof ViewportTools
+     */
     initTransformControls(inspector: IInspector) {
         const sceneHelpers = inspector.sceneHelpers;
         const camera = inspector.camera;
@@ -109,6 +139,12 @@ class ViewportTools {
         this.transformControls = transformControls;
     }
 
+    /**
+     *
+     *
+     * @param {IInspector} inspector
+     * @memberof ViewportTools
+     */
     initControls(inspector: IInspector) {
         const { camera, container, sceneEl } = inspector;
         const controls = new AFRAME.THREE.EditorControls(camera, container);
@@ -124,6 +160,12 @@ class ViewportTools {
         this.enableControls();
     }
 
+    /**
+     *
+     *
+     * @param {IInspector} inspector
+     * @memberof ViewportTools
+     */
     initEvents(inspector: IInspector) {
         const { camera } = inspector;
         EventTools.on('inspectorcleared', () => {
@@ -212,6 +254,13 @@ class ViewportTools {
         });
     }
 
+    /**
+     *
+     *
+     * @param {IInspector} inspector
+     * @param {THREE.Object3D} object
+     * @memberof ViewportTools
+     */
     updateHelpers(inspector: IInspector, object: THREE.Object3D) {
         object.traverse(node => {
             if (inspector.helpers[node.uuid]) {
@@ -220,12 +269,22 @@ class ViewportTools {
         });
     }
 
+    /**
+     *
+     *
+     * @memberof ViewportTools
+     */
     enableControls() {
         this.mouseCursor.enable();
         this.transformControls.activate();
         this.controls.enabled = true;
     }
 
+    /**
+     *
+     *
+     * @memberof ViewportTools
+     */
     disableControls() {
         this.mouseCursor.disable();
         this.transformControls.dispose();
