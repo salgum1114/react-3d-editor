@@ -13,6 +13,7 @@ class Editor extends Component {
                 <Layout.Sider
                     style={{ zIndex: 9999 }}
                     theme="light"
+                    width={230}
                 >
                     <Item />
                 </Layout.Sider>
@@ -22,7 +23,7 @@ class Editor extends Component {
                 <Layout.Sider
                     theme="light"
                     style={{ zIndex: 9999 }}
-                    width={400}
+                    width={360}
                 >
                     <Setting />
                 </Layout.Sider>

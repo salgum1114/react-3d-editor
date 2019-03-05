@@ -1,9 +1,10 @@
 import EventTools from './EventTools';
-import { IInspector, ICamera } from '../components/inspector/Inspector';
 
 import '../lib/TransformControls';
 import '../lib/EditorControls';
-import RaycasterTools, { IRaycaster } from './RaycasterTools';
+import { IRaycaster } from './RaycasterTools';
+import { RaycasterTools, InspectorTools } from '.';
+import { ICamera } from './InpsectorTools';
 
 class ViewportTools {
     selectionBox?: THREE.BoxHelper;
@@ -11,17 +12,17 @@ class ViewportTools {
     controls?: THREE.EditorControls;
     grid?: THREE.GridHelper;
     mouseCursor?: IRaycaster;
-    constructor(inspector: IInspector) {
+    constructor(inspector: InspectorTools) {
         this.init(inspector);
     }
 
     /**
      * Viewport init
      *
-     * @param {IInspector} inspector
+     * @param {InspectorTools} inspector
      * @memberof ViewportTools
      */
-    init(inspector: IInspector) {
+    init(inspector: InspectorTools) {
         const sceneEl = inspector.sceneEl;
         let originalCamera = inspector.cameras.original;
         sceneEl.addEventListener('camera-set-active', event => {
@@ -43,10 +44,10 @@ class ViewportTools {
     /**
      *
      *
-     * @param {IInspector} inspector
+     * @param {InspectorTools} inspector
      * @memberof ViewportTools
      */
-    initRaycaster(inspector: IInspector) {
+    initRaycaster(inspector: InspectorTools) {
         const raycasterTools = new RaycasterTools(inspector);
         this.mouseCursor = raycasterTools.init(inspector);
     }
@@ -54,10 +55,10 @@ class ViewportTools {
     /**
      *
      *
-     * @param {IInspector} inspector
+     * @param {InspectorTools} inspector
      * @memberof ViewportTools
      */
-    initGrid(inspector: IInspector) {
+    initGrid(inspector: InspectorTools) {
         const sceneHelpers = inspector.sceneHelpers;
         const grid = new AFRAME.THREE.GridHelper(30, 60, 0xaaaaaa, 0x262626);
         sceneHelpers.add(grid);
@@ -67,10 +68,10 @@ class ViewportTools {
     /**
      *
      *
-     * @param {IInspector} inspector
+     * @param {InspectorTools} inspector
      * @memberof ViewportTools
      */
-    initSelectionBox(inspector: IInspector) {
+    initSelectionBox(inspector: InspectorTools) {
         const sceneHelpers = inspector.sceneHelpers;
         this.selectionBox = new AFRAME.THREE.BoxHelper();
         this.selectionBox.material.depthTest = false;
@@ -83,10 +84,10 @@ class ViewportTools {
     /**
      *
      *
-     * @param {IInspector} inspector
+     * @param {InspectorTools} inspector
      * @memberof ViewportTools
      */
-    initTransformControls(inspector: IInspector) {
+    initTransformControls(inspector: InspectorTools) {
         const sceneHelpers = inspector.sceneHelpers;
         const camera = inspector.camera;
         const transformControls = new AFRAME.THREE.TransformControls(
@@ -142,10 +143,10 @@ class ViewportTools {
     /**
      *
      *
-     * @param {IInspector} inspector
+     * @param {InspectorTools} inspector
      * @memberof ViewportTools
      */
-    initControls(inspector: IInspector) {
+    initControls(inspector: InspectorTools) {
         const { camera, container, sceneEl } = inspector;
         const controls = new AFRAME.THREE.EditorControls(camera, container);
         controls.center.set(0, 1.6, 0);
@@ -163,10 +164,10 @@ class ViewportTools {
     /**
      *
      *
-     * @param {IInspector} inspector
+     * @param {InspectorTools} inspector
      * @memberof ViewportTools
      */
-    initEvents(inspector: IInspector) {
+    initEvents(inspector: InspectorTools) {
         const { camera } = inspector;
         EventTools.on('inspectorcleared', () => {
             this.controls.center.set(0, 0, 0);
@@ -181,7 +182,6 @@ class ViewportTools {
             this.transformControls.setSpace(space);
         });
         EventTools.on('objectselect', object3D => {
-            console.log(object3D);
             this.selectionBox.visible = false;
             this.transformControls.detach();
             if (object3D && object3D.el) {
@@ -225,7 +225,7 @@ class ViewportTools {
             camera.aspect = inspector.container.offsetWidth / inspector.container.offsetHeight;
             camera.updateProjectionMatrix();
         });
-        EventTools.on('gridvisibilitychanged', showGrid => {
+        EventTools.on('gridvisibilitychanged', (showGrid?: boolean) => {
             this.grid.visible = showGrid;
         });
         EventTools.on('togglegrid', () => {
@@ -257,11 +257,11 @@ class ViewportTools {
     /**
      *
      *
-     * @param {IInspector} inspector
+     * @param {InspectorTools} inspector
      * @param {THREE.Object3D} object
      * @memberof ViewportTools
      */
-    updateHelpers(inspector: IInspector, object: THREE.Object3D) {
+    updateHelpers(inspector: InspectorTools, object: THREE.Object3D) {
         object.traverse(node => {
             if (inspector.helpers[node.uuid]) {
                 inspector.helpers[node.uuid].update();

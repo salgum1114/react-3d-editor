@@ -31,6 +31,7 @@ class Item extends Component<IItemProps, IItemState> {
                 }
                 this.state.treeNodes.push({
                     key: entity.id,
+                    id: entity.object3D.id,
                     type: entity.tagName.toLowerCase(),
                     title: entity.title,
                     icon: 'eye',
@@ -57,6 +58,26 @@ class Item extends Component<IItemProps, IItemState> {
                 expandedKeys: Array.from(this.state.expandedKeys),
             });
         });
+
+        EventTools.on('entityselect', (entity: Entity) => {
+            if (entity) {
+                this.setState({
+                    selectedKeys: [entity.id],
+                });
+            } else {
+                this.setState({
+                    selectedKeys: [],
+                });
+            }
+        });
+
+        EventTools.on('objectselect', (object3D: THREE.Object3D) => {
+            if (!object3D) {
+                this.setState({
+                    selectedKeys: [],
+                });
+            }
+        })
     }
 
     findTreeNode = (id: string, treeNodes?: IEntity[]): any => {
@@ -107,6 +128,10 @@ class Item extends Component<IItemProps, IItemState> {
     handleSelectEntity = (selectedKeys: string[]) => {
         this.setState({
             selectedKeys,
+        }, () => {
+            if (selectedKeys.length) {
+                EntityTools.selectEntity(selectedKeys[0]);
+            }
         });
     }
 

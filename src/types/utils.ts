@@ -1,5 +1,5 @@
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
-export interface KeyMapper {
+export interface ObjectMapper {
     [key: string]: any;
 }

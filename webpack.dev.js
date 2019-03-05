@@ -3,7 +3,7 @@ const merge = require('webpack-merge');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const baseConfig = require('./webpack.config.js');
+const baseConfig = require('./webpack.common.js');
 
 const devPort = 8080;
 const host = 'localhost';
@@ -51,6 +51,7 @@ module.exports = merge(baseConfig, {
         new webpack.HotModuleReplacementPlugin(), // HMR을 사용하기 위한 플러그인
         new HtmlWebpackPlugin({
             filename: 'index.html',
+            title: 'React 3D Editor',
         }),
     ],
 });

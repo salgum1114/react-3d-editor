@@ -1,17 +1,33 @@
-import { IInspector } from '../components/inspector/Inspector';
 import EventTools from './EventTools';
-import { EntityTools } from '.';
+import { EntityTools, InspectorTools } from '.';
+import { ObjectMapper } from '../types/utils';
+import { getOS } from './UtilTools';
+
+interface IShortcuts {
+    default?: ObjectMapper;
+    modules?: ObjectMapper;
+}
 
 class ShortcutTools {
     enabled: boolean;
-    shortcuts: object;
-    inspector: IInspector;
-    constructor(inspector: IInspector) {
+    shortcuts: IShortcuts;
+    inspector: InspectorTools;
+
+    constructor(inspector: InspectorTools) {
+        this.init(inspector);
+    }
+
+    init = (inspector: InspectorTools) => {
         this.inspector = inspector;
+        this.enabled = false;
+        this.shortcuts = {
+            default: {},
+            modules: {},
+        }
     }
 
     onKeyUp = (event: KeyboardEvent) => {
-        if (!this.shouldCaptureKeyEvent(event)) {
+        if (!this.shouldCaptureKeyEvent(event) || !AFRAME.INSPECTOR.opened) {
             return;
         }
         const keyCode = event.keyCode;
@@ -83,7 +99,7 @@ class ShortcutTools {
         } else if (keyCode === 55) {
             EventTools.emit('cameraorthographictoggle', 'front');
         }
-        for (const moduleName in this.shortcuts.modules) {
+        Object.keys(this.shortcuts.modules).forEach(moduleName => {
             const shortcutsModule = this.shortcuts.modules[moduleName];
             if (
                 shortcutsModule[keyCode] &&
@@ -93,7 +109,7 @@ class ShortcutTools {
             ) {
                 this.shortcuts.modules[moduleName][keyCode].callback();
             }
-        }
+        })
     }
 
     onKeyDown = (event: KeyboardEvent) => {
@@ -101,8 +117,8 @@ class ShortcutTools {
             return;
         }
         if (
-            (event.ctrlKey && os === 'windows') ||
-            (event.metaKey && os === 'macos')
+            (event.ctrlKey && getOS() === 'windows') ||
+            (event.metaKey && getOS() === 'macos')
         ) {
             if (
                 this.inspector.selectedEntity &&
@@ -192,11 +208,6 @@ class ShortcutTools {
         };
     }
 
-    init = (inspector: IInspector) => {
-        this.inspector = inspector;
-        this.onKeyDown = this.onKeyDown.bind(this);
-        this.onKeyUp = this.onKeyUp.bind(this);
-    }
 }
 
 export default ShortcutTools;

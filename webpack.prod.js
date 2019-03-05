@@ -6,7 +6,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
-const baseConfig = require('./webpack.config.js');
+const baseConfig = require('./webpack.common.js');
 
 const pathsToClean = [
     'js',
@@ -23,6 +23,7 @@ const plugins = [
     // index.html 로 의존성 파일들 inject해주는 플러그인
     new HtmlWebpackPlugin({
         filename: 'index.html',
+        title: 'React 3D Editor',
     }),
     new WorkboxPlugin.InjectManifest({
         swSrc: './src/sw.js',

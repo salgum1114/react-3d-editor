@@ -1,6 +1,5 @@
-import { IInspector } from '../components/inspector/Inspector';
-import EventTools from './EventTools';
-import { KeyMapper } from '../types/utils';
+import { ObjectMapper } from '../types/utils';
+import { InspectorTools, EventTools } from '.';
 
 export type DirectionType = 'left'
 | 'right'
@@ -13,7 +12,7 @@ export type DirectionType = 'left'
 
 // Save ortho camera FOV / position before switching to restore later.
 let currentOrthoDir = '';
-const orthoCameraMemory: KeyMapper = {
+const orthoCameraMemory: ObjectMapper = {
     left: {
         position: new AFRAME.THREE.Vector3(-10, 0, 0), rotation: new AFRAME.THREE.Euler(),
     },
@@ -35,11 +34,11 @@ const orthoCameraMemory: KeyMapper = {
 };
 
 class CameraTools {
-    constructor(inspector: IInspector) {
+    constructor(inspector: InspectorTools) {
         this.init(inspector);
     }
 
-    init(inspector: IInspector) {
+    init(inspector: InspectorTools) {
         const sceneEl = inspector.sceneEl;
         const originalCamera = inspector.currentCameraEl = sceneEl.camera.el;
         inspector.currentCameraEl.setAttribute(

@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -p --config webpack.config.prod.js",
+    "build": "webpack -p --config webpack.prod.js",
     "start": "npm install && npm run start:dev",
-    "start:dev": "webpack-dev-server --config webpack.config.dev.js --inline",
+    "start:dev": "webpack-dev-server --config webpack.dev.js --inline",
     "deploy": "npm install && npm run build && gh-pages -d public",
     "tsc": "tsc",
     "lint": "tslint '**/*.ts'"

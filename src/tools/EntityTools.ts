@@ -4,7 +4,7 @@ import { Entity } from 'aframe';
 import { IPrimitive } from '../constants/primitives/primitives';
 import EventTools from './EventTools';
 
-export const createEntity = (primitive: IPrimitive) => {
+export const createEntity = (primitive: IPrimitive, callback?: (...args: any) => void) => {
     const { type, title, attributes } = primitive;
     const entity = document.createElement(type);
     entity.setAttribute('id', `${type}_${uuid()}`);
@@ -20,6 +20,9 @@ export const createEntity = (primitive: IPrimitive) => {
     });
     entity.addEventListener('loaded', () => {
         EventTools.emit('entitycreate', entity);
+        if (callback) {
+            callback(entity);
+        }
     })
     AFRAME.scenes[0].appendChild(entity);
     return entity;
@@ -29,14 +32,20 @@ export const updateEntity = (entity: Entity, attribute: string, value: any) => {
     entity.setAttribute(attribute, `${value}`);
 };
 
-export const removeEntity = (entity: Entity, force: boolean) => {
-    const closest = findClosestEntity(entity);
+export const removeEntity = (entity: Entity, force?: boolean) => {
+    const closest = findClosestEntity(entity) as Entity;
     AFRAME.INSPECTOR.removeObject(entity.object3D);
     entity.remove();
     AFRAME.INSPECTOR.selectEntity(closest);
 };
 
-export function removeSelectedEntity(force) {
+export function cloneSelectedEntity() {
+    if (AFRAME.INSPECTOR.selectedEntity) {
+        cloneEntity(AFRAME.INSPECTOR.selectedEntity);
+    }
+}
+
+export function removeSelectedEntity(force?: boolean) {
     if (AFRAME.INSPECTOR.selectedEntity) {
         removeEntity(AFRAME.INSPECTOR.selectedEntity, force);
     }

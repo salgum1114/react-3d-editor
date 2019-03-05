@@ -110,7 +110,7 @@ export interface IPrimitive {
 }
 
 export interface IEntity {
-    id?: string;
+    id?: number;
     key?: string;
     type?: string;
     title?: string;
