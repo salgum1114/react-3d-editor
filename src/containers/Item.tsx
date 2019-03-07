@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tree, Icon, Input, Modal, List, Avatar } from 'antd';
+import { Tree, Icon, Input, Modal, List, Avatar, message } from 'antd';
 import { IPrimitive, primitives, IEntity } from '../constants';
 import { Entity } from 'aframe';
 import { EntityTools, EventTools } from '../tools';
@@ -36,6 +36,7 @@ class Item extends Component<IItemProps, IItemState> {
                     title: entity.title,
                     icon: 'eye',
                     children: [],
+                    parentKey: 'scene',
                 });
             } else {
                 if (this.state.selectedKeys.length) {
@@ -46,10 +47,12 @@ class Item extends Component<IItemProps, IItemState> {
                     }
                     parentNode.children.push({
                         key: entity.id,
+                        id: entity.object3D.id,
                         type: entity.tagName.toLowerCase(),
                         title: entity.title,
                         icon: 'eye',
                         children: [],
+                        parentKey: selectedKey,
                     });
                 }
             }
@@ -77,35 +80,56 @@ class Item extends Component<IItemProps, IItemState> {
                     selectedKeys: [],
                 });
             }
-        })
+        });
+
+        EventTools.on('objectremove', (object3D: THREE.Object3D) => {
+            const findNode = this.findTreeNode(AFRAME.INSPECTOR.selectedEntity.id, this.state.treeNodes);
+            const parentNode = this.findTreeNode(findNode.parentKey, this.state.treeNodes);
+            let treeNodes = [];
+            if (!parentNode) {
+                treeNodes = this.state.treeNodes.filter((child: IEntity) => child.key !== findNode.key)
+            } else {
+                treeNodes = parentNode.children.filter((child: IEntity) => child.key !== findNode.key);
+            }
+            this.setState({
+                treeNodes,
+            });
+        });
     }
 
-    findTreeNode = (id: string, treeNodes?: IEntity[]): any => {
-        let parentNode;
+    findTreeNode = (key: string, treeNodes?: IEntity[]): IEntity => {
+        let findNode;
         for (let i = 0; i < treeNodes.length; i++) {
             const node = treeNodes[i];
-            if (node.key === id) {
-                parentNode = node;
-                return parentNode;
+            if (node.key === key) {
+                findNode = node;
+                return findNode;
             }
             if (node.children.length) {
-                parentNode = this.findTreeNode(id, node.children);
-                if (parentNode) {
-                    return parentNode;
+                findNode = this.findTreeNode(key, node.children);
+                if (findNode) {
+                    return findNode;
                 }
             }
         }
-        return parentNode;
+        return findNode;
     }
 
     handleDeleteEntity = () => {
-        Modal.confirm({
-            title: 'Delete confirm',
-            content: 'Are you sure want to delete this entity?',
-            onOk: () => {
-
-            },
-        });
+        if (AFRAME.INSPECTOR.selectedEntity) {
+            Modal.confirm({
+                title: 'Delete confirm',
+                content: 'Are you sure want to delete this entity?',
+                onOk: () => {
+                    const findNode = this.findTreeNode(AFRAME.INSPECTOR.selectedEntity.id, this.state.treeNodes);
+                    if (findNode.children.length) {
+                        message.warn('There are child entities.');
+                        return;
+                    }
+                    EntityTools.removeSelectedEntity();
+                },
+            });
+        }
     }
 
     handleAddEntity = (item: IPrimitive) => {
@@ -126,6 +150,7 @@ class Item extends Component<IItemProps, IItemState> {
     }
 
     handleSelectEntity = (selectedKeys: string[]) => {
+        console.log(selectedKeys);
         this.setState({
             selectedKeys,
         }, () => {

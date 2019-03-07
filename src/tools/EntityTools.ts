@@ -32,10 +32,10 @@ export const updateEntity = (entity: Entity, attribute: string, value: any) => {
     entity.setAttribute(attribute, `${value}`);
 };
 
-export const removeEntity = (entity: Entity, force?: boolean) => {
+export const removeEntity = (entity: Entity) => {
     const closest = findClosestEntity(entity) as Entity;
     AFRAME.INSPECTOR.removeObject(entity.object3D);
-    entity.remove();
+    entity.parentNode.removeChild(entity);
     AFRAME.INSPECTOR.selectEntity(closest);
 };
 
@@ -45,9 +45,9 @@ export function cloneSelectedEntity() {
     }
 }
 
-export function removeSelectedEntity(force?: boolean) {
+export function removeSelectedEntity() {
     if (AFRAME.INSPECTOR.selectedEntity) {
-        removeEntity(AFRAME.INSPECTOR.selectedEntity, force);
+        removeEntity(AFRAME.INSPECTOR.selectedEntity);
     }
 }
 

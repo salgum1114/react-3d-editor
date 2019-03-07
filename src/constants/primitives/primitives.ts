@@ -115,6 +115,7 @@ export interface IEntity {
     type?: string;
     title?: string;
     icon?: string;
+    parentKey?: string;
     children?: IEntity[];
 }
 
