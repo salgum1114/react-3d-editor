@@ -127,7 +127,8 @@ export const primitives: IPrimitive[] = [
         description: 'The box primitive creates shapes such as boxes, cubes, or walls.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-box.html',
-        attributes: Object.keys(ABox.attributes).map(key => ABox.attributes[key]),
+        // attributes: Object.keys(ABox.attributes).map(key => ABox.attributes[key]),
+        attributes: [],
     },
     {
         key: 'a-camera',

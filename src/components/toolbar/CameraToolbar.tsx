@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
-import { Select } from 'antd';
+import { Select, Icon } from 'antd';
 
 import { EventTools } from '../../tools';
+import { EventType } from '../../constants';
 
 interface IOption {
     value?: string;
-    event?: string;
+    event?: EventType;
     payload?: string;
     label?: string;
+}
+
+interface IProps {
+    style?: React.CSSProperties;
 }
 
 const options: IOption[] = [
@@ -20,7 +25,7 @@ const options: IOption[] = [
     { value: 'orthofront', event: 'cameraorthographictoggle', payload: 'front', label: 'Front View' },
 ];
 
-class CameraToolbar extends Component<{}, {}> {
+class CameraToolbar extends Component<IProps> {
     justChangedCamera?: boolean;
 
     constructor(props: {}) {
@@ -56,9 +61,11 @@ class CameraToolbar extends Component<{}, {}> {
     }
 
     render() {
+        const { style } = this.props;
         const { selectedCamera } = this.state;
         return (
-            <div style={{ marginLeft: 8 }}>
+            <div style={style}>
+                <Icon type="camera" style={{ marginRight: 8 }} />
                 <Select
                     onChange={this.handleChange}
                     value={selectedCamera}

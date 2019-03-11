@@ -84,16 +84,22 @@ class Item extends Component<IItemProps, IItemState> {
 
         EventTools.on('objectremove', (object3D: THREE.Object3D) => {
             const findNode = this.findTreeNode(AFRAME.INSPECTOR.selectedEntity.id, this.state.treeNodes);
-            const parentNode = this.findTreeNode(findNode.parentKey, this.state.treeNodes);
-            let treeNodes = [];
-            if (!parentNode) {
-                treeNodes = this.state.treeNodes.filter((child: IEntity) => child.key !== findNode.key)
-            } else {
-                treeNodes = parentNode.children.filter((child: IEntity) => child.key !== findNode.key);
+            if (findNode) {
+                const parentNode = this.findTreeNode(findNode.parentKey, this.state.treeNodes);
+                let treeNodes = [] as IEntity[];
+                if (!parentNode) {
+                    treeNodes = this.state.treeNodes.filter((child: IEntity) => child.key !== findNode.key);
+                } else {
+                    const findIndex = parentNode.children.findIndex((child: IEntity) => child.key === findNode.key);
+                    if (findIndex > -1) {
+                        parentNode.children.splice(findIndex, 1);
+                        treeNodes = this.state.treeNodes;
+                    }
+                }
+                this.setState({
+                    treeNodes,
+                });
             }
-            this.setState({
-                treeNodes,
-            });
         });
     }
 

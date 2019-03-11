@@ -17,7 +17,6 @@ class RaycasterTools {
     onDoubleClickPosition?: THREE.Vector2;
 
     constructor(inspector?: InspectorTools) {
-        console.log(inspector);
         this.inspector = inspector;
         this.onDownPosition = new AFRAME.THREE.Vector2();
         this.onUpPosition = new AFRAME.THREE.Vector2();
@@ -25,7 +24,6 @@ class RaycasterTools {
     }
 
     init = (inspector?: InspectorTools) => {
-        console.log(inspector.container);
         // Use cursor="rayOrigin: mouse".
         const mouseCursor = document.createElement('a-entity');
         mouseCursor.setAttribute('id', 'aframeInspectorMouseCursor');
@@ -106,9 +104,7 @@ class RaycasterTools {
     }
 
     onMouseLeave = (event: Event) => {
-        EventTools.emit(
-            'raycastermouseleave',
-            this.mouseCursor.components.cursor.intersectedEl,
+        EventTools.emit('raycastermouseleave', this.mouseCursor.components.cursor.intersectedEl,
         );
     }
 

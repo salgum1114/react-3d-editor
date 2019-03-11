@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { EventType } from '../constants';
 
 class EventTools {
     emitter: EventEmitter;
@@ -8,18 +9,18 @@ class EventTools {
         this.emitter.setMaxListeners(0);
     }
 
-    on(...args: any[]) {
-        this.emitter.on.apply(this.emitter, args);
+    on(type: EventType, callback?: (payload?: any) => any) {
+        this.emitter.on.apply(this.emitter, [type, callback]);
         return this;
     }
 
-    emit(...args: any[]) {
-        this.emitter.emit.apply(this.emitter, args);
+    emit(type: EventType, payload?: any) {
+        this.emitter.emit.apply(this.emitter, [type, payload]);
         return this;
     }
 
-    removeListener(...args: any[]) {
-        this.emitter.removeListener.apply(this.emitter, args);
+    removeListener(type: EventType, payload?: any) {
+        this.emitter.removeListener.apply(this.emitter, [type, payload]);
         return this;
     }
 }

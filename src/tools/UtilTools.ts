@@ -98,3 +98,5 @@ export const saveBlob = (blob: Blob, filename: string) => {
     link.click();
     // URL.revokeObjectURL(url); breaks Firefox...
 };
+
+export const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1) : false;

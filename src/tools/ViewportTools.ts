@@ -117,13 +117,13 @@ class ViewportTools {
                 component = 'scale';
                 value = `${object.scale.x} ${object.scale.y} ${object.scale.z}`;
             }
-            // EventTools.emit('entityupdate', {
-            //     component,
-            //     entity: transformControls.object.el,
-            //     property: '',
-            //     value: value,
-            // });
-            // EventTools.emit('entitytransformed', transformControls.object.el);
+            EventTools.emit('entityupdate', {
+                component,
+                entity: transformControls.object.el,
+                property: '',
+                value,
+            });
+            EventTools.emit('entitytransformed', transformControls.object.el);
         });
         transformControls.addEventListener('mouseDown', () => {
             this.controls.enabled = false;

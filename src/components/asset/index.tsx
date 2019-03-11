@@ -1,1 +1,1 @@
-export { default as Asset } from './Asset';
+export { default as Assets } from './Assets';

@@ -136,7 +136,7 @@ class InspectorTools {
         EventTools.on('entityselect', (entity: Entity) => {
             this.selectEntity(entity, false);
         });
-        EventTools.on('inspectortoggle', active => {
+        EventTools.on('inspectortoggle', (active?: boolean) => {
             this.inspectorActive = active;
             this.sceneHelpers.visible = this.inspectorActive;
         });

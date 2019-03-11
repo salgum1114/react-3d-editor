@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Tabs, Icon } from 'antd';
-import { Property } from '../components/property';
-import { Asset } from '../components/asset';
+import { Properties } from '../components/property';
+import { Assets } from '../components/asset';
 
 class Setting extends Component {
     render() {
@@ -16,13 +16,13 @@ class Setting extends Component {
                     key="setting"
                     tab={<Icon type="setting" style={{ marginRight: 0 }}/>}
                 >
-                    <Property />
+                    <Properties />
                 </Tabs.TabPane>
                 <Tabs.TabPane
                     key="asset"
                     tab={<Icon type="shop" style={{ marginRight: 0 }}/>}
                 >
-                    <Asset />
+                    <Assets />
                 </Tabs.TabPane>
             </Tabs>
         );

@@ -28,8 +28,36 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
     return entity;
 };
 
-export const updateEntity = (entity: Entity, attribute: string, value: any) => {
-    entity.setAttribute(attribute, `${value}`);
+export const updateEntity = (entity: Entity, propertyName: string, value: any) => {
+    console.log(entity, propertyName, value);
+    let splitName;
+    if (propertyName.indexOf('.') !== -1) {
+        // Multi-prop
+        splitName = propertyName.split('.');
+        if (value === null || value === undefined) {
+            // Remove property.
+            const parameters = entity.getAttribute(splitName[0]);
+            delete parameters[splitName[1]];
+            entity.setAttribute(splitName[0], parameters);
+        } else {
+            // Set property.
+            entity.setAttribute(splitName[0], splitName[1], value);
+        }
+    } else {
+        if (value === null || value === undefined) {
+            // Remove property.
+            entity.removeAttribute(propertyName);
+        } else {
+            // Set property.
+            entity.setAttribute(propertyName, value);
+        }
+    }
+    EventTools.emit('entityupdate', {
+        component: splitName ? splitName[0] : propertyName,
+        entity,
+        property: splitName ? splitName[1] : '',
+        value,
+    });
 };
 
 export const removeEntity = (entity: Entity) => {

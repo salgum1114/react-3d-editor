@@ -1,7 +1,7 @@
 import React from 'react';
 import { Omit } from '../../types/utils';
 
-export interface IContainerProps extends Omit<React.HTMLProps<HTMLElement>, 'title' | 'content'> {
+export interface ISidebarContainerProps extends Omit<React.HTMLProps<HTMLElement>, 'title' | 'content'> {
     style?: React.CSSProperties;
     title?: React.ReactNode;
     titleStyle?: React.CSSProperties;
@@ -9,7 +9,7 @@ export interface IContainerProps extends Omit<React.HTMLProps<HTMLElement>, 'tit
     contentStyle?: React.CSSProperties;
 }
 
-const Container: React.SFC<IContainerProps> = props => {
+const SidebarContainer: React.SFC<ISidebarContainerProps> = props => {
     const {
         style,
         title,
@@ -30,4 +30,4 @@ const Container: React.SFC<IContainerProps> = props => {
     )
 };
 
-export default Container;
+export default SidebarContainer;
