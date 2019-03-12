@@ -72,13 +72,19 @@ class InspectorTools {
             return;
         }
         this.sceneEl = AFRAME.scenes[0];
-        this.scene = this.sceneEl.object3D;
         if (!this.sceneEl.hasLoaded) {
             setTimeout(() => {
                 this.init();
             }, 100);
             return;
         }
+        if (!this.sceneEl.camera) {
+            this.sceneEl.addEventListener('camera-set-active', () => {
+                this.init();
+            }, { once: true });
+            return;
+        }
+        this.scene = this.sceneEl.object3D;
         this.container = document.querySelector('.a-canvas');
         this.initCamera();
         this.initShortcut();

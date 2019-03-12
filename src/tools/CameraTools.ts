@@ -62,9 +62,11 @@ class CameraTools {
         const perspectiveCamera = inspector.camera = new AFRAME.THREE.PerspectiveCamera();
         perspectiveCamera.far = 10000;
         perspectiveCamera.near = 0.01;
-        perspectiveCamera.position.set(0, 1.6, 2);
+        perspectiveCamera.position.set(0, 5, 20);
+        // perspectiveCamera.position.set(0, 3.5, 8);
+        // perspectiveCamera.position.set(0, 1.6, 2);
         perspectiveCamera.lookAt(new AFRAME.THREE.Vector3(0, 1.6, -1));
-        perspectiveCamera.updateMatrixWorld(false);
+        perspectiveCamera.updateMatrixWorld();
         sceneEl.object3D.add(perspectiveCamera);
         sceneEl.camera = perspectiveCamera;
 

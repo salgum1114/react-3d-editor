@@ -20,7 +20,20 @@ class Properties extends Component {
                 selectedEntity: entity,
             });
         });
-        EventTools.on('entityupdate', (payload: any) => {
+        EventTools.on('objectselect', (object3D: THREE.Object3D) => {
+            if (!object3D) {
+                this.setState({
+                    selectedEntity: null,
+                });
+            }
+        });
+        EventTools.on('entityupdate', () => {
+            this.forceUpdate();
+        });
+        EventTools.on('componentadd', () => {
+            this.forceUpdate();
+        });
+        EventTools.on('componentremove', () => {
             this.forceUpdate();
         });
     }

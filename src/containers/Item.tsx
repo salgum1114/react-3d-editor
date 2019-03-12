@@ -124,7 +124,7 @@ class Item extends Component<IItemProps, IItemState> {
     handleDeleteEntity = () => {
         if (AFRAME.INSPECTOR.selectedEntity) {
             Modal.confirm({
-                title: 'Delete confirm',
+                title: 'Delete entity',
                 content: 'Are you sure want to delete this entity?',
                 onOk: () => {
                     const findNode = this.findTreeNode(AFRAME.INSPECTOR.selectedEntity.id, this.state.treeNodes);

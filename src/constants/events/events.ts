@@ -19,4 +19,7 @@ export type EventType = 'entitycreate'
 | 'cameratoggle'
 | 'entitytransformed'
 | 'refreshsidebarobject3d'
+| 'componentadd'
+| 'componentremove'
+| 'windowresize'
 ;

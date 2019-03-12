@@ -36,9 +36,14 @@ class ColorPicker extends Component<IProps> {
             <Popover
                 trigger="click"
                 placement="bottom"
+                style={{ zIndex: 9999 }}
+                overlayStyle={{ zIndex: 9999 }}
                 content={<SketchPicker color={color} onChange={onChange} />}
             >
-                <Button style={{ background: color }} shape="circle" />
+                <div style={{ display: 'flex', flex: 1, alignItems: 'center', cursor: 'pointer' }}>
+                    <Button style={{ background: color }} shape="circle" />
+                    <span style={{ marginLeft: 16 }}>{color}</span>
+                </div>
             </Popover>
         );
     }
