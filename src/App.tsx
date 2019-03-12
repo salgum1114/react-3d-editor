@@ -12,7 +12,7 @@ class App extends Component<{}, {}> {
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                     <link rel="manifest" href="./manifest.json" />
                     <link rel="shortcut icon" href="./favicon.ico" />
-                    <link rel="stylesheet" href="http://fonts.googleapis.com/earlyaccess/notosanskr.css" />
+                    <link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" />
                     {/* <script src="https://aframe.io/releases/0.8.2/aframe.min.js" /> */}
                     {/* <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js" /> */}
                     {/* <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.0/aframe/build/aframe-ar.js" /> */}
