@@ -1,2 +1,4 @@
 node_modules/
 public/js
+public/*.js
+public/index.html
