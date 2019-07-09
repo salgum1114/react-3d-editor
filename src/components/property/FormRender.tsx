@@ -59,16 +59,16 @@ class FormRender extends Component<IProps> {
                 return <Input />;
             }
             case 'map':
-            return (
-                <TexturePicker
-                    schema={schema}
-                    data={data}
-                    form={form}
-                    entity={entity}
-                    schemaKey={schemaKey}
-                    componentName={componentName}
-                />
-            );
+                return (
+                    <TexturePicker
+                        schema={schema}
+                        data={data}
+                        form={form}
+                        entity={entity}
+                        schemaKey={schemaKey}
+                        componentName={componentName}
+                    />
+                );
             default:
                 return <Input />;
         }

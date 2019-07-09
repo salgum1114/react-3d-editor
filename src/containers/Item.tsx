@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tree, Icon, Input, Modal, List, Avatar, message } from 'antd';
+import { Tree, Icon, Input, Modal, List, Avatar, message, Button } from 'antd';
 import { IPrimitive, primitives, IEntity } from '../constants';
 import { Entity } from 'aframe';
 import { EntityTools, EventTools } from '../tools';
@@ -13,6 +13,7 @@ interface IItemState {
     treeNodes: IEntity[];
     selectedKeys: string[];
     expandedKeys: string[];
+    isInspector: boolean;
 }
 
 class Item extends Component<IItemProps, IItemState> {
@@ -21,6 +22,7 @@ class Item extends Component<IItemProps, IItemState> {
         treeNodes: [],
         selectedKeys: [],
         expandedKeys: [],
+        isInspector: false,
     }
 
     componentDidMount() {
@@ -172,6 +174,17 @@ class Item extends Component<IItemProps, IItemState> {
         });
     }
 
+    handleScene = () => {
+        if (this.state.isInspector) {
+            AFRAME.INSPECTOR.open();
+        } else {
+            AFRAME.INSPECTOR.close();
+        }
+        this.setState({
+            isInspector: !this.state.isInspector,
+        });
+    }
+
     renderListItem = (item: IPrimitive) => {
         return (
             <List.Item>
@@ -203,9 +216,14 @@ class Item extends Component<IItemProps, IItemState> {
     })
 
     render() {
-        const { visible, treeNodes, selectedKeys, expandedKeys } = this.state;
+        const { visible, treeNodes, selectedKeys, expandedKeys, isInspector } = this.state;
         return (
             <div className="editor-item-container">
+                <div className="editor-item-scene">
+                    <Button block={true} onClick={this.handleScene} type="primary">
+                        {isInspector ? 'Inspect Scene' : 'Back to the Scene'}
+                    </Button>
+                </div>
                 <div className="editor-item-tools">
                     <div style={{ flex: 1 }}>
                         <a target="_blank" href="https://github.com/salgum1114/react-3d-editor">
@@ -232,7 +250,7 @@ class Item extends Component<IItemProps, IItemState> {
                     <Tree.TreeNode
                         key="scene"
                         icon={<Icon type="eye" />}
-                        title="<a-scene>"
+                        title="Scene"
                     >
                         {this.renderTreeNodes(treeNodes)}
                     </Tree.TreeNode>

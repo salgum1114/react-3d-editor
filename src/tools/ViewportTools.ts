@@ -12,6 +12,12 @@ class ViewportTools {
     controls?: THREE.EditorControls;
     grid?: THREE.GridHelper;
     mouseCursor?: IRaycaster;
+
+    /**
+     * Creates an instance of ViewportTools.
+     * @param {InspectorTools} inspector
+     * @memberof ViewportTools
+     */
     constructor(inspector: InspectorTools) {
         this.init(inspector);
     }
@@ -232,6 +238,7 @@ class ViewportTools {
             this.grid.visible = !this.grid.visible;
         });
         EventTools.on('inspectortoggle', active => {
+            console.log(active);
             if (active) {
                 this.enableControls();
                 AFRAME.scenes[0].camera = inspector.camera;
@@ -250,7 +257,6 @@ class ViewportTools {
                     element.style.display = 'block';
                 });
             }
-            // ga('send', 'event', 'Viewport', 'toggleEditor', active);
         });
     }
 

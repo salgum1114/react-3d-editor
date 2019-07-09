@@ -123,309 +123,254 @@ export const primitives: IPrimitive[] = [
     {
         key: 'a-box',
         type: 'a-box',
-        title: '<a-box>',
+        title: 'Box',
         description: 'The box primitive creates shapes such as boxes, cubes, or walls.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-box.html',
-        // attributes: Object.keys(ABox.attributes).map(key => ABox.attributes[key]),
         attributes: [],
     },
     {
         key: 'a-camera',
         type: 'a-camera',
-        title: '<a-camera>',
+        title: 'Camera',
         description: 'The camera primitive determines what the user sees. We can change the viewport by modifying the camera entity’s position and rotation.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-camera.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-circle',
         type: 'a-circle',
-        title: '<a-circle>',
+        title: 'Circle',
         description: 'The circle primitive creates circles surfaces using the geometry component with the type set to circle.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-circle.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-collada-model',
         type: 'a-collada-model',
-        title: '<a-collada-model>',
+        title: 'Collada Model',
         description: 'The COLLADA model primitive displays a 3D COLLADA model created from a 3D modeling program or downloaded from the web.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-collada-model.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-cone',
         type: 'a-cone',
-        title: '<a-cone>',
+        title: 'Cone',
         description: 'The cone primitive creates a cone shape.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-cone.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-cursor',
         type: 'a-cursor',
-        title: '<a-cursor>',
+        title: 'Cursor',
         description: 'The cursor primitive is a reticle that allows for clicking and basic interactivity with a scene on devices that do not have a hand controller. The default appearance is a ring geometry. The cursor is usually placed as a child of the camera.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-cursor.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-curvedimage',
         type: 'a-curvedimage',
-        title: '<a-curvedimage>',
+        title: 'Curvedimage',
         description: `The curved image primitive creates images that bend around the user. Curved images arranged around the camera can be pleasing for legibility since each pixel sits at the same distance from the user. They can be a better choice than angled flat planes for complex layouts because they ensure a smooth surface rather than a series of awkward seams between planes.
             Under the hood, a curved image is a double-sided open-ended cylinder with textures mapped to the inside of the cylinder.`,
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-curvedimage.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-cylinder',
         type: 'a-cylinder',
-        title: '<a-cylinder>',
+        title: 'Cylinder',
         description: 'The cylinder primitive is used to create tubes and curved surfaces.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-cylinder.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-dodecahedron',
         type: 'a-dodecahedron',
-        title: '<a-dodecahedron>',
+        title: 'Dodecahedron',
         description: '',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-dodecahedron.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-gltf-model',
         type: 'a-gltf-model',
-        title: '<a-gltf-model>',
+        title: 'Gltf Model',
         description: 'The glTF model primitive displays a 3D glTF model created from a 3D modeling program or downloaded from the web.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-gltf-model.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-icosahedron',
         type: 'a-icosahedron',
-        title: '<a-icosahedron>',
+        title: 'Icosahedron',
         description: '',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-icosahedron.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-image',
         type: 'a-image',
-        title: '<a-image>',
+        title: 'Image',
         description: 'The image primitive shows an image on a flat plane.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-image.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-light',
         type: 'a-light',
-        title: '<a-light>',
+        title: 'Light',
         description: 'A light changes the lighting and shading of the scene.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-light.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-link',
         type: 'a-link',
-        title: '<a-link>',
+        title: 'Link',
         description: 'The link primitive provides a compact API to define links that resembles the traditional <a> tag.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-link.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-obj-model',
         type: 'a-obj-model',
-        title: '<a-obj-model>',
+        title: 'Obj Model',
         description: 'The .OBJ model primitive displays a 3D Wavefront model.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-obj-model.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-octahedron',
         type: 'a-octahedron',
-        title: '<a-octahedron>',
+        title: 'Octahedron>',
         description: '',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-octahedron.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-plane',
         type: 'a-plane',
-        title: '<a-plane>',
+        title: 'Plane',
         description: 'The plane primitive creates flat surfaces using the geometry component with the type set to plane.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-plane.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-ring',
         type: 'a-ring',
-        title: '<a-ring>',
+        title: 'Ring',
         description: 'The ring primitive creates a ring or disc shape.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-ring.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-sky',
         type: 'a-sky',
-        title: '<a-sky>',
+        title: 'Sky',
         description: 'The sky primitive adds a background color or 360° image to a scene. A sky is a large sphere with a color or texture mapped to the inside.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-sky.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-sound',
         type: 'a-sound',
-        title: '<a-sound>',
+        title: 'Sound',
         description: 'The sound primitive wraps the sound component.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-sound.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-sphere',
         type: 'a-sphere',
-        title: '<a-sphere>',
+        title: 'Sphere',
         description: 'The sphere primitive creates a spherical or polyhedron shapes. It wraps an entity that prescribes the geometry component with its geometric primitive set to sphere.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-sphere.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-tetrahedron',
         type: 'a-tetrahedron',
-        title: '<a-tetrahedron>',
+        title: 'Tetrahedron',
         description: '',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-tetrahedron.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-text',
         type: 'a-text',
-        title: '<a-text>',
+        title: 'Text',
         description: 'Wraps the text component.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-text.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-torus-knot',
         type: 'a-torus-knot',
-        title: '<a-torus-knot>',
+        title: 'Torus Knot',
         description: 'The torus knot primitive creates pretzel shapes using the geometry component with the type set to torusKnot.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-torus-knot.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-torus',
         type: 'a-torus',
-        title: '<a-torus>',
+        title: 'Torus',
         description: 'The torus primitive creates donut or tube shapes using the geometry component with the type set to torus.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-torus.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-triangle',
         type: 'a-triangle',
-        title: '<a-triangle>',
+        title: 'Triangle',
         description: 'The triangle primitive creates triangle surfaces using the geometry component with the type set to triangle.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-triangle.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-video',
         type: 'a-video',
-        title: '<a-video>',
+        title: 'Video',
         description: 'The video primitive plays a video as a texture on a flat plane.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-video.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
     {
         key: 'a-videosphere',
         type: 'a-videosphere',
-        title: '<a-videosphere>',
+        title: 'Videosphere',
         description: 'The videosphere primitive plays 360° videos in the background of the scene. Videospheres are a large sphere with the video texture mapped to the inside.',
         icon: 'eye',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-videosphere.html',
-        attributes: [
-            
-        ],
+        attributes: [],
     },
 ];

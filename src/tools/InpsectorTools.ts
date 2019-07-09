@@ -112,6 +112,7 @@ class InspectorTools {
         this.sceneHelpers = new AFRAME.THREE.Scene();
         this.sceneHelpers.userData.source = 'INPSECTOR';
         this.sceneHelpers.visible = true;
+        this.inspectorActive = false;
         this.viewportTools = new ViewportTools(this);
         EventTools.emit('windowresize');
         scene.add(this.sceneHelpers);

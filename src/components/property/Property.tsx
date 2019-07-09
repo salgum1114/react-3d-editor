@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Form, Divider, List } from 'antd';
 import { Entity } from 'aframe';
 import { FormComponentProps } from 'antd/lib/form';
+import debounce from 'lodash/debounce';
 
 import GeneralComponent from './GeneralComponent';
 import AddComponent from './AddComponent';
@@ -27,6 +28,8 @@ class Property extends Component<IProps> {
     }
 }
 
+const updateEntity = debounce((entity, propertyName, value) => EntityTools.updateEntity(entity, propertyName, value), 200);
+
 export default Form.create({
     onValuesChange: (props: IProps, changedValues: any, allValues: any) => {
         const { entity } = props;
@@ -40,17 +43,17 @@ export default Form.create({
                     const changedSchema = allValues[changedComponentName];
                     const value = newSchema.stringify(changedSchema[changedSchemaKey]);
                     const propertyName = `${changedComponentName}.${changedSchemaKey}`;
-                    EntityTools.updateEntity(entity, propertyName, value);
+                    updateEntity(entity, propertyName, value);
                 } else {
                     const changedSchema = allValues[changedComponentName];
                     const value = changedSchema[changedSchemaKey];
                     const propertyName = `${changedComponentName}.${changedSchemaKey}`;
-                    EntityTools.updateEntity(entity, propertyName, value);
+                    updateEntity(entity, propertyName, value);
                 }
                 return;
             }
             const value = schema.stringify(allValues[changedComponentName]);
-            EntityTools.updateEntity(entity, changedComponentName, value);
+            updateEntity(entity, changedComponentName, value);
         }
     },
 })(Property);

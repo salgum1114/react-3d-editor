@@ -9,6 +9,7 @@ interface IProps extends FormComponentProps {
     data?: any;
     componentName?: string;
     schemaKey?: string;
+    onChange?: (value?: any) => void;
 }
 
 class TexturePicker extends Component<IProps> {
@@ -22,11 +23,16 @@ class TexturePicker extends Component<IProps> {
         });
     }
 
+    handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { onChange } = this.props;
+        onChange(e.target.value);
+    }
+
     render() {
         const { visible } = this.state;
         return (
             <>
-                <Input addonAfter={<Icon type="shop" onClick={this.handleClick} />} />
+                <Input onChange={this.handleChangeInput} addonAfter={<Icon type="shop" onClick={this.handleClick} />} />
                 <Modal
                     visible={visible}
                     closable={true}

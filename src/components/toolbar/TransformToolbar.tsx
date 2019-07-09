@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Icon, Switch } from 'antd';
+import { Button, Icon } from 'antd';
 
 import { EventTools } from '../../tools';
 
@@ -16,20 +16,12 @@ const transforms = [
 class TransformToolbar extends Component<IProps> {
     state = {
         selectedTransform: 'translate',
-        localSpace: false,
     }
 
     componentDidMount() {
         EventTools.on('transformmodechange', selectedTransform => {
             this.setState({
                 selectedTransform,
-            });
-        });
-
-        EventTools.on('transformspacechange', () => {
-            EventTools.emit('transformspacechanged', this.state.localSpace ? 'world' : 'local');
-            this.setState({
-                localSpace: !this.state.localSpace,
             });
         });
     }
@@ -41,19 +33,12 @@ class TransformToolbar extends Component<IProps> {
         EventTools.emit('transformmodechange', selectedTransform);
     }
 
-    handleChangeLocalSpace = (localSpace?: boolean) => {
-        this.setState({
-            localSpace,
-        });
-        EventTools.emit('transformspacechanged', localSpace ? 'local' : 'world');
-    }
-
     render() {
         const { style } = this.props;
-        const { localSpace, selectedTransform } = this.state;
+        const { selectedTransform } = this.state;
         return (
             <div style={style}>
-                <div style={{ marginRight: 16 }}>
+                <Button.Group>
                     {
                         transforms.map(transform => (
                             <Button
@@ -65,15 +50,7 @@ class TransformToolbar extends Component<IProps> {
                             </Button>
                         ))
                     }
-                </div>
-                <label
-                    style={{ marginRight: 8 }}
-                    htmlFor="local"
-                    title="Toggle between local and world space transforms"
-                >
-                    Local
-                </label>
-                <Switch size="small" onChange={this.handleChangeLocalSpace} checked={localSpace} />
+                </Button.Group>
             </div>
         );
     }
