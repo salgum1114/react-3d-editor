@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Tree, Input, Modal, message, Tabs, Row, Col, Card, Icon } from 'antd';
+import { Tree, Input, Modal, message, Tabs, Row, Col, Card } from 'antd';
 import { Entity } from 'aframe';
-import PolestarIcon from 'polestar-icons';
+import Icon from 'polestar-icons';
 
 import { IPrimitive, primitives, catalogs, IEntity } from '../constants';
 import { EntityTools, EventTools } from '../tools';
@@ -38,7 +38,7 @@ class Item extends Component<IItemProps, IItemState> {
                         id: entity.object3D.id,
                         type: entity.tagName.toLowerCase(),
                         title: entity.title,
-                        icon: 'eye',
+                        icon: entity.dataset.icon,
                         children: [],
                         parentKey: 'scene',
                     });
@@ -48,7 +48,7 @@ class Item extends Component<IItemProps, IItemState> {
                         id: entity.object3D.id,
                         type: entity.tagName.toLowerCase(),
                         title: entity.title,
-                        icon: 'eye',
+                        icon: entity.dataset.icon,
                         children: [],
                         parentKey: 'scene',
                     });
@@ -65,7 +65,7 @@ class Item extends Component<IItemProps, IItemState> {
                         id: entity.object3D.id,
                         type: entity.tagName.toLowerCase(),
                         title: entity.title,
-                        icon: 'eye',
+                        icon: entity.dataset.icon,
                         children: [],
                         parentKey: selectedKey,
                     });
@@ -192,13 +192,13 @@ class Item extends Component<IItemProps, IItemState> {
      * @param {IEntity[]} treeNodes
      */
     renderTreeNodes = (treeNodes: IEntity[]) => treeNodes.map(item => {
+        console.log(item)
         if (item.children && item.children.length) {
             return (
                 <Tree.TreeNode
                     key={item.key}
                     title={item.title}
-                    icon={<PolestarIcon name={'cube'} />}
-                    // icon={<Icon type={item.icon} />}
+                    icon={<Icon name={item.icon} />}
                     dataRef={item}
                 >
                     {this.renderTreeNodes(item.children)}
@@ -209,8 +209,7 @@ class Item extends Component<IItemProps, IItemState> {
             <Tree.TreeNode
                 key={item.key}
                 title={item.title}
-                icon={<PolestarIcon name={'cube'} />}
-                // icon={<Icon type={item.icon} />}
+                icon={<Icon name={item.icon} />}
                 dataRef={item}
             />
         );
@@ -234,7 +233,7 @@ class Item extends Component<IItemProps, IItemState> {
                                     title={item.title}
                                     extra={
                                         <a className="editor-item-help-icon" onClick={e => e.stopPropagation()} target="_blank" href={item.url}>
-                                            <Icon type="question-circle" />
+                                            <Icon name="question-circle-o" />
                                         </a>
                                     }
                                     style={{ marginBottom: 16 }}
@@ -260,12 +259,12 @@ class Item extends Component<IItemProps, IItemState> {
                 <div className="editor-item-tools">
                     <div style={{ flex: 1 }}>
                         <a target="_blank" href="https://github.com/salgum1114/react-3d-editor">
-                            <Icon type="github" style={{ fontSize: '1.2rem' }} />
+                            <Icon name="github" style={{ fontSize: '1.2rem' }} />
                         </a>
                     </div>
                     <div>
-                        <Icon className="editor-icon" style={{ fontSize: '1.2rem', marginRight: 8 }} type="plus" onClick={this.handleModalVisible} />
-                        <Icon className="editor-icon" style={{ fontSize: '1.2rem' }} type="delete" onClick={this.handleDeleteEntity} />
+                        <Icon className="editor-icon" style={{ fontSize: '1.2rem', marginRight: 8, cursor: 'pointer' }} name="plus" onClick={this.handleModalVisible} />
+                        <Icon className="editor-icon" style={{ fontSize: '1.2rem', cursor: 'pointer' }} name="trash" onClick={this.handleDeleteEntity} />
                     </div>
                 </div>
                 <div className="editor-item-search">
@@ -284,7 +283,7 @@ class Item extends Component<IItemProps, IItemState> {
                         isScene ? (
                             <Tree.TreeNode
                                 key="scene"
-                                icon={<Icon type="eye" />}
+                                icon={<Icon name="eye" />}
                                 title="Scene"
                             >
                                 {this.renderTreeNodes(treeNodes)}

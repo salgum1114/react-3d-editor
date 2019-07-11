@@ -65,7 +65,7 @@ class ViewportTools {
      */
     initGrid(inspector: InspectorTools) {
         const sceneHelpers = inspector.sceneHelpers;
-        const grid = new AFRAME.THREE.GridHelper(300, 600, 0xaaaaaa, 0x262626);
+        const grid = new AFRAME.THREE.GridHelper(30, 60, 0xaaaaaa, 0x262626);
         sceneHelpers.add(grid);
         this.grid = grid;
     }

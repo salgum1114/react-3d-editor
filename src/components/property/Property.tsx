@@ -19,7 +19,6 @@ class Property extends Component<IProps> {
         const { entity: nextEntity, form } = nextProps;
         const { entity: currentEntity } = this.props;
         if ((nextEntity && currentEntity) && (nextEntity.id !== currentEntity.id)) {
-            console.log('componentWillReceiveProps');
             form.resetFields();
         }
     }

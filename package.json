@@ -46,7 +46,7 @@
     "classnames": "^2.2.6",
     "css-element-queries": "^1.1.1",
     "lodash": "^4.17.11",
-    "polestar-icons": "^0.9.46",
+    "polestar-icons": "^0.9.48",
     "react": "^16.7.0",
     "react-ace": "^6.3.2",
     "react-color": "^2.17.0",

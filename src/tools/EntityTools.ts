@@ -5,10 +5,11 @@ import { IPrimitive } from '../constants/primitives/primitives';
 import EventTools from './EventTools';
 
 export const createEntity = (primitive: IPrimitive, callback?: (...args: any) => void) => {
-    const { type, title, attributes } = primitive;
+    const { type, title, icon, attributes } = primitive;
     const entity = document.createElement(type);
     entity.setAttribute('id', `${type}_${uuid()}`);
     entity.setAttribute('title', title);
+    entity.setAttribute('data-icon', icon);
     entity.addEventListener('loaded', () => {
         EventTools.emit('entitycreate', entity);
         if (callback) {
