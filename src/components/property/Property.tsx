@@ -8,22 +8,32 @@ import GeneralComponent from './GeneralComponent';
 import AddComponent from './AddComponent';
 import Components from './Components';
 import { EntityTools } from '../../tools';
+import { Scrollbar } from '../common';
 
 interface IProps extends FormComponentProps {
     entity?: Entity;
 };
 
 class Property extends Component<IProps> {
+    componentWillReceiveProps(nextProps: IProps) {
+        const { entity: nextEntity, form } = nextProps;
+        const { entity: currentEntity } = this.props;
+        if ((nextEntity && currentEntity) && (nextEntity.id !== currentEntity.id)) {
+            console.log('componentWillReceiveProps');
+            form.resetFields();
+        }
+    }
+
     render() {
         const { entity, form } = this.props;
         return entity ? (
-            <Form style={{ display: 'flex', flexDirection: 'column' }}>
-                <GeneralComponent entity={entity} form={form} />
-                <Divider />
-                <AddComponent entity={entity} />
-                <Divider />
-                <Components entity={entity} form={form} />
-            </Form>
+            <Scrollbar>
+                <Form style={{ display: 'flex', flexDirection: 'column' }}>
+                    <GeneralComponent entity={entity} form={form} />
+                    <AddComponent entity={entity} />
+                    <Components entity={entity} form={form} />
+                </Form>
+            </Scrollbar>
         ) : <List />
     }
 }

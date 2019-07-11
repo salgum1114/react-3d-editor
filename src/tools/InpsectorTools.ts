@@ -26,6 +26,10 @@ export interface ICamera extends THREE.Camera {
     el?: Entity;
 }
 
+export interface IInsepctorOptions {
+    playCamera?: boolean;
+}
+
 class InspectorTools {
     sceneEl?: IScene;
     scene: THREE.Object3D;
@@ -52,7 +56,7 @@ class InspectorTools {
     cameraTools?: CameraTools;
     viewportTools?: ViewportTools;
 
-    constructor() {
+    constructor(options: IInsepctorOptions = {}) {
         this.assetsLoader = new AssetTools();
         // this.exporters = { gltf: new THREE.GLTFExporter() };
         this.history = new HistoryTools();
@@ -60,7 +64,8 @@ class InspectorTools {
         this.modules = {};
         this.on = EventTools.on;
         this.opened = false;
-        this.initScene(document.body);
+        const { playCamera } = options;
+        this.initScene(document.body, playCamera);
         this.init();
     }
 
@@ -93,8 +98,30 @@ class InspectorTools {
         this.initAssets();
     }
 
-    initScene = (inspector: HTMLElement) => {
+    /**
+     * Initial Scene
+     *
+     * @param {HTMLElement} inspector
+     * @param {boolean} playCamera
+     */
+    initScene = (inspector: HTMLElement, playCamera: boolean = true) => {
         const scene = document.createElement('a-scene');
+        if (playCamera) {
+            scene.innerHTML = `
+                <!-- Lights. -->
+                <!-- Camera. -->
+                <a-entity id="cameraWrapper" position="0 1.6 8">
+                    <a-entity id="camera" camera look-controls wasd-controls>
+                    <!-- Cursor. -->
+                    <a-entity id="cursor" position="0 0 -2"
+                                geometry="primitive: ring; radiusOuter: 0.016; radiusInner: 0.01"
+                                material="color: #ff9; shader: flat; transparent: true; opacity: 0.5"
+                                scale="2 2 2" raycaster>
+                    </a-entity>
+                    </a-entity>
+                </a-entity>
+            `;
+        }
         inspector.appendChild(scene);
         scene.id = 'scene';
         scene.style.position = 'fixed';
@@ -257,6 +284,11 @@ class InspectorTools {
         }
     }
 
+    /**
+     * Open the editor UI
+     *
+     * @param {Entity} [focusEl]
+     */
     open = (focusEl?: Entity) => {
         this.opened = true;
         EventTools.emit('inspectortoggle', true);
@@ -293,6 +325,10 @@ class InspectorTools {
         this.isFirstOpen = false;
     }
 
+    /**
+     * Closes the editor and gives the control back to the scene
+     *
+     */
     close = () => {
         this.opened = false;
         EventTools.emit('inspectortoggle', false);
@@ -301,8 +337,8 @@ class InspectorTools {
         this.sceneEl.play();
         this.cursor.pause();
         if (this.sceneEl.hasAttribute('aframe-inspector-removed-embedded')) {
-          this.sceneEl.setAttribute('embedded', '');
-          this.sceneEl.removeAttribute('aframe-inspector-removed-embedded');
+            this.sceneEl.setAttribute('embedded', '');
+            this.sceneEl.removeAttribute('aframe-inspector-removed-embedded');
         }
         document.body.classList.remove('aframe-inspector-opened');
         this.sceneEl.resize();

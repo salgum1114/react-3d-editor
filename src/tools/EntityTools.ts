@@ -9,6 +9,12 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
     const entity = document.createElement(type);
     entity.setAttribute('id', `${type}_${uuid()}`);
     entity.setAttribute('title', title);
+    entity.addEventListener('loaded', () => {
+        EventTools.emit('entitycreate', entity);
+        if (callback) {
+            callback(entity);
+        }
+    })
     if (type === 'a-entity') {
         AFRAME.scenes[0].appendChild(entity);
         return entity;
@@ -18,12 +24,6 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
             entity.setAttribute(attr.attribute, `${attr.defaultValue}`);
         }
     });
-    entity.addEventListener('loaded', () => {
-        EventTools.emit('entitycreate', entity);
-        if (callback) {
-            callback(entity);
-        }
-    })
     AFRAME.scenes[0].appendChild(entity);
     return entity;
 };

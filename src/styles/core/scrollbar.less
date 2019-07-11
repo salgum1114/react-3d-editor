@@ -31,3 +31,35 @@ Not supports in Firefox and IE */
 ::-webkit-scrollbar-button {
     display: none;
 }
+
+.track-horizontal {
+    bottom: 2px;
+    border-radius: 3px;
+    width: 100%;
+    opacity: 0;
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.track-vertical {
+    right: 0px;
+    bottom: 2px;
+    top: 2px;
+    border-radius: 3px;
+    opacity: 0;
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.track-view {
+    &:hover {
+        ~.track-vertical {
+            opacity: 1;
+        }
+        ~.track-horizontal {
+            opacity: 1;
+        }
+    }
+}

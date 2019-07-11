@@ -13,6 +13,7 @@ interface IOption {
 
 interface IProps {
     style?: React.CSSProperties;
+    className?: string;
 }
 
 const options: IOption[] = [
@@ -61,14 +62,14 @@ class CameraToolbar extends Component<IProps> {
     }
 
     render() {
-        const { style } = this.props;
+        const { style, className } = this.props;
         const { selectedCamera } = this.state;
         return (
-            <div style={style}>
-                <Icon type="camera" style={{ marginRight: 8 }} />
+            <div style={style} className={className}>
                 <Select
                     onChange={this.handleChange}
                     value={selectedCamera}
+                    suffixIcon={<Icon type="camera" />}
                 >
                     {
                         options.map(option => (

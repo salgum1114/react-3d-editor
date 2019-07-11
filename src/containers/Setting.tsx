@@ -6,25 +6,27 @@ import { Assets } from '../components/asset';
 class Setting extends Component {
     render() {
         return (
-            <Tabs
-                style={{
-                    height: '100%',
-                }}
-                tabPosition="right"
-            >
-                <Tabs.TabPane
-                    key="setting"
-                    tab={<Icon type="setting" style={{ marginRight: 0 }}/>}
+            <div className="editor-setting-container">
+                <Tabs
+                    style={{
+                        height: '100%',
+                    }}
+                    tabPosition="right"
                 >
-                    <Properties />
-                </Tabs.TabPane>
-                <Tabs.TabPane
-                    key="asset"
-                    tab={<Icon type="shop" style={{ marginRight: 0 }}/>}
-                >
-                    <Assets />
-                </Tabs.TabPane>
-            </Tabs>
+                    <Tabs.TabPane
+                        key="setting"
+                        tab={<Icon type="setting" style={{ marginRight: 0 }}/>}
+                    >
+                        <Properties />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane
+                        key="asset"
+                        tab={<Icon type="shop" style={{ marginRight: 0 }}/>}
+                    >
+                        <Assets />
+                    </Tabs.TabPane>
+                </Tabs>
+            </div>
         );
     }
 }

@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import { Tree, Icon, Input, Modal, List, Avatar, message, Button } from 'antd';
-import { IPrimitive, primitives, IEntity } from '../constants';
+import { Tree, Input, Modal, message, Tabs, Row, Col, Card, Icon } from 'antd';
 import { Entity } from 'aframe';
+import PolestarIcon from 'polestar-icons';
+
+import { IPrimitive, primitives, catalogs, IEntity } from '../constants';
 import { EntityTools, EventTools } from '../tools';
+import { Scrollbar } from '../components/common';
 
 interface IItemProps {
-
+    isScene?: boolean;
 }
 
 interface IItemState {
@@ -13,7 +16,6 @@ interface IItemState {
     treeNodes: IEntity[];
     selectedKeys: string[];
     expandedKeys: string[];
-    isInspector: boolean;
 }
 
 class Item extends Component<IItemProps, IItemState> {
@@ -22,24 +24,35 @@ class Item extends Component<IItemProps, IItemState> {
         treeNodes: [],
         selectedKeys: [],
         expandedKeys: [],
-        isInspector: false,
     }
 
     componentDidMount() {
         EventTools.on('entitycreate', (entity: Entity) => {
-            if (this.state.selectedKeys.length === 0 || this.state.treeNodes.length === 0 || this.state.selectedKeys[0] === 'scene') {
-                if (!this.state.expandedKeys.some(key => key === 'scene')) {
-                    this.state.expandedKeys.push('scene');
+            if (this.state.selectedKeys.length === 0 || this.state.treeNodes.length === 0) {
+                if (this.props.isScene && this.state.selectedKeys[0] === 'scene') {
+                    if (!this.state.expandedKeys.some(key => key === 'scene')) {
+                        this.state.expandedKeys.push('scene');
+                    }
+                    this.state.treeNodes.push({
+                        key: entity.id,
+                        id: entity.object3D.id,
+                        type: entity.tagName.toLowerCase(),
+                        title: entity.title,
+                        icon: 'eye',
+                        children: [],
+                        parentKey: 'scene',
+                    });
+                } else {
+                    this.state.treeNodes.push({
+                        key: entity.id,
+                        id: entity.object3D.id,
+                        type: entity.tagName.toLowerCase(),
+                        title: entity.title,
+                        icon: 'eye',
+                        children: [],
+                        parentKey: 'scene',
+                    });
                 }
-                this.state.treeNodes.push({
-                    key: entity.id,
-                    id: entity.object3D.id,
-                    type: entity.tagName.toLowerCase(),
-                    title: entity.title,
-                    icon: 'eye',
-                    children: [],
-                    parentKey: 'scene',
-                });
             } else {
                 if (this.state.selectedKeys.length) {
                     const selectedKey = this.state.selectedKeys[0];
@@ -158,7 +171,6 @@ class Item extends Component<IItemProps, IItemState> {
     }
 
     handleSelectEntity = (selectedKeys: string[]) => {
-        console.log(selectedKeys);
         this.setState({
             selectedKeys,
         }, () => {
@@ -174,56 +186,77 @@ class Item extends Component<IItemProps, IItemState> {
         });
     }
 
-    handleScene = () => {
-        if (this.state.isInspector) {
-            AFRAME.INSPECTOR.open();
-        } else {
-            AFRAME.INSPECTOR.close();
-        }
-        this.setState({
-            isInspector: !this.state.isInspector,
-        });
-    }
-
-    renderListItem = (item: IPrimitive) => {
-        return (
-            <List.Item>
-                <List.Item.Meta
-                    avatar={<Avatar><Icon type={item.icon} /></Avatar>}
-                    title={
-                        <div style={{ display: 'flex' }}>
-                            <a style={{ flex: 1 }} onClick={() => { this.handleAddEntity(item); }}>{item.title}</a>
-                            <div style={{ alignSelf: 'flex-end' }}>
-                                <a target="_blank" href={item.url}><Icon type="question-circle" /></a>
-                            </div>
-                        </div>
-                    }
-                    description={item.description}
-                />
-            </List.Item>
-        );
-    }
-
+    /**
+     * Render the tree node
+     *
+     * @param {IEntity[]} treeNodes
+     */
     renderTreeNodes = (treeNodes: IEntity[]) => treeNodes.map(item => {
-        if (item.children) {
+        if (item.children && item.children.length) {
             return (
-                <Tree.TreeNode key={item.key} title={item.title} icon={<Icon type={item.icon} />} dataRef={item}>
+                <Tree.TreeNode
+                    key={item.key}
+                    title={item.title}
+                    icon={<PolestarIcon name={'cube'} />}
+                    // icon={<Icon type={item.icon} />}
+                    dataRef={item}
+                >
                     {this.renderTreeNodes(item.children)}
                 </Tree.TreeNode>
             );
         }
-        return <Tree.TreeNode key={item.key} title={item.title} icon={<Icon type={item.icon} />} dataRef={item} />;
+        return (
+            <Tree.TreeNode
+                key={item.key}
+                title={item.title}
+                icon={<PolestarIcon name={'cube'} />}
+                // icon={<Icon type={item.icon} />}
+                dataRef={item}
+            />
+        );
     })
 
+    /**
+     * Render the items with Card
+     *
+     * @param {IPrimitive[]} items
+     * @returns
+     */
+    renderCardItems = (items: IPrimitive[]) => {
+        return (
+            <Row gutter={16} style={{ margin: 0 }}>
+                {
+                    items.map(item => {
+                        return (
+                            <Col key={item.key} md={24} lg={12} xl={6} onClick={() => this.handleAddEntity(item)}>
+                                <Card
+                                    hoverable={true}
+                                    title={item.title}
+                                    extra={
+                                        <a className="editor-item-help-icon" onClick={e => e.stopPropagation()} target="_blank" href={item.url}>
+                                            <Icon type="question-circle" />
+                                        </a>
+                                    }
+                                    style={{ marginBottom: 16 }}
+                                    bodyStyle={{ padding: 12, height: 120 }}
+                                >
+                                    <div className="editor-item-card-desc">
+                                        {item.description}
+                                    </div>
+                                </Card>
+                            </Col>
+                        );
+                    })
+                }
+            </Row>
+        )
+    }
+
     render() {
-        const { visible, treeNodes, selectedKeys, expandedKeys, isInspector } = this.state;
+        const { isScene } = this.props;
+        const { visible, treeNodes, selectedKeys, expandedKeys } = this.state;
         return (
             <div className="editor-item-container">
-                <div className="editor-item-scene">
-                    <Button block={true} onClick={this.handleScene} type="primary">
-                        {isInspector ? 'Inspect Scene' : 'Back to the Scene'}
-                    </Button>
-                </div>
                 <div className="editor-item-tools">
                     <div style={{ flex: 1 }}>
                         <a target="_blank" href="https://github.com/salgum1114/react-3d-editor">
@@ -247,24 +280,38 @@ class Item extends Component<IItemProps, IItemState> {
                     onExpand={this.handleExpandEntity}
                     onSelect={this.handleSelectEntity}
                 >
-                    <Tree.TreeNode
-                        key="scene"
-                        icon={<Icon type="eye" />}
-                        title="Scene"
-                    >
-                        {this.renderTreeNodes(treeNodes)}
-                    </Tree.TreeNode>
+                    {
+                        isScene ? (
+                            <Tree.TreeNode
+                                key="scene"
+                                icon={<Icon type="eye" />}
+                                title="Scene"
+                            >
+                                {this.renderTreeNodes(treeNodes)}
+                            </Tree.TreeNode>
+                        ) : this.renderTreeNodes(treeNodes)
+                    }
                 </Tree>
                 <Modal
-                    title="Add entity"
+                    className="editor-item-modal"
+                    title="Add Entity"
                     visible={visible}
                     onCancel={this.handleModalVisible}
-                    footer={[]}
+                    closable={true}
+                    footer={null}
+                    width="75%"
+                    style={{ height: '75%' }}
                 >
-                    <List
-                        dataSource={primitives}
-                        renderItem={this.renderListItem}
-                    />
+                    <Tabs tabPosition="left">
+                        <Tabs.TabPane key="primitives" tab="Primitives">
+                            <Scrollbar>
+                                {this.renderCardItems(primitives)}
+                            </Scrollbar>
+                        </Tabs.TabPane>
+                        <Tabs.TabPane key="catalogs" tab="Catalogs">
+                            {this.renderCardItems(catalogs)}
+                        </Tabs.TabPane>
+                    </Tabs>
                 </Modal>
             </div>
         );

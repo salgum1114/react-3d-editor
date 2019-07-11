@@ -19,11 +19,11 @@ const SidebarContainer: React.SFC<ISidebarContainerProps> = props => {
         children,
     } = props;
     return (
-        <div className="editor-setting-container" style={style}>
-            <div className="editor-setting-title" style={titleStyle}>
+        <div className="editor-setting-panel" style={style}>
+            <div className="editor-setting-panel-title" style={titleStyle}>
                 {title}
             </div>
-            <div className="editor-setting-content" style={contentStyle}>
+            <div className="editor-setting-panel-content" style={contentStyle}>
                 {children || content}
             </div>
         </div>

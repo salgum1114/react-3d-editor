@@ -43,7 +43,6 @@ class ViewportTools {
         this.initSelectionBox(inspector);
         this.initTransformControls(inspector);
         this.initControls(inspector);
-
         this.initEvents(inspector);
     }
 
@@ -66,7 +65,7 @@ class ViewportTools {
      */
     initGrid(inspector: InspectorTools) {
         const sceneHelpers = inspector.sceneHelpers;
-        const grid = new AFRAME.THREE.GridHelper(30, 60, 0xaaaaaa, 0x262626);
+        const grid = new AFRAME.THREE.GridHelper(300, 600, 0xaaaaaa, 0x262626);
         sceneHelpers.add(grid);
         this.grid = grid;
     }
@@ -238,7 +237,6 @@ class ViewportTools {
             this.grid.visible = !this.grid.visible;
         });
         EventTools.on('inspectortoggle', active => {
-            console.log(active);
             if (active) {
                 this.enableControls();
                 AFRAME.scenes[0].camera = inspector.camera;
@@ -249,7 +247,7 @@ class ViewportTools {
                 });
             } else {
                 this.disableControls();
-                inspector.cameras.original.setAttribute('camera', 'active', 'true');
+                inspector.cameras.original.setAttribute('camera', 'active', true);
                 AFRAME.scenes[0].camera = inspector.cameras.original.getObject3D('camera') as ICamera;
                 Array.prototype.slice
                 .call(document.querySelectorAll('.a-enter-vr,.rs-base'))

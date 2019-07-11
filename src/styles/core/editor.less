@@ -18,9 +18,15 @@ html, body, #root, .container {
     display: flex;
     flex-direction: column;
     .editor-view-header {
-        background-color: #fff;
+        background-color: transparent;
         height: 40px;
-        z-index: 1000;
+        z-index: 999;
+        transition: height 0.5s;
+        margin: 12px;
+        &.collapsed {
+            height: 0;
+            display: none;
+        }
     }
     .editor-view-content {
         flex: 1;
@@ -31,9 +37,7 @@ html, body, #root, .container {
     height: 100%;
     display: flex;
     flex-direction: column;
-    .editor-item-scene {
-        height: 40px;
-    }
+    box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
     .editor-item-tools {
         height: 40px;
         margin: 0 8px;
@@ -52,12 +56,23 @@ html, body, #root, .container {
 
 .editor-setting-container {
     height: 100%;
+    box-shadow: -5px 0 5px -5px rgba(0, 0, 0, 0.5);
+    .ant-tabs {
+        .ant-tabs-content {
+            padding: 0;
+        }
+    }
+
+}
+
+.editor-setting-panel {
+    height: 100%;
     display: flex;
     flex-direction: column;
-    .editor-setting-title {
+    .editor-setting-panel-title {
         height: 40px;
     }
-    .editor-setting-content {
+    .editor-setting-panel-content {
         flex: 1;
         overflow: auto;
         .ant-form-item {
@@ -66,9 +81,73 @@ html, body, #root, .container {
     }
 }
 
+.editor-toolbar-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    background-color: transparent;
+    .editor-toolbar-camera {
+        margin-left: 8;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .editor-toolbar-viewport {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .editor-toolbar-transform {
+        margin-right: 8;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+}
+
+.editor-item-modal {
+    .ant-modal-content {
+        height: 100%;
+        .ant-modal-header {
+            height: 60px;
+        }
+        .ant-modal-body {
+            height: calc(100% - 60px);
+        }
+    }
+    .editor-item-card-desc {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 5;
+        -webkit-box-orient: vertical;
+        word-wrap: break-word;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.45);
+    }
+}
+
 .editor-icon {
-    transition: color .3s;
+    transition: color .125s;
     &:hover {
         color: @primary-color;
     }
+}
+
+.editor-item-help-icon {
+    i {
+        transform: scale(1);
+        transition: transform 0.125s linear;
+    }
+    &:hover {
+        i {
+            transform: scale(1.25);
+        }
+    }
+}
+
+.editor-inspector-btn {
+    z-index: 999;
+    height: 40px;
 }

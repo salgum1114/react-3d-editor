@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select } from 'antd';
+import { Select, Modal, Input } from 'antd';
 import { Entity } from 'aframe';
 
 import { EventTools } from '../../tools';
@@ -10,13 +10,36 @@ interface IProps {
     entity?: Entity;
 }
 
-class AddComponent extends Component<IProps> {
+interface IState {
+    componentId?: string;
+}
+
+class AddComponent extends Component<IProps, IState> {
+    state: IState = {
+        componentId: '',
+    }
+
     handleSelect = (value: any) => {
         const { entity } = this.props;
-        entity.setAttribute(value, '');
+        if (entity.components[value]) {
+            Modal.confirm({
+                title: 'Please input ID for the component',
+                content: (
+                    <Input onChange={e => { this.setState({ componentId: e.target.value })}} />
+                ),
+                onOk: () => this.handleAddComponent(`${value}__${this.state.componentId}`),
+            });
+            return;
+        }
+        this.handleAddComponent(value);
+    }
+
+    handleAddComponent = (componentId: string) => {
+        const { entity } = this.props;
+        entity.setAttribute(componentId, '');
         EventTools.emit('componentadd', {
             entity,
-            component: value,
+            component: componentId,
         });
     }
 
@@ -27,7 +50,12 @@ class AddComponent extends Component<IProps> {
                 <Select dropdownStyle={{ zIndex: 9999 }} placeholder={'Add Component'} onSelect={this.handleSelect}>
                     {
                         Object.keys(AFRAME.components)
-                        .filter(component => !Object.keys(entity.components).concat(generalComponents).some(comp => comp === component))
+                        .filter(componentName => {
+                            if (AFRAME.components[componentName].multiple) {
+                                return true;
+                            }
+                            return !Object.keys(entity.components).concat(generalComponents).some(comp => comp === componentName);
+                        })
                         .map((componentName: string) => {
                             return (
                                 <Select.Option key={componentName} value={componentName}>

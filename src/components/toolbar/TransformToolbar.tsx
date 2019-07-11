@@ -5,6 +5,7 @@ import { EventTools } from '../../tools';
 
 interface IProps {
     style?: React.CSSProperties;
+    className?: string;
 }
 
 const transforms = [
@@ -34,10 +35,10 @@ class TransformToolbar extends Component<IProps> {
     }
 
     render() {
-        const { style } = this.props;
+        const { style, className } = this.props;
         const { selectedTransform } = this.state;
         return (
-            <div style={style}>
+            <div style={style} className={className}>
                 <Button.Group>
                     {
                         transforms.map(transform => (

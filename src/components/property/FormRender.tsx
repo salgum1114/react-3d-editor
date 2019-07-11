@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input, InputNumber, Switch, Col, Select } from 'antd';
+import { Form, Input, InputNumber, Switch, Col, Select, Row } from 'antd';
 import { Entity } from 'aframe';
 import { FormComponentProps } from 'antd/lib/form';
 
@@ -30,6 +30,9 @@ class FormRender extends Component<IProps> {
                     />
                 );
             }
+        }
+        if (schemaKey === 'loop') {
+            return <Switch />;
         }
         switch (schema.type) {
             case 'number':
@@ -124,21 +127,23 @@ class FormRender extends Component<IProps> {
         const { schema, data, form, entity, schemaKey, componentName } = this.props;
         return (
             <Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
-                {
-                    Object.keys(schema.default).map(key => {
-                        return (
-                            <Col key={`${schemaKey ? `${componentName}.${schemaKey}` : componentName}.${key}`} span={8}>
-                                <Form.Item>
-                                    {
-                                        form.getFieldDecorator(`${componentName}.${key}`, {
-                                            initialValue: data[key],
-                                        })(<InputNumber />)
-                                    }
-                                </Form.Item>
-                            </Col>
-                        );
-                    })
-                }
+                <Row gutter={8}>
+                    {
+                        Object.keys(schema.default).map(key => {
+                            return (
+                                <Col key={`${schemaKey ? `${componentName}.${schemaKey}` : componentName}.${key}`} md={24} lg={8}>
+                                    <Form.Item>
+                                        {
+                                            form.getFieldDecorator(`${componentName}.${key}`, {
+                                                initialValue: data[key],
+                                            })(<InputNumber style={{ width: 'inherit' }} />)
+                                        }
+                                    </Form.Item>
+                                </Col>
+                            );
+                        })
+                    }
+                </Row>
             </Form.Item>
         );
     }
@@ -147,21 +152,23 @@ class FormRender extends Component<IProps> {
         const { schema, data, form, entity, componentName, schemaKey } = this.props;
         return (
             <Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
-                {
-                    Object.keys(schema.default).map(key => {
-                        return (
-                            <Col key={`${schemaKey ? `${componentName}.${schemaKey}` : componentName}.${key}`} span={6}>
-                                <Form.Item>
-                                    {
-                                        form.getFieldDecorator(`${componentName}.${key}`, {
-                                            initialValue: data[key],
-                                        })(<InputNumber />)
-                                    }
-                                </Form.Item>
-                            </Col>
-                        );
-                    })
-                }
+                <Row gutter={8}>
+                    {
+                        Object.keys(schema.default).map(key => {
+                            return (
+                                <Col key={`${schemaKey ? `${componentName}.${schemaKey}` : componentName}.${key}`} md={24} lg={6}>
+                                    <Form.Item>
+                                        {
+                                            form.getFieldDecorator(`${componentName}.${key}`, {
+                                                initialValue: data[key],
+                                            })(<InputNumber style={{ width: 'inherit' }} />)
+                                        }
+                                    </Form.Item>
+                                </Col>
+                            );
+                        })
+                    }
+                </Row>
             </Form.Item>
         );
     }

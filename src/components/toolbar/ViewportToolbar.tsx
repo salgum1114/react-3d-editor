@@ -5,6 +5,7 @@ import { EventTools } from '../../tools';
 
 interface IProps {
     style?: React.CSSProperties;
+    className?: string;
 }
 
 interface IState {
@@ -39,10 +40,10 @@ class ViewportToolbar extends Component<IProps, IState> {
     }
 
     render() {
-        const { style } = this.props;
+        const { style, className } = this.props;
         const { hoveredEntity } = this.state;
         return (
-            <div style={style}>
+            <div style={style} className={className}>
                 {this.renderEntity(hoveredEntity)}
             </div>
         );

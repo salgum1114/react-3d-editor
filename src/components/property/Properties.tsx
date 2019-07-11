@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Entity } from 'aframe';
-import debounce from 'lodash/debounce';
 
 import { SidebarContainer } from '../common';
 import { EventTools } from '../../tools';
@@ -28,9 +27,9 @@ class Properties extends Component {
                 });
             }
         });
-        EventTools.on('entityupdate', debounce(() => {
+        EventTools.on('entityupdate', () => {
             this.forceUpdate();
-        }, 200));
+        });
         EventTools.on('componentadd', () => {
             this.forceUpdate();
         });
