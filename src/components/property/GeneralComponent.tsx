@@ -13,9 +13,10 @@ export type GeneralComponentType = 'position'
 | 'rotation'
 | 'scale'
 | 'visible'
+| 'name'
 ;
 
-export const generalComponents: GeneralComponentType[] = ['position', 'rotation', 'scale', 'visible'];
+export const generalComponents: GeneralComponentType[] = ['name', 'position', 'rotation', 'scale', 'visible'];
 
 class GeneralComponent extends Component<IProps> {
     render() {

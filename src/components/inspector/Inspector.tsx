@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { InspectorTools } from '../../tools';
+import { InspectorTools, EventTools } from '../../tools';
 
 class Inspector extends Component {
     inspector?: InspectorTools;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Icon } from 'antd';
+import { Button, Icon, Radio } from 'antd';
 
 import { EventTools } from '../../tools';
 
@@ -39,19 +39,23 @@ class TransformToolbar extends Component<IProps> {
         const { selectedTransform } = this.state;
         return (
             <div style={style} className={className}>
-                <Button.Group>
+                <Radio.Group
+                    buttonStyle="solid"
+                    value={selectedTransform}
+                    defaultValue={selectedTransform}
+                    onChange={e => this.handleChangeTransformMode(e.target.value)}
+                >
                     {
                         transforms.map(transform => (
-                            <Button
+                            <Radio.Button
                                 key={transform.value}
-                                type={selectedTransform === transform.value ? 'primary' : 'default'}
-                                onClick={() => this.handleChangeTransformMode(transform.value)}
+                                value={transform.value}
                             >
                                 <Icon type={transform.icon} />
-                            </Button>
+                            </Radio.Button>
                         ))
                     }
-                </Button.Group>
+                </Radio.Group>
             </div>
         );
     }

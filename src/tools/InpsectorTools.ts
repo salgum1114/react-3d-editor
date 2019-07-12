@@ -1,7 +1,5 @@
 import { Entity, Scene } from 'aframe';
 
-// import THREE from 'three';
-// import { GLTFExporter } from '../vendor/GLTFExporter';
 import { ObjectMapper, Omit } from '../types/utils';
 import {
     ShortcutTools,
@@ -11,6 +9,7 @@ import {
     HistoryTools,
     AssetTools,
 } from '.';
+import Components from '../constants/components';
 
 export interface ICameras {
     perspective?: THREE.PerspectiveCamera;
@@ -29,6 +28,8 @@ export interface ICamera extends THREE.Camera {
 export interface IInsepctorOptions {
     playCamera?: boolean;
 }
+
+Components.forEach(Comp => Comp());
 
 class InspectorTools {
     sceneEl?: IScene;
@@ -89,6 +90,7 @@ class InspectorTools {
             }, { once: true });
             return;
         }
+        EventTools.emit('sceneloaded', this.scene);
         this.scene = this.sceneEl.object3D;
         this.container = document.querySelector('.a-canvas');
         this.initCamera();

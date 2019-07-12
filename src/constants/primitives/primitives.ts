@@ -1,3 +1,5 @@
+import { Entity } from 'aframe';
+
 export type PrimitiveType = 'a-box'
 | 'a-camera'
 | 'a-circle'
@@ -114,7 +116,15 @@ export interface IEntity {
     title?: string;
     icon?: string;
     parentKey?: string;
+    entity?: Entity;
     children?: IEntity[];
+}
+
+export interface IDetailEntity {
+    component: string;
+    entity: Entity;
+    property: string;
+    value: any;
 }
 
 export const primitives: IPrimitive[] = [

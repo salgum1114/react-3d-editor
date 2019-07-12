@@ -33,7 +33,11 @@ class Property extends Component<IProps> {
                     <Components entity={entity} form={form} />
                 </Form>
             </Scrollbar>
-        ) : <List />
+        ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center' }}>
+                <List />
+            </div>
+        )
     }
 }
 

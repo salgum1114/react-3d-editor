@@ -11,6 +11,7 @@ Not supports in Firefox and IE */
 /* background of the scrollbar except button or resizer */
 ::-webkit-scrollbar-track {
     background-color: transparent;
+    opacity: 0;
 }
 ::-webkit-scrollbar-track:hover {
     // background-color: #f4f4f4;
@@ -54,6 +55,8 @@ Not supports in Firefox and IE */
 }
 
 .track-view {
+    margin-right: -7px !important;
+    margin-bottom: -7px !important;
     &:hover {
         ~.track-vertical {
             opacity: 1;

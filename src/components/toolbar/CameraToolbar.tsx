@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select, Icon } from 'antd';
+import { Select, Icon, Radio } from 'antd';
 
 import { EventTools } from '../../tools';
 import { EventType } from '../../constants';
@@ -9,6 +9,11 @@ interface IOption {
     event?: EventType;
     payload?: string;
     label?: string;
+}
+
+interface IState {
+    viewType?: string;
+    selectedCamera?: string;
 }
 
 interface IProps {
@@ -26,7 +31,7 @@ const options: IOption[] = [
     { value: 'orthofront', event: 'cameraorthographictoggle', payload: 'front', label: 'Front View' },
 ];
 
-class CameraToolbar extends Component<IProps> {
+class CameraToolbar extends Component<IProps, IState> {
     justChangedCamera?: boolean;
 
     constructor(props: {}) {
@@ -34,8 +39,9 @@ class CameraToolbar extends Component<IProps> {
         this.justChangedCamera = false;
     }
 
-    state = {
+    state: IState = {
         selectedCamera: 'perspective',
+        viewType: '3d',
     }
 
     componentDidMount() {
@@ -61,24 +67,44 @@ class CameraToolbar extends Component<IProps> {
         EventTools.emit(option.event, option.payload);
     }
 
+    handleChangeViewType = (viewType: string) => {
+        this.setState({
+            viewType,
+        });
+    }
+
     render() {
         const { style, className } = this.props;
-        const { selectedCamera } = this.state;
+        const { selectedCamera, viewType } = this.state;
         return (
             <div style={style} className={className}>
-                <Select
-                    onChange={this.handleChange}
-                    value={selectedCamera}
-                    suffixIcon={<Icon type="camera" />}
+                <Radio.Group
+                    value={viewType}
+                    defaultValue={viewType}
+                    style={{ marginRight: 8 }}
+                    buttonStyle="solid"
+                    onChange={e => this.handleChangeViewType(e.target.value)}
                 >
-                    {
-                        options.map(option => (
-                            <Select.Option key={option.value} value={option.value}>
-                                {option.label}
-                            </Select.Option>
-                        ))
-                    }
-                </Select>
+                    <Radio.Button value="2d">{'2D'}</Radio.Button>
+                    <Radio.Button value="3d">{'3D'}</Radio.Button>
+                </Radio.Group>
+                {
+                    viewType === '3d' ? (
+                        <Select
+                            onChange={this.handleChange}
+                            value={selectedCamera}
+                            suffixIcon={<Icon type="camera" />}
+                        >
+                            {
+                                options.map(option => (
+                                    <Select.Option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </Select.Option>
+                                ))
+                            }
+                        </Select>
+                    ) : null
+                }
             </div>
         );
     }

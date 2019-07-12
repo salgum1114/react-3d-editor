@@ -40,37 +40,40 @@ html, body, #root, .container {
     box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
     .editor-item-tools {
         height: 40px;
-        margin: 0 8px;
         display: flex;
         align-items: center;
+        margin: 0 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
     }
     .editor-item-search {
         margin: 8px;
     }
     .editor-item-tree {
-        font-weight: 900;
         overflow: auto;
-        height: calc(100% - 112px);
+        flex: 1;
+        .ant-tree {
+            font-weight: 500;
+        }
     }
 }
 
 .editor-setting-container {
     height: 100%;
     box-shadow: -5px 0 5px -5px rgba(0, 0, 0, 0.5);
-    .ant-tabs {
-        .ant-tabs-content {
-            padding: 0;
-        }
-    }
-
 }
 
 .editor-setting-panel {
     height: 100%;
     display: flex;
     flex-direction: column;
+    flex: 1;
     .editor-setting-panel-title {
         height: 40px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        margin: 0 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
     }
     .editor-setting-panel-content {
         flex: 1;
@@ -130,6 +133,7 @@ html, body, #root, .container {
 
 .editor-icon {
     transition: color .125s;
+    cursor: pointer;
     &:hover {
         color: @primary-color;
     }
@@ -150,4 +154,13 @@ html, body, #root, .container {
 .editor-inspector-btn {
     z-index: 999;
     height: 40px;
+    border-radius: 0;
+}
+
+.editor-empty {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
 }

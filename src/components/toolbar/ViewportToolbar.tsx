@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Entity } from 'aframe';
 
 import { EventTools } from '../../tools';
+import Icon from 'polestar-icons';
 
 interface IProps {
     style?: React.CSSProperties;
@@ -33,9 +34,10 @@ class ViewportToolbar extends Component<IProps, IState> {
 
     renderEntity = (entity?: Entity) => {
         return (
-            <strong style={{ display: 'flex', justifyContent: 'center' }}>
-                {entity ? entity.title : ''}
-            </strong>
+            <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
+                <Icon name={entity.dataset.icon} style={{ marginRight: 4, fontSize: '1.25rem' }} />
+                <div>{entity.title}</div>
+            </div>
         );
     }
 
@@ -44,7 +46,7 @@ class ViewportToolbar extends Component<IProps, IState> {
         const { hoveredEntity } = this.state;
         return (
             <div style={style} className={className}>
-                {this.renderEntity(hoveredEntity)}
+                {hoveredEntity ? this.renderEntity(hoveredEntity) : ''}
             </div>
         );
     }

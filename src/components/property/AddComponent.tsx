@@ -22,12 +22,12 @@ class AddComponent extends Component<IProps, IState> {
     handleSelect = (value: any) => {
         const { entity } = this.props;
         if (entity.components[value]) {
-            Modal.confirm({
+            Modal.info({
                 title: 'Please input ID for the component',
                 content: (
                     <Input onChange={e => { this.setState({ componentId: e.target.value })}} />
                 ),
-                onOk: () => this.handleAddComponent(`${value}__${this.state.componentId}`),
+                onOk: () => this.state.componentId.length ? this.handleAddComponent(`${value}__${this.state.componentId}`) : null,
             });
             return;
         }
@@ -46,7 +46,7 @@ class AddComponent extends Component<IProps, IState> {
     render() {
         const { entity } = this.props;
         return (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', margin: 16 }}>
                 <Select dropdownStyle={{ zIndex: 9999 }} placeholder={'Add Component'} onSelect={this.handleSelect}>
                     {
                         Object.keys(AFRAME.components)

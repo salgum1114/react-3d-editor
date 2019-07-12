@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import { SidebarContainer } from '../common';
+import { List } from 'antd';
 
 class Assets extends Component {
     render() {
         return (
-            <SidebarContainer
-                title="Assets"
-            >
-                Assets
-            </SidebarContainer>
+            <div className="editor-empty">
+                <List />
+            </div>
         );
     }
 }

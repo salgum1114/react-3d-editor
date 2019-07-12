@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -p --config webpack.prod.js",
     "start": "npm install && npm run start:dev",
-    "start:dev": "webpack-dev-server --progress --colors --config webpack.dev.js --inline",
+    "start:dev": "webpack-dev-server --colors --config webpack.dev.js --inline",
     "deploy": "npm install && npm run build && gh-pages -d public",
     "tsc": "tsc",
     "lint": "tslint '**/*.ts'"
@@ -40,6 +40,7 @@
     "@types/react-custom-scrollbars": "^4.0.5",
     "@types/react-dom": "^16.0.11",
     "@types/react-helmet": "^5.0.8",
+    "@types/store": "^2.0.2",
     "@types/uuid": "^3.4.4",
     "aframe": "^0.9.2",
     "antd": "^3.14.1",
@@ -56,6 +57,7 @@
     "react-helmet": "^5.2.0",
     "react-hot-loader": "4.6.3",
     "react-json-view": "^1.19.1",
+    "react-split-pane": "^0.1.87",
     "store": "^2.0.12",
     "uuid": "^3.3.2"
   },

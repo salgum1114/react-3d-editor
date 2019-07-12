@@ -31,6 +31,7 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
 
 export const updateEntity = (entity: Entity, propertyName: string, value: any) => {
     console.log(entity, propertyName, value);
+    console.log(entity.object3D);
     let splitName;
     if (propertyName.indexOf('.') !== -1) {
         // Multi-prop
@@ -101,6 +102,9 @@ export const findClosestEntity = (entity: Entity) => {
     while (nextEntity && (!nextEntity.isEntity || nextEntity.isInspector)) {
         nextEntity = nextEntity.nextElementSibling;
     }
+    if (nextEntity && nextEntity.id === 'aframeInspectorMouseCursor') {
+        return null;
+    }
     // Return if we found it
     if (nextEntity && nextEntity.isEntity && !nextEntity.isInspector) {
         return nextEntity;
@@ -109,6 +113,9 @@ export const findClosestEntity = (entity: Entity) => {
     let prevEntity = entity.previousElementSibling;
     while (prevEntity && (!prevEntity.isEntity || prevEntity.isInspector)) {
         prevEntity = prevEntity.previousElementSibling;
+    }
+    if (prevEntity && prevEntity.id === 'aframeInspectorMouseCursor') {
+        return null;
     }
     // Return if we found it
     if (prevEntity && prevEntity.isEntity && !prevEntity.isInspector) {

@@ -6,6 +6,7 @@ import { SidebarContainer } from '../common';
 import { EventTools } from '../../tools';
 import Property from './Property';
 import Icon from 'polestar-icons';
+import { IDetailEntity } from '../../constants';
 
 interface IState {
     selectedEntity?: Entity;
@@ -29,7 +30,10 @@ class Properties extends Component {
                 });
             }
         });
-        EventTools.on('entityupdate', debounce(() => {
+        EventTools.on('entityupdate', debounce((detail: IDetailEntity) => {
+            if (detail.component === 'name') {
+                detail.entity.title = detail.value;
+            }
             this.forceUpdate();
         }, 200));
         EventTools.on('componentadd', () => {
@@ -49,7 +53,7 @@ class Properties extends Component {
                     <div>{selectedEntity.title}</div>
                 </div>
                 <div>
-                    <Icon name="clipboard" />
+                    <Icon name="clipboard" className="editor-icon" />
                 </div>
             </>
         ) : (
@@ -60,11 +64,7 @@ class Properties extends Component {
         );
         return (
             <SidebarContainer
-                title={
-                    <div style={{ fontWeight: 'bold', height: '100%', display: 'flex', alignItems: 'center', margin: '0 8px' }}>
-                        {title}
-                    </div>
-                }
+                title={title}
             >
                 <Property entity={selectedEntity} />
             </SidebarContainer>
