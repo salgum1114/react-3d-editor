@@ -27,4 +27,5 @@ export type EventType = 'entitycreate'
 | 'geometrychanged'
 | 'inspectorcleared'
 | 'snapchanged'
+| 'sceneloaded'
 ;

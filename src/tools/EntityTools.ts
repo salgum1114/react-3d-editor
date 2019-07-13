@@ -77,6 +77,9 @@ export function cloneSelectedEntity() {
 
 export function removeSelectedEntity() {
     if (AFRAME.INSPECTOR.selectedEntity) {
+        if (AFRAME.INSPECTOR.selectedEntity.id === 'scene') {
+            return;
+        }
         removeEntity(AFRAME.INSPECTOR.selectedEntity);
     }
 }

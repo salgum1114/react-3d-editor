@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Divider, List } from 'antd';
+import { Form, List } from 'antd';
 import { Entity } from 'aframe';
 import { FormComponentProps } from 'antd/lib/form';
 import debounce from 'lodash/debounce';
@@ -8,7 +8,7 @@ import GeneralComponent from './GeneralComponent';
 import AddComponent from './AddComponent';
 import Components from './Components';
 import { EntityTools } from '../../tools';
-import { Scrollbar } from '../common';
+import { Empty } from '../common';
 
 interface IProps extends FormComponentProps {
     entity?: Entity;
@@ -26,18 +26,12 @@ class Property extends Component<IProps> {
     render() {
         const { entity, form } = this.props;
         return entity ? (
-            <Scrollbar>
-                <Form style={{ display: 'flex', flexDirection: 'column' }}>
-                    <GeneralComponent entity={entity} form={form} />
-                    <AddComponent entity={entity} />
-                    <Components entity={entity} form={form} />
-                </Form>
-            </Scrollbar>
-        ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center' }}>
-                <List />
-            </div>
-        )
+            <Form style={{ display: 'flex', flexDirection: 'column' }}>
+                <GeneralComponent entity={entity} form={form} />
+                <AddComponent entity={entity} />
+                <Components entity={entity} form={form} />
+            </Form>
+        ) : <Empty />
     }
 }
 

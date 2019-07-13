@@ -113,7 +113,7 @@ export interface IEntity {
     id?: number;
     key?: string;
     type?: string;
-    title?: string;
+    title?: string | boolean;
     icon?: string;
     parentKey?: string;
     entity?: Entity;

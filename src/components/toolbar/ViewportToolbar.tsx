@@ -35,7 +35,7 @@ class ViewportToolbar extends Component<IProps, IState> {
     renderEntity = (entity?: Entity) => {
         return (
             <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
-                <Icon name={entity.dataset.icon} style={{ marginRight: 4, fontSize: '1.25rem' }} />
+                <Icon name={entity.dataset.icon || 'cube'} style={{ marginRight: 4, fontSize: '1.25rem' }} />
                 <div>{entity.title}</div>
             </div>
         );

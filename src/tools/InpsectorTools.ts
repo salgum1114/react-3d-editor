@@ -26,7 +26,7 @@ export interface ICamera extends THREE.Camera {
 }
 
 export interface IInsepctorOptions {
-    playCamera?: boolean;
+    playerCamera?: boolean;
 }
 
 Components.forEach(Comp => Comp());
@@ -65,8 +65,7 @@ class InspectorTools {
         this.modules = {};
         this.on = EventTools.on;
         this.opened = false;
-        const { playCamera } = options;
-        this.initScene(document.body, playCamera);
+        this.initScene(document.body, options);
         this.init();
     }
 
@@ -90,14 +89,13 @@ class InspectorTools {
             }, { once: true });
             return;
         }
-        EventTools.emit('sceneloaded', this.scene);
+        EventTools.emit('sceneloaded', this.sceneEl);
         this.scene = this.sceneEl.object3D;
         this.container = document.querySelector('.a-canvas');
         this.initCamera();
         this.initShortcut();
         this.initViewport();
         this.initEvents();
-        this.initAssets();
     }
 
     /**
@@ -106,11 +104,33 @@ class InspectorTools {
      * @param {HTMLElement} inspector
      * @param {boolean} playCamera
      */
-    initScene = (inspector: HTMLElement, playCamera: boolean = true) => {
+    initScene = (inspector: HTMLElement, options: IInsepctorOptions) => {
         const scene = document.createElement('a-scene');
-        if (playCamera) {
+        const { playerCamera = true } = options;
+        if (playerCamera) {
             scene.innerHTML = `
+                ${this.initAssets()}
+                <a-entity id="environment" environment="preset: forest; fog: false"></a-entity>
+
+                <!-- Meshes. -->
+                <a-entity id="blueBox" mixin="blueBox" position="0 8 0"></a-entity>
+                <a-entity id="shortOrangeBox" mixin="short orange box" position="-5 2 0"></a-entity>
+                <a-entity id="shortYellowBox" mixin="short yellow box" position="5 2 0"></a-entity>
+                <a-entity id="redBox" geometry="primitive: box" material="color:#f00" position="-4 1 0" animation="property: object3D.rotation.y; to: 360; loop: true; easing: linear; dur: 9600"></a-entity>
+                <a-entity id="yellowSphere" geometry="primitive: sphere" material="color:#ff0; metalness:0.0; roughness:1.0" position="-2 2 -2"></a-entity>
+                <a-box src="https://aframe.io/sample-assets/assets/images/bricks/brick_bump.jpg" position="-5 5 -2" width="1" color="#F16745"></a-box>
+                <a-box id="box" position="0 2 0" height="2" color="#FFC65D"></a-box>
+
+                <!-- Models. -->
+                <a-entity class="boxClass" geometry="primitive: box" material="src: #crateImg" position="3 4 0"></a-entity>
+                <a-entity class="boxClass" geometry="primitive: box" material="color: #0f0" position="4 2 4"></a-entity>
+
+                <!-- Floor. -->
+                <a-entity id="floor" geometry="primitive: box; height: .2; depth: 24; width: 24"
+                            material="src: #floorImg; color: #fafafa; metalness: .1; repeat: 50 20; roughness: 1"></a-entity>
+
                 <!-- Lights. -->
+                <a-entity id="pointLight" light="type: point; intensity: 0.25" position="0 3 3"></a-entity>
                 <!-- Camera. -->
                 <a-entity id="cameraWrapper" position="0 1.6 8">
                     <a-entity id="camera" camera look-controls wasd-controls>
@@ -126,6 +146,8 @@ class InspectorTools {
         }
         inspector.appendChild(scene);
         scene.id = 'scene';
+        scene.title = 'Scene';
+        scene.dataset.icon = 'eye';
         scene.style.position = 'fixed';
         scene.style.top = '0';
         scene.style.left = '0';
@@ -153,8 +175,21 @@ class InspectorTools {
     }
 
     initAssets = () => {
-        const assets = document.createElement('a-assets');
-        this.sceneEl.appendChild(assets);
+        return `
+            <a-assets id="assets">
+                <a-mixin id="blue" material="color: #4CC3D9"></a-mixin>
+                <a-mixin id="blueBox" geometry="primitive: box; depth: 2; height: 5; width: 1" material="color: #4CC3D9"></a-mixin>
+                <a-mixin id="box" geometry="primitive: box; depth: 1; height: 1; width: 1"></a-mixin>
+                <a-mixin id="cylinder" geometry="primitive: cylinder; height: 0.3; radius: 0.75; segmentsRadial: 6"></a-mixin>
+                <a-mixin id="green" material="color: #7BC8A4"></a-mixin>
+                <a-mixin id="orange" material="color: #F16745"></a-mixin>
+                <a-mixin id="purple" material="color: #93648D"></a-mixin>
+                <a-mixin id="short" scale="1 0.5 1"></a-mixin>
+                <a-mixin id="yellow" material="color: #FFC65D"></a-mixin>
+                <img id="crateImg" src="https://aframe.io/sample-assets/assets/images/wood/crate.gif" crossOrigin="true">
+                <img id="floorImg" src="https://aframe.io/sample-assets/assets/images/terrain/grasslight-big.jpg" crossOrigin="true">
+            </a-assets>
+        `;
     }
 
     initShortcut = () => {
@@ -250,6 +285,7 @@ class InspectorTools {
             return;
         }
         if (entity) {
+            console.log(entity);
             entity.object3D.traverse(node => {
                 if (this.helpers[node.uuid]) {
                     this.helpers[node.uuid].visible = true;

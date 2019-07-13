@@ -7,6 +7,7 @@ import { EventTools } from '../../tools';
 import Property from './Property';
 import Icon from 'polestar-icons';
 import { IDetailEntity } from '../../constants';
+import { capitalize } from '../../tools/UtilTools';
 
 interface IState {
     selectedEntity?: Entity;
@@ -46,11 +47,21 @@ class Properties extends Component {
 
     render() {
         const { selectedEntity } = this.state;
+        let name;
+        if (selectedEntity) {
+            if (selectedEntity.object3D.name.length) {
+                name = selectedEntity.object3D.name;
+            } else if (!selectedEntity.title) {
+                name = capitalize(selectedEntity.id);
+            } else {
+                name = selectedEntity.title;
+            }
+        }
         const title = selectedEntity ? (
             <>
                 <div style={{ display: 'flex', flex: 1 }}>
-                    <Icon name={selectedEntity.dataset.icon} style={{ marginRight: 4, fontSize: '1.25rem' }} />
-                    <div>{selectedEntity.title}</div>
+                    <Icon name={selectedEntity.dataset.icon || 'cube'} style={{ marginRight: 4, fontSize: '1.25rem' }} />
+                    <div>{name}</div>
                 </div>
                 <div>
                     <Icon name="clipboard" className="editor-icon" />
