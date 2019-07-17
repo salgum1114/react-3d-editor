@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { Tree, List, Modal, Tabs, Radio, Input, message, Row, Col, Card, Avatar } from 'antd';
 import { Entity } from 'aframe';
 import Icon from 'polestar-icons';
+import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
+import uuid from 'uuid/v4';
 
 import { SidebarContainer, Scrollbar, Empty } from '../common';
-import { IEntity, IDetailEntity, IPrimitive, catalogs, primitives } from '../../constants';
+import { IEntity, IDetailEntity, IPrimitive, catalogs, primitives, getIcon } from '../../constants';
 import { EntityTools, EventTools } from '../../tools';
-import { IScene } from '../../tools/InpsectorTools';
+import { IScene } from '../../tools/InspectorTools';
 import { capitalize } from '../../tools/UtilTools';
 
 type ViewTypes = 'card' | 'list';
@@ -20,18 +22,20 @@ interface IState {
     searchCatalogs?: string;
     viewPrimitives?: ViewTypes;
     viewCatalogs?: ViewTypes;
+    spinning: boolean;
 }
 
 class Entities extends Component<{}, IState> {
     state: IState = {
         visible: false,
         treeNodes: [],
-        selectedKeys: [],
-        expandedKeys: [],
+        selectedKeys: ['scene'],
+        expandedKeys: ['scene'],
         searchPrimitives: '',
         searchCatalogs: '',
         viewPrimitives: 'card',
         viewCatalogs: 'card',
+        spinning: true,
     }
 
     componentDidMount() {
@@ -39,6 +43,7 @@ class Entities extends Component<{}, IState> {
             const treeNodes = this.buildTreeNode(scene);
             this.setState({
                 treeNodes,
+                spinning: false,
             });
         });
         EventTools.on('entitycreate', (entity: Entity) => {
@@ -51,8 +56,9 @@ class Entities extends Component<{}, IState> {
                     id: entity.object3D.id,
                     type: entity.tagName.toLowerCase(),
                     title: entity.title,
-                    icon: entity.dataset.icon,
+                    icon: getIcon(entity.tagName.toLowerCase()),
                     children: [],
+                    entity,
                     parentKey: 'scene',
                 });
             } else {
@@ -65,23 +71,25 @@ class Entities extends Component<{}, IState> {
                         id: entity.object3D.id,
                         type: entity.tagName.toLowerCase(),
                         title: entity.title,
-                        icon: entity.dataset.icon,
+                        icon: getIcon(entity.tagName.toLowerCase()),
                         children: [],
+                        entity,
                         parentKey: 'scene',
                     });
                 } else {
                     const selectedKey = this.state.selectedKeys[0];
                     const parentNode = this.findTreeNode(selectedKey, this.state.treeNodes);
                     if (!this.state.expandedKeys.some(key => key === parentNode.key)) {
-                        this.state.expandedKeys.push(parentNode.key)
+                        this.state.expandedKeys.push(parentNode.key.toString());
                     }
                     parentNode.children.push({
                         key: entity.id,
                         id: entity.object3D.id,
                         type: entity.tagName.toLowerCase(),
                         title: entity.title,
-                        icon: entity.dataset.icon,
+                        icon: getIcon(entity.tagName.toLowerCase()),
                         children: [],
+                        entity,
                         parentKey: selectedKey,
                     });
                 }
@@ -91,7 +99,6 @@ class Entities extends Component<{}, IState> {
                 expandedKeys: Array.from(this.state.expandedKeys),
             });
         });
-
         EventTools.on('entityselect', (entity: Entity) => {
             if (entity) {
                 this.setState({
@@ -103,7 +110,6 @@ class Entities extends Component<{}, IState> {
                 });
             }
         });
-
         EventTools.on('objectselect', (object3D: THREE.Object3D) => {
             if (!object3D) {
                 this.setState({
@@ -111,11 +117,10 @@ class Entities extends Component<{}, IState> {
                 });
             }
         });
-
         EventTools.on('objectremove', () => {
             const findNode = this.findTreeNode(AFRAME.INSPECTOR.selectedEntity.id, this.state.treeNodes);
             if (findNode) {
-                const parentNode = this.findTreeNode(findNode.parentKey, this.state.treeNodes);
+                const parentNode = this.findTreeNode(findNode.parentKey.toString(), this.state.treeNodes);
                 let treeNodes = [] as IEntity[];
                 if (!parentNode) {
                     treeNodes = this.state.treeNodes.filter((child: IEntity) => child.key !== findNode.key);
@@ -131,7 +136,6 @@ class Entities extends Component<{}, IState> {
                 });
             }
         });
-
         EventTools.on('entityupdate', (detail: IDetailEntity) => {
             if (detail.component === 'name') {
                 const treeNodes = this.buildTreeNode(AFRAME.INSPECTOR.sceneEl);
@@ -145,7 +149,7 @@ class Entities extends Component<{}, IState> {
     /**
      * @description Building tree
      * @param {IScene} scene
-     * @returns
+     * @returns {IEntity[]} treeNodes
      */
     private buildTreeNode = (scene: IScene) => {
         const treeNodes: IEntity[] = [{
@@ -153,7 +157,7 @@ class Entities extends Component<{}, IState> {
             id: scene.object3D.id,
             type: scene.tagName.toLowerCase(),
             title: scene.object3D.name.length ? scene.object3D.name : scene.title,
-            icon: scene.dataset.icon,
+            icon: 'eye',
             entity: scene as Entity,
             children: [],
         }];
@@ -162,24 +166,29 @@ class Entities extends Component<{}, IState> {
                 const en = treeNode.entity.children[i] as Entity;
                 if (en.dataset.isInspector || !en.isEntity
                 || en.isInspector || 'aframeInspector' in en.dataset
-                || !en.id || en.hasAttribute('aframe-injected')) {
+                || en.hasAttribute('aframe-injected')) {
                     continue;
+                }
+                if (!en.id) {
+                    en.id = uuid();
                 }
                 const { id, name } = en.object3D;
                 let title;
                 if (name.length) {
                     title = name;
-                } else if (!en.title) {
+                } else if (en.title) {
+                    title = en.title;
+                } else if (en.id) {
                     title = capitalize(en.id);
                 } else {
-                    title = en.title;
+                    title = en.tagName;
                 }
                 const childTreeNode: IEntity = {
                     key: en.id,
                     id,
                     type: en.tagName.toLowerCase(),
                     title,
-                    icon: en.dataset.icon || 'cube',
+                    icon: getIcon(en.tagName.toLowerCase()),
                     entity: en,
                     children: [],
                     parentKey: treeNode.key,
@@ -267,12 +276,12 @@ class Entities extends Component<{}, IState> {
      * @description Select the entity
      * @param {string[]} selectedKeys
      */
-    private handleSelectEntity = (selectedKeys: string[]) => {
+    private handleSelectEntity = (selectedKeys: string[], e: AntTreeNodeSelectedEvent) => {
         this.setState({
             selectedKeys,
         }, () => {
             if (selectedKeys.length) {
-                EntityTools.selectEntity(selectedKeys[0]);
+                EntityTools.selectEntity(e.node.props.dataRef.entity);
             }
         });
     }
@@ -335,7 +344,7 @@ class Entities extends Component<{}, IState> {
         if (item.children && item.children.length) {
             return (
                 <Tree.TreeNode
-                    key={item.key}
+                    key={item.key.toString()}
                     title={item.title}
                     icon={<Icon name={item.icon} />}
                     dataRef={item}
@@ -346,7 +355,7 @@ class Entities extends Component<{}, IState> {
         }
         return (
             <Tree.TreeNode
-                key={item.key}
+                key={item.key.toString()}
                 title={item.title}
                 icon={<Icon name={item.icon} />}
                 dataRef={item}
@@ -363,33 +372,37 @@ class Entities extends Component<{}, IState> {
     private renderCardItems = (items: IPrimitive[], searchText: string) => {
         return (
             <Scrollbar>
-                <Row gutter={16} style={{ margin: 0 }}>
-                    {
-                        items
-                        .filter(item => item.title.includes(searchText.toLowerCase()) || item.description.includes(searchText.toLowerCase()))
-                        .map(item => {
-                            return (
-                                <Col key={item.key} md={24} lg={12} xl={6} onClick={() => this.handleAddEntity(item)}>
-                                    <Card
-                                        hoverable={true}
-                                        title={item.title}
-                                        extra={
-                                            <a className="editor-item-help-icon" onClick={e => e.stopPropagation()} target="_blank" href={item.url}>
-                                                <Icon name="question-circle-o" />
-                                            </a>
-                                        }
-                                        style={{ marginBottom: 16 }}
-                                        bodyStyle={{ padding: 12, height: 120 }}
-                                    >
-                                        <div className="editor-item-card-desc">
-                                            {item.description}
-                                        </div>
-                                    </Card>
-                                </Col>
-                            );
-                        })
-                    }
-                </Row>
+                {
+                    items.length ? (
+                        <Row gutter={16} style={{ margin: 0 }}>
+                            {
+                                items
+                                .filter(item => item.title.includes(searchText.toLowerCase()) || item.description.includes(searchText.toLowerCase()))
+                                .map(item => {
+                                    return (
+                                        <Col key={item.key} md={24} lg={12} xl={6} onClick={() => this.handleAddEntity(item)}>
+                                            <Card
+                                                hoverable={true}
+                                                title={item.title}
+                                                extra={
+                                                    <a className="editor-item-help-icon" onClick={e => e.stopPropagation()} target="_blank" href={item.url}>
+                                                        <Icon name="question-circle-o" />
+                                                    </a>
+                                                }
+                                                style={{ marginBottom: 16 }}
+                                                bodyStyle={{ padding: 12, height: 120 }}
+                                            >
+                                                <div className="editor-item-card-desc">
+                                                    {item.description}
+                                                </div>
+                                            </Card>
+                                        </Col>
+                                    );
+                                })
+                            }
+                        </Row>
+                    ) : <Empty />
+                }
             </Scrollbar>
         )
     }
@@ -404,26 +417,30 @@ class Entities extends Component<{}, IState> {
     private renderListItems = (items: IPrimitive[], searchText: string) => {
         return (
             <Scrollbar>
-                <List
-                    style={{ padding: '0 8px' }}
-                    dataSource={items.filter(item => item.title.includes(searchText.toLowerCase()) || item.description.includes(searchText.toLowerCase()))}
-                    renderItem={item => (
-                        <List.Item>
-                            <List.Item.Meta
-                                avatar={<Avatar><Icon name={item.icon} /></Avatar>}
-                                title={
-                                    <div style={{ display: 'flex' }}>
-                                        <a style={{ flex: 1 }} onClick={() => { this.handleAddEntity(item); }}>{item.title}</a>
-                                        <div style={{ alignSelf: 'flex-end' }}>
-                                            <a className="editor-item-help-icon" target="_blank" href={item.url}><Icon name="question-circle-o" /></a>
-                                        </div>
-                                    </div>
-                                }
-                                description={item.description}
-                            />
-                        </List.Item>
-                    )}
-                />
+                {
+                    items.length ? (
+                        <List
+                            style={{ padding: '0 8px' }}
+                            dataSource={items.filter(item => item.title.includes(searchText.toLowerCase()) || item.description.includes(searchText.toLowerCase()))}
+                            renderItem={item => (
+                                <List.Item>
+                                    <List.Item.Meta
+                                        avatar={<Avatar><Icon name={getIcon(item.type)} /></Avatar>}
+                                        title={
+                                            <div style={{ display: 'flex' }}>
+                                                <a style={{ flex: 1 }} onClick={() => { this.handleAddEntity(item); }}>{item.title}</a>
+                                                <div style={{ alignSelf: 'flex-end' }}>
+                                                    <a className="editor-item-help-icon" target="_blank" href={item.url}><Icon name="question-circle-o" /></a>
+                                                </div>
+                                            </div>
+                                        }
+                                        description={item.description}
+                                    />
+                                </List.Item>
+                            )}
+                        />
+                    ) : <Empty />
+                }
             </Scrollbar>
         );
     }
@@ -463,6 +480,7 @@ class Entities extends Component<{}, IState> {
             selectedKeys, expandedKeys,
             viewPrimitives, viewCatalogs,
             searchPrimitives, searchCatalogs,
+            spinning,
         } = this.state;
         return (
             <SidebarContainer
@@ -476,6 +494,7 @@ class Entities extends Component<{}, IState> {
                         </div>
                     </>
                 }
+                spinning={spinning}
             >
                 {
                     treeNodes.length ? (
@@ -498,7 +517,6 @@ class Entities extends Component<{}, IState> {
                     title={'Add Entity'}
                     visible={visible}
                     onCancel={this.handleModalVisible}
-                    closable={true}
                     footer={null}
                     width="75%"
                     style={{ height: '75%' }}

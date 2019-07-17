@@ -85,6 +85,8 @@ export type ComponentType = 'background'
 | 'windows-motion-controls'
 ;
 
+export type AllType = PrimitiveType | CoreType | ArType | AssetType | string;
+
 export type EntityType = PrimitiveType | CoreType | string;
 
 export interface IAttribute {
@@ -110,12 +112,12 @@ export interface IPrimitive {
 }
 
 export interface IEntity {
-    id?: number;
-    key?: string;
+    id?: string | number;
+    key?: string | number;
     type?: string;
     title?: string | boolean;
     icon?: string;
-    parentKey?: string;
+    parentKey?: string | number;
     entity?: Entity;
     children?: IEntity[];
 }
@@ -133,7 +135,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-entity',
         title: 'Entity',
         description: 'A-Frame represents an entity via the <a-entity> element. As defined in the entity-component-system pattern, entities are placeholder objects to which we plug in components to provide them appearance, behavior, and functionality.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.9.0/core/entity.html',
         attributes: [],
     },
@@ -142,7 +143,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-box',
         title: 'Box',
         description: 'The box primitive creates shapes such as boxes, cubes, or walls.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-box.html',
         attributes: [],
     },
@@ -151,7 +151,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-camera',
         title: 'Camera',
         description: 'The camera primitive determines what the user sees. We can change the viewport by modifying the camera entity’s position and rotation.',
-        icon: 'camera',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-camera.html',
         attributes: [],
     },
@@ -160,7 +159,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-circle',
         title: 'Circle',
         description: 'The circle primitive creates circles surfaces using the geometry component with the type set to circle.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-circle.html',
         attributes: [],
     },
@@ -169,7 +167,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-collada-model',
         title: 'Collada Model',
         description: 'The COLLADA model primitive displays a 3D COLLADA model created from a 3D modeling program or downloaded from the web.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-collada-model.html',
         attributes: [],
     },
@@ -178,7 +175,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-cone',
         title: 'Cone',
         description: 'The cone primitive creates a cone shape.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-cone.html',
         attributes: [],
     },
@@ -187,7 +183,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-cursor',
         title: 'Cursor',
         description: 'The cursor primitive is a reticle that allows for clicking and basic interactivity with a scene on devices that do not have a hand controller. The default appearance is a ring geometry. The cursor is usually placed as a child of the camera.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-cursor.html',
         attributes: [],
     },
@@ -197,7 +192,6 @@ export const primitives: IPrimitive[] = [
         title: 'Curvedimage',
         description: `The curved image primitive creates images that bend around the user. Curved images arranged around the camera can be pleasing for legibility since each pixel sits at the same distance from the user. They can be a better choice than angled flat planes for complex layouts because they ensure a smooth surface rather than a series of awkward seams between planes.
             Under the hood, a curved image is a double-sided open-ended cylinder with textures mapped to the inside of the cylinder.`,
-        icon: 'image',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-curvedimage.html',
         attributes: [],
     },
@@ -206,7 +200,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-cylinder',
         title: 'Cylinder',
         description: 'The cylinder primitive is used to create tubes and curved surfaces.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-cylinder.html',
         attributes: [],
     },
@@ -215,7 +208,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-dodecahedron',
         title: 'Dodecahedron',
         description: '',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-dodecahedron.html',
         attributes: [],
     },
@@ -224,7 +216,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-gltf-model',
         title: 'Gltf Model',
         description: 'The glTF model primitive displays a 3D glTF model created from a 3D modeling program or downloaded from the web.',
-        icon: 'image',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-gltf-model.html',
         attributes: [],
     },
@@ -233,7 +224,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-icosahedron',
         title: 'Icosahedron',
         description: '',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-icosahedron.html',
         attributes: [],
     },
@@ -242,7 +232,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-image',
         title: 'Image',
         description: 'The image primitive shows an image on a flat plane.',
-        icon: 'image',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-image.html',
         attributes: [],
     },
@@ -251,7 +240,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-light',
         title: 'Light',
         description: 'A light changes the lighting and shading of the scene.',
-        icon: 'lightbulb-o',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-light.html',
         attributes: [],
     },
@@ -260,7 +248,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-link',
         title: 'Link',
         description: 'The link primitive provides a compact API to define links that resembles the traditional <a> tag.',
-        icon: 'link',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-link.html',
         attributes: [],
     },
@@ -269,7 +256,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-obj-model',
         title: 'Obj Model',
         description: 'The .OBJ model primitive displays a 3D Wavefront model.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-obj-model.html',
         attributes: [],
     },
@@ -278,7 +264,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-octahedron',
         title: 'Octahedron',
         description: '',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-octahedron.html',
         attributes: [],
     },
@@ -287,7 +272,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-plane',
         title: 'Plane',
         description: 'The plane primitive creates flat surfaces using the geometry component with the type set to plane.',
-        icon: 'rectangle',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-plane.html',
         attributes: [],
     },
@@ -296,7 +280,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-ring',
         title: 'Ring',
         description: 'The ring primitive creates a ring or disc shape.',
-        icon: 'circle-o',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-ring.html',
         attributes: [],
     },
@@ -305,7 +288,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-sky',
         title: 'Sky',
         description: 'The sky primitive adds a background color or 360° image to a scene. A sky is a large sphere with a color or texture mapped to the inside.',
-        icon: 'skyatlas',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-sky.html',
         attributes: [],
     },
@@ -314,7 +296,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-sound',
         title: 'Sound',
         description: 'The sound primitive wraps the sound component.',
-        icon: 'soundcloud',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-sound.html',
         attributes: [],
     },
@@ -323,7 +304,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-sphere',
         title: 'Sphere',
         description: 'The sphere primitive creates a spherical or polyhedron shapes. It wraps an entity that prescribes the geometry component with its geometric primitive set to sphere.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-sphere.html',
         attributes: [],
     },
@@ -332,7 +312,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-tetrahedron',
         title: 'Tetrahedron',
         description: '',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-tetrahedron.html',
         attributes: [],
     },
@@ -341,7 +320,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-text',
         title: 'Text',
         description: 'Wraps the text component.',
-        icon: 'font',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-text.html',
         attributes: [],
     },
@@ -350,7 +328,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-torus-knot',
         title: 'Torus Knot',
         description: 'The torus knot primitive creates pretzel shapes using the geometry component with the type set to torusKnot.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-torus-knot.html',
         attributes: [],
     },
@@ -359,7 +336,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-torus',
         title: 'Torus',
         description: 'The torus primitive creates donut or tube shapes using the geometry component with the type set to torus.',
-        icon: 'cube',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-torus.html',
         attributes: [],
     },
@@ -368,7 +344,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-triangle',
         title: 'Triangle',
         description: 'The triangle primitive creates triangle surfaces using the geometry component with the type set to triangle.',
-        icon: 'triangle',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-triangle.html',
         attributes: [],
     },
@@ -377,7 +352,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-video',
         title: 'Video',
         description: 'The video primitive plays a video as a texture on a flat plane.',
-        icon: 'video-camera',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-video.html',
         attributes: [],
     },
@@ -386,7 +360,6 @@ export const primitives: IPrimitive[] = [
         type: 'a-videosphere',
         title: 'Videosphere',
         description: 'The videosphere primitive plays 360° videos in the background of the scene. Videospheres are a large sphere with the video texture mapped to the inside.',
-        icon: 'video-camera',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-videosphere.html',
         attributes: [],
     },

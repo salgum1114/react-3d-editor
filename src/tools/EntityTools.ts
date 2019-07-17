@@ -5,11 +5,10 @@ import { IPrimitive } from '../constants/primitives/primitives';
 import EventTools from './EventTools';
 
 export const createEntity = (primitive: IPrimitive, callback?: (...args: any) => void) => {
-    const { type, title, icon, attributes } = primitive;
+    const { type, title, attributes } = primitive;
     const entity = document.createElement(type);
     entity.setAttribute('id', `${type}_${uuid()}`);
     entity.setAttribute('title', title);
-    entity.setAttribute('data-icon', icon);
     entity.addEventListener('loaded', () => {
         EventTools.emit('entitycreate', entity);
         if (callback) {
@@ -93,8 +92,13 @@ export const cloneEntity = (entity: Entity) => {
     return clonedEntity;
 }
 
-export const selectEntity = (id: string) => {
+export const selectEntityById = (id: string) => {
     const entity = document.getElementById(id);
+    EventTools.emit('entityselect', entity);
+    return entity;
+}
+
+export const selectEntity = (entity: Entity) => {
     EventTools.emit('entityselect', entity);
     return entity;
 }

@@ -3,6 +3,7 @@ import { Entity } from 'aframe';
 
 import { EventTools } from '../../tools';
 import Icon from 'polestar-icons';
+import { capitalize } from '../../tools/UtilTools';
 
 interface IProps {
     style?: React.CSSProperties;
@@ -33,10 +34,21 @@ class ViewportToolbar extends Component<IProps, IState> {
     }
 
     renderEntity = (entity?: Entity) => {
+        let title;
+        const { name } = entity.object3D;
+        if (name.length) {
+            title = name;
+        } else if (entity.title) {
+            title = entity.title;
+        } else if (entity.id) {
+            title = capitalize(entity.id);
+        } else {
+            title = entity.tagName;
+        }
         return (
             <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
                 <Icon name={entity.dataset.icon || 'cube'} style={{ marginRight: 4, fontSize: '1.25rem' }} />
-                <div>{entity.title}</div>
+                <div>{title}</div>
             </div>
         );
     }

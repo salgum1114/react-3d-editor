@@ -3,3 +3,4 @@ export { default as ColorPicker } from './ColorPicker';
 export { default as TexturePicker } from './TexturePicker';
 export { default as Scrollbar } from './Scrollbar';
 export { default as Empty } from './Empty';
+export { default as AddEmpty } from './AddEmpty';

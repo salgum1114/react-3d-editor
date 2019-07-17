@@ -4,7 +4,7 @@ import '../lib/TransformControls';
 import '../lib/EditorControls';
 import { IRaycaster } from './RaycasterTools';
 import { RaycasterTools, InspectorTools } from '.';
-import { ICamera } from './InpsectorTools';
+import { ICamera } from './InspectorTools';
 
 class ViewportTools {
     selectionBox?: THREE.BoxHelper;

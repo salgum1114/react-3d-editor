@@ -4,7 +4,7 @@ import ShortcutTools from './ShortcutTools';
 import RaycasterTools from './RaycasterTools';
 import ViewportTools from './ViewportTools';
 import CameraTools from './CameraTools';
-import InspectorTools from './InpsectorTools';
+import InspectorTools from './InspectorTools';
 import HistoryTools from './HistoryTools';
 import AssetTools from './AssetTools';
 

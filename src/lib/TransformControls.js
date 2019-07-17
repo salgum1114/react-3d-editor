@@ -1069,7 +1069,7 @@
         return;
 
       var pointer = event.changedTouches ? event.changedTouches[0] : event;
-
+      console.log(event, pointer);
       var planeIntersect = intersectObjects(pointer, [
         _gizmo[_mode].activePlane
       ]);

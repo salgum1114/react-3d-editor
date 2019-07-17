@@ -4,6 +4,8 @@ import { Select, Icon, Radio } from 'antd';
 import { EventTools } from '../../tools';
 import { EventType } from '../../constants';
 
+type ViewTypes = '3d' | '2d';
+
 interface IOption {
     value?: string;
     event?: EventType;
@@ -12,7 +14,7 @@ interface IOption {
 }
 
 interface IState {
-    viewType?: string;
+    viewType?: ViewTypes;
     selectedCamera?: string;
 }
 
@@ -44,30 +46,35 @@ class CameraToolbar extends Component<IProps, IState> {
         viewType: '3d',
     }
 
-    componentDidMount() {
-        EventTools.on('cameratoggle', (data: IOption) => {
-            if (this.justChangedCamera) {
-                this.justChangedCamera = false;
-                return;
-            }
-            this.setState({
-                selectedCamera: data.value,
-            });
-        });
-    }
-
+    /**
+     * @description Get the camera option
+     * @param {string} value
+     */
     getOption = (value: string) => options.filter(option => option.value === value)[0];
 
-    handleChange = (value: string) => {
+    /**
+     * @description Change camera in 3D
+     * @param {string} value
+     */
+    handleChangeCamera = (value: string) => {
         const option = this.getOption(value);
-        this.justChangedCamera = true;
         this.setState({
             selectedCamera: option.value,
         });
         EventTools.emit(option.event, option.payload);
     }
 
-    handleChangeViewType = (viewType: string) => {
+    /**
+     * @description Change view type
+     * @param {ViewTypes} viewType
+     */
+    handleChangeViewType = (viewType: ViewTypes) => {
+        if (viewType === '2d') {
+            EventTools.emit('cameraorthographictoggle', 'top');
+        } else {
+            const option = this.getOption(this.state.selectedCamera);
+            EventTools.emit(option.event, option.payload);
+        }
         this.setState({
             viewType,
         });
@@ -91,7 +98,7 @@ class CameraToolbar extends Component<IProps, IState> {
                 {
                     viewType === '3d' ? (
                         <Select
-                            onChange={this.handleChange}
+                            onChange={this.handleChangeCamera}
                             value={selectedCamera}
                             suffixIcon={<Icon type="camera" />}
                         >

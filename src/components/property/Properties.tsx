@@ -47,21 +47,24 @@ class Properties extends Component {
 
     render() {
         const { selectedEntity } = this.state;
-        let name;
+        let entityTitle;
         if (selectedEntity) {
-            if (selectedEntity.object3D.name.length) {
-                name = selectedEntity.object3D.name;
-            } else if (!selectedEntity.title) {
-                name = capitalize(selectedEntity.id);
+            const { name } = selectedEntity.object3D;
+            if (name.length) {
+                entityTitle = name;
+            } else if (selectedEntity.title) {
+                entityTitle = selectedEntity.title;
+            } else if (selectedEntity.id) {
+                entityTitle = capitalize(selectedEntity.id);
             } else {
-                name = selectedEntity.title;
+                entityTitle = selectedEntity.tagName;
             }
         }
         const title = selectedEntity ? (
             <>
                 <div style={{ display: 'flex', flex: 1 }}>
                     <Icon name={selectedEntity.dataset.icon || 'cube'} style={{ marginRight: 4, fontSize: '1.25rem' }} />
-                    <div>{name}</div>
+                    <div>{entityTitle}</div>
                 </div>
                 <div>
                     <Icon name="clipboard" className="editor-icon" />

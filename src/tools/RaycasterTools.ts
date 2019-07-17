@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce';
-import { Entity } from 'aframe';
+import { Entity, DetailEvent } from 'aframe';
 
 import { EventTools, InspectorTools } from '.';
 
@@ -90,7 +90,7 @@ class RaycasterTools {
         return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
     }
 
-    onClick = (event: Event) => {
+    onClick = (event: DetailEvent<Event>) => {
         // Check to make sure not dragging.
         const DRAG_THRESHOLD = 0.03;
         if (this.onDownPosition.distanceTo(this.onUpPosition) >= DRAG_THRESHOLD) {
@@ -99,13 +99,12 @@ class RaycasterTools {
         this.inspector.selectEntity(event.detail.intersectedEl);
     }
 
-    onMouseEnter = (event: Event) => {
+    onMouseEnter = (event: DetailEvent<Event>) => {
         EventTools.emit('raycastermouseenter', this.mouseCursor.components.cursor.intersectedEl);
     }
 
-    onMouseLeave = (event: Event) => {
-        EventTools.emit('raycastermouseleave', this.mouseCursor.components.cursor.intersectedEl,
-        );
+    onMouseLeave = (event: DetailEvent<Event>) => {
+        EventTools.emit('raycastermouseleave', this.mouseCursor.components.cursor.intersectedEl);
     }
 
     onMouseDown = (event: MouseEvent) => {

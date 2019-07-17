@@ -1,10 +1,14 @@
 import React from 'react';
-import { List } from 'antd';
+import { Empty as AntEmpty } from 'antd';
+import { EmptyProps } from 'antd/lib/empty';
 
-const Empty: React.SFC = () => {
+const Empty: React.SFC<EmptyProps> = props => {
+    const { children, ...other } = props;
     return (
         <div className="editor-empty">
-            <List />
+            <AntEmpty {...other}>
+                {children}
+            </AntEmpty>
         </div>
     );
 };
