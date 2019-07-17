@@ -7,7 +7,6 @@ import {
     CameraTools,
     ViewportTools,
     HistoryTools,
-    AssetTools,
 } from './';
 import Components from '../constants/components';
 
@@ -46,7 +45,6 @@ class InspectorTools {
     isFirstOpen?: boolean;
     opened?: boolean;
     exporters?: ObjectMapper;
-    assetsLoader?: any;
     on?: any;
     inspectorActive?: boolean;
     cameraHelper?: THREE.CameraHelper;
@@ -56,9 +54,9 @@ class InspectorTools {
     shortcutTools?: ShortcutTools;
     cameraTools?: CameraTools;
     viewportTools?: ViewportTools;
+    selectedAsset?: Entity;
 
     constructor(options: IInsepctorOptions = {}) {
-        this.assetsLoader = new AssetTools();
         // this.exporters = { gltf: new THREE.GLTFExporter() };
         this.history = new HistoryTools();
         this.isFirstOpen = true;
@@ -173,7 +171,7 @@ class InspectorTools {
                 </a-entity>
                 </a-entity>
             </a-entity>
-        `);
+        `.trim());
     }
 
     initCamera = () => {
@@ -218,6 +216,9 @@ class InspectorTools {
         });
         EventTools.on('entitycreate', (entity: Entity) => {
             this.selectEntity(entity);
+        });
+        EventTools.on('assetselect', (asset: Entity) => {
+            this.selectAsset(asset);
         });
         document.addEventListener('child-detached', event => {
             const entity = event.detail.el;
@@ -309,7 +310,7 @@ class InspectorTools {
      * @param {number} id
      * @returns
      */
-    selectById = (id: number) => {
+    selectEntityById = (id: number) => {
         if (id === this.camera.id) {
             this.select(this.camera);
             return;
@@ -335,6 +336,14 @@ class InspectorTools {
      */
     deselect = () => {
         this.select(null);
+    }
+
+    /**
+     * @description Select the asset
+     * @param {Entity} asset
+     */
+    selectAsset = (asset: Entity) => {
+        this.selectedAsset = asset;
     }
 
     /**

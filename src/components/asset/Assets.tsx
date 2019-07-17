@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Icon from 'polestar-icons';
 import { Entity } from 'aframe';
-import { Modal, Tree, Spin } from 'antd';
+import { Modal, Tree } from 'antd';
 import uuid from 'uuid/v4';
 import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
 
 import { SidebarContainer } from '../common';
-import { EventTools } from '../../tools';
+import { EventTools, AssetTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
 import { IEntity, getIcon } from '../../constants';
 import AddEmpty from '../common/AddEmpty';
@@ -33,6 +33,12 @@ class Assets extends Component<{}, IState> {
             this.setState({
                 assets,
                 spinning: false,
+            });
+        });
+        EventTools.on('assetremove', () => {
+            const assets = this.buildAssets(AFRAME.INSPECTOR.sceneEl);
+            this.setState({
+                assets,
             });
         });
     }
@@ -89,14 +95,28 @@ class Assets extends Component<{}, IState> {
      * @param {AntTreeNodeSelectedEvent} e
      */
     private handleSelectAsset = (selectedKeys: string[], e: AntTreeNodeSelectedEvent) => {
-        console.log(e.node.props.dataRef.entity);
         this.setState({
             selectedKeys,
+        }, () => {
+            if (selectedKeys.length) {
+                AssetTools.selectAsset(e.node.props.dataRef.entity);
+            }
         });
     }
 
+    /**
+     * @description Delete the asset
+     */
     private handleDeleteAsset = () => {
-
+        if (AFRAME.INSPECTOR.selectedAsset) {
+            Modal.confirm({
+                title: 'Delete asset',
+                content: 'Are you sure want to delete this asset?',
+                onOk: () => {
+                    AssetTools.removeSelectedAsset();
+                },
+            });
+        }
     }
 
     /**

@@ -1,12 +1,7 @@
-export type EventType = 'entitycreate'
-| 'entityupdate'
-| 'entityclone'
-| 'entityselect'
-| 'cameraperspectivetoggle'
-| 'cameraorthographictoggle'
-| 'objectselect'
-| 'objectfocus'
-| 'objectremove'
+export type EventType = EntityEventType
+| ObjectEventType
+| CameraEventType
+| AssetEventType
 | 'helperremove'
 | 'raycastermouseenter'
 | 'raycastermouseleave'
@@ -14,9 +9,6 @@ export type EventType = 'entitycreate'
 | 'transformmodechange'
 | 'transformspacechange'
 | 'transformspacechanged'
-| 'cameraperspectivetoggle'
-| 'cameraorthographictoggle'
-| 'cameratoggle'
 | 'entitytransformed'
 | 'refreshsidebarobject3d'
 | 'componentadd'
@@ -28,4 +20,30 @@ export type EventType = 'entitycreate'
 | 'inspectorcleared'
 | 'snapchanged'
 | 'sceneloaded'
+| 'openhelpmodal'
+;
+
+export type EntityEventType = 'entitycreate'
+| 'entityupdate'
+| 'entityclone'
+| 'entityselect'
+;
+
+export type ObjectEventType = 'objectselect'
+| 'objectfocus'
+| 'objectremove'
+;
+
+export type CameraEventType = 'cameraperspectivetoggle'
+| 'cameraorthographictoggle'
+| 'cameraperspectivetoggle'
+| 'cameraorthographictoggle'
+| 'cameratoggle'
+;
+
+export type AssetEventType = 'assetsimagesload'
+| 'assetselect'
+| 'assetcreate'
+| 'assetupdate'
+| 'assetremove'
 ;

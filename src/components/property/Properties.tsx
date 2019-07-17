@@ -62,9 +62,9 @@ class Properties extends Component {
         }
         const title = selectedEntity ? (
             <>
-                <div style={{ display: 'flex', flex: 1 }}>
+                <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
                     <Icon name={selectedEntity.dataset.icon || 'cube'} style={{ marginRight: 4, fontSize: '1.25rem' }} />
-                    <div>{entityTitle}</div>
+                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entityTitle}</div>
                 </div>
                 <div>
                     <Icon name="clipboard" className="editor-icon" />

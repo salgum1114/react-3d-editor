@@ -78,7 +78,7 @@ class FormRender extends Component<IProps> {
     }
 
     renderFormItem = () => {
-        const { schema, data, form, entity, schemaKey, componentName } = this.props;
+        const { schema, data, form, schemaKey, componentName } = this.props;
         switch (schema.type) {
             case 'vec2':
                 return this.renderVec2FormItem();
@@ -101,7 +101,7 @@ class FormRender extends Component<IProps> {
     }
 
     renderVec2FormItem = () => {
-        const { schema, data, form, entity, schemaKey, componentName } = this.props;
+        const { schema, data, form, schemaKey, componentName } = this.props;
         return (
             <Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
                 {
@@ -124,7 +124,7 @@ class FormRender extends Component<IProps> {
     }
 
     renderVec3FormItem = () => {
-        const { schema, data, form, entity, schemaKey, componentName } = this.props;
+        const { schema, data, form, schemaKey, componentName } = this.props;
         return (
             <Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
                 <Row gutter={8}>
@@ -149,7 +149,7 @@ class FormRender extends Component<IProps> {
     }
 
     renderVec4FormItem = () => {
-        const { schema, data, form, entity, componentName, schemaKey } = this.props;
+        const { schema, data, form, componentName, schemaKey } = this.props;
         return (
             <Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
                 <Row gutter={8}>

@@ -118,23 +118,10 @@ class Entities extends Component<{}, IState> {
             }
         });
         EventTools.on('objectremove', () => {
-            const findNode = this.findTreeNode(AFRAME.INSPECTOR.selectedEntity.id, this.state.treeNodes);
-            if (findNode) {
-                const parentNode = this.findTreeNode(findNode.parentKey.toString(), this.state.treeNodes);
-                let treeNodes = [] as IEntity[];
-                if (!parentNode) {
-                    treeNodes = this.state.treeNodes.filter((child: IEntity) => child.key !== findNode.key);
-                } else {
-                    const findIndex = parentNode.children.findIndex((child: IEntity) => child.key === findNode.key);
-                    if (findIndex > -1) {
-                        parentNode.children.splice(findIndex, 1);
-                        treeNodes = this.state.treeNodes;
-                    }
-                }
-                this.setState({
-                    treeNodes,
-                });
-            }
+            const treeNodes = this.buildTreeNode(AFRAME.INSPECTOR.sceneEl);
+            this.setState({
+                treeNodes,
+            });
         });
         EventTools.on('entityupdate', (detail: IDetailEntity) => {
             if (detail.component === 'name') {
@@ -233,7 +220,7 @@ class Entities extends Component<{}, IState> {
      */
     private handleDeleteEntity = () => {
         if (AFRAME.INSPECTOR.selectedEntity) {
-            if (AFRAME.INSPECTOR.selectedEntity.id === 'scene') {
+            if (AFRAME.INSPECTOR.selectedEntity.tagName.toLowerCase() === 'a-scene') {
                 message.warn('Does not delete Scene.');
                 return;
             }
@@ -241,8 +228,7 @@ class Entities extends Component<{}, IState> {
                 title: 'Delete entity',
                 content: 'Are you sure want to delete this entity?',
                 onOk: () => {
-                    const findNode = this.findTreeNode(AFRAME.INSPECTOR.selectedEntity.id, this.state.treeNodes);
-                    if (findNode.children.length) {
+                    if (AFRAME.INSPECTOR.selectedEntity.children.length) {
                         message.warn('There are child entities.');
                         return;
                     }

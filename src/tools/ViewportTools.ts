@@ -137,8 +137,8 @@ class ViewportTools {
             this.controls.enabled = true;
         });
         sceneHelpers.add(transformControls);
-        EventTools.on('entityupdate', detail => {
-            if (inspector.selectedEntity.object3DMap['mesh']) {
+        EventTools.on('entityupdate', () => {
+            if (inspector.selectedEntity.object3DMap.mesh) {
                 this.selectionBox.update(inspector.selected);
             }
         });

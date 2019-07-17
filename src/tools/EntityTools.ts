@@ -16,7 +16,11 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
         }
     })
     if (type === 'a-entity') {
-        AFRAME.scenes[0].appendChild(entity);
+        if (AFRAME.INSPECTOR.selectedEntity) {
+            AFRAME.INSPECTOR.selectedEntity.appendChild(entity);
+        } else {
+            AFRAME.scenes[0].appendChild(entity);
+        }
         return entity;
     }
     attributes.forEach(attr => {
@@ -24,7 +28,11 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
             entity.setAttribute(attr.attribute, `${attr.defaultValue}`);
         }
     });
-    AFRAME.scenes[0].appendChild(entity);
+    if (AFRAME.INSPECTOR.selectedEntity) {
+        AFRAME.INSPECTOR.selectedEntity.appendChild(entity);
+    } else {
+        AFRAME.scenes[0].appendChild(entity);
+    }
     return entity;
 };
 
@@ -62,23 +70,28 @@ export const updateEntity = (entity: Entity, propertyName: string, value: any) =
 };
 
 export const removeEntity = (entity: Entity) => {
+    if (entity.tagName.toLowerCase() === 'a-scene') {
+        alert('Does not delete Scene.');
+        return;
+    }
+    if (entity.children.length) {
+        alert('There are child entities.');
+        return;
+    }
     const closest = findClosestEntity(entity) as Entity;
     AFRAME.INSPECTOR.removeObject(entity.object3D);
     entity.parentNode.removeChild(entity);
     AFRAME.INSPECTOR.selectEntity(closest);
 };
 
-export function cloneSelectedEntity() {
+export const cloneSelectedEntity = () => {
     if (AFRAME.INSPECTOR.selectedEntity) {
         cloneEntity(AFRAME.INSPECTOR.selectedEntity);
     }
 }
 
-export function removeSelectedEntity() {
+export const removeSelectedEntity = () => {
     if (AFRAME.INSPECTOR.selectedEntity) {
-        if (AFRAME.INSPECTOR.selectedEntity.id === 'scene') {
-            return;
-        }
         removeEntity(AFRAME.INSPECTOR.selectedEntity);
     }
 }
