@@ -1,0 +1,1 @@
+export default AFRAME.components.scale;

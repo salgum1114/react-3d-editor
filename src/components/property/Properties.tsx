@@ -6,16 +6,19 @@ import { SidebarContainer } from '../common';
 import { EventTools } from '../../tools';
 import Property from './Property';
 import Icon from 'polestar-icons';
-import { IDetailEntity } from '../../constants';
+import { IDetailEntity, getIcon } from '../../constants';
 import { capitalize } from '../../tools/UtilTools';
+import AssetProperty from './AssetProperty';
 
 interface IState {
     selectedEntity?: Entity;
+    selectedAsset?: Entity;
 }
 
 class Properties extends Component {
     state: IState = {
         selectedEntity: null,
+        selectedAsset: null,
     }
 
     componentDidMount() {
@@ -30,6 +33,11 @@ class Properties extends Component {
                     selectedEntity: null,
                 });
             }
+        });
+        EventTools.on('assetselect', (asset: Entity) => {
+            this.setState({
+                selectedAsset: asset,
+            });
         });
         EventTools.on('entityupdate', debounce((detail: IDetailEntity) => {
             if (detail.component === 'name') {
@@ -46,24 +54,31 @@ class Properties extends Component {
     }
 
     render() {
-        const { selectedEntity } = this.state;
+        const { selectedEntity, selectedAsset } = this.state;
         let entityTitle;
-        if (selectedEntity) {
-            const { name } = selectedEntity.object3D;
-            if (name.length) {
-                entityTitle = name;
-            } else if (selectedEntity.title) {
-                entityTitle = selectedEntity.title;
-            } else if (selectedEntity.id) {
-                entityTitle = capitalize(selectedEntity.id);
+        const selected = selectedEntity || selectedAsset;
+        if (selected) {
+            const { object3D } = selected;
+            if (object3D) {
+                const { name } = object3D;
+                if (name.length) {
+                    entityTitle = name;
+                }
+            }
+            if (selected.title) {
+                entityTitle = selected.title;
+            } else if (selected.id) {
+                entityTitle = capitalize(selected.id);
+            } else if (selected.hasAttribute('name')){
+                entityTitle = selected.getAttribute('name');
             } else {
-                entityTitle = selectedEntity.tagName;
+                entityTitle = selected.tagName;
             }
         }
-        const title = selectedEntity ? (
+        const title = selected ? (
             <>
                 <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-                    <Icon name={selectedEntity.dataset.icon || 'cube'} style={{ marginRight: 4, fontSize: '1.25rem' }} />
+                    <Icon name={getIcon(selected.tagName.toLowerCase())} style={{ marginRight: 4, fontSize: '1.25rem' }} />
                     <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entityTitle}</div>
                 </div>
                 <div>
@@ -76,11 +91,34 @@ class Properties extends Component {
                 <div>{'Properties'}</div>
             </>
         );
+        let type = 'entity';
+        if (selected) {
+            switch (selected.tagName.toLowerCase()) {
+                case 'a-asset-item':
+                    type = 'asset';
+                    break;
+                case 'a-mixin':
+                    type = 'asset';
+                    break;
+                case 'img':
+                    type = 'asset';
+                    break;
+                case 'audio':
+                    type = 'asset';
+                    break;
+                case 'video':
+                    type = 'asset';
+                    break;
+                default:
+                    type = 'entity';
+                    break;
+            }
+        }
         return (
             <SidebarContainer
                 title={title}
             >
-                <Property entity={selectedEntity} />
+                <Property entity={selected} type={type} />
             </SidebarContainer>
         );
     }

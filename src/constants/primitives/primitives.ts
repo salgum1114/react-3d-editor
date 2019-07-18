@@ -34,8 +34,7 @@ export type ArType = 'a-marker'
 | 'a-marker-camera'
 ;
 
-export type CoreType = 'a-animation'
-| 'a-entity'
+export type CoreType = 'a-entity'
 | 'a-scene'
 ;
 

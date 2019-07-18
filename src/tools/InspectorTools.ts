@@ -139,7 +139,6 @@ class InspectorTools {
     initEntities = () => {
         return document.createRange().createContextualFragment(`
             <a-entity id="environment" environment="preset: forest; fog: false"></a-entity>
-
             <!-- Meshes. -->
             <a-entity id="blueBox" mixin="blueBox" position="0 8 0"></a-entity>
             <a-entity id="shortOrangeBox" mixin="short orange box" position="-5 2 0"></a-entity>

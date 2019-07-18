@@ -41,10 +41,14 @@ class Assets extends Component<{}, IState> {
                 assets,
             });
         });
+        EventTools.on('entityselect', () => {
+            this.setState({
+                selectedKeys: [],
+            });
+        });
     }
 
     /**
-     * 
      * @description Building assets
      * @param {IScene} scene
      * @returns {IEntity[]} assets
@@ -62,9 +66,13 @@ class Assets extends Component<{}, IState> {
                     title = en.title;
                 } else if (en.id) {
                     title = capitalize(en.id);
+                } else if (en.hasAttribute('name')) {
+                    title = en.getAttribute('name');
                 } else {
-                    title = en.tagName;
+                    title = en.tagName.toLowerCase();
                 }
+                en.title = title.toString();
+                en.setAttribute('name', title.toString());
                 assets.push({
                     key: en.id,
                     type: en.tagName.toLowerCase(),
@@ -100,6 +108,9 @@ class Assets extends Component<{}, IState> {
         }, () => {
             if (selectedKeys.length) {
                 AssetTools.selectAsset(e.node.props.dataRef.entity);
+                EventTools.emit('objectselect');
+            } else {
+                AssetTools.selectAsset();
             }
         });
     }
@@ -136,7 +147,7 @@ class Assets extends Component<{}, IState> {
     }
 
     render() {
-        const { assets, visible, spinning } = this.state;
+        const { assets, visible, spinning, selectedKeys } = this.state;
         return (
             <SidebarContainer
                 titleStyle={{ border: 0 }}
@@ -156,6 +167,7 @@ class Assets extends Component<{}, IState> {
                         <Tree
                             showIcon={true}
                             onSelect={this.handleSelectAsset}
+                            selectedKeys={selectedKeys}
                         >
                             {assets.map(asset => this.renderTreeNode(asset))}
                         </Tree>

@@ -170,6 +170,7 @@ class Entities extends Component<{}, IState> {
                 } else {
                     title = en.tagName;
                 }
+                en.title = title.toString();
                 const childTreeNode: IEntity = {
                     key: en.id,
                     id,
@@ -268,6 +269,8 @@ class Entities extends Component<{}, IState> {
         }, () => {
             if (selectedKeys.length) {
                 EntityTools.selectEntity(e.node.props.dataRef.entity);
+            } else {
+                EntityTools.selectEntity();
             }
         });
     }

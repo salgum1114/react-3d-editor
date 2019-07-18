@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, List } from 'antd';
+import { Form } from 'antd';
 import { Entity } from 'aframe';
 import { FormComponentProps } from 'antd/lib/form';
 import debounce from 'lodash/debounce';
@@ -9,9 +9,11 @@ import AddComponent from './AddComponent';
 import Components from './Components';
 import { EntityTools } from '../../tools';
 import { Empty } from '../common';
+import { GeneralComponents } from '../../constants/components/components';
 
 interface IProps extends FormComponentProps {
     entity?: Entity;
+    type: 'entity' | 'asset';
 };
 
 class Property extends Component<IProps> {
@@ -24,12 +26,12 @@ class Property extends Component<IProps> {
     }
 
     render() {
-        const { entity, form } = this.props;
+        const { entity, form, type = 'entity' } = this.props;
         return entity ? (
             <Form style={{ display: 'flex', flexDirection: 'column' }}>
-                <GeneralComponent entity={entity} form={form} />
-                <AddComponent entity={entity} />
-                <Components entity={entity} form={form} />
+                <GeneralComponent entity={entity} form={form} generalComponents={type === 'entity' ? GeneralComponents : ['name']} />
+                {(type === 'entity' || entity.tagName.toLowerCase() === 'a-mixin') && <AddComponent entity={entity} generalComponents={type === 'entity' ? GeneralComponents : ['name']} />}
+                <Components entity={entity} form={form} generalComponents={type === 'entity' ? GeneralComponents : ['name']} />
             </Form>
         ) : <Empty />
     }

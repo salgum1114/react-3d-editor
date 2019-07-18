@@ -59,6 +59,6 @@ export const removeSelectedAsset = () => {
     }
 };
 
-export const selectAsset = (asset: Entity) => {
+export const selectAsset = (asset?: Entity) => {
     EventTools.emit('assetselect', asset);
 };

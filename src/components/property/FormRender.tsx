@@ -3,7 +3,7 @@ import { Form, Input, InputNumber, Switch, Col, Select, Row } from 'antd';
 import { Entity } from 'aframe';
 import { FormComponentProps } from 'antd/lib/form';
 
-import { ColorPicker, TexturePicker } from '../common';
+import { ColorPicker, TexturePicker, AudioPicker, VideoPicker, ImagePicker } from '../common';
 import { capitalize } from '../../tools/UtilTools';
 
 interface IProps extends FormComponentProps {
@@ -72,6 +72,39 @@ class FormRender extends Component<IProps> {
                         componentName={componentName}
                     />
                 );
+            case 'audio':
+                return (
+                    <AudioPicker
+                        schema={schema}
+                        data={data}
+                        form={form}
+                        entity={entity}
+                        schemaKey={schemaKey}
+                        componentName={componentName}
+                    />
+                );
+            case 'video':
+                return (
+                    <VideoPicker
+                        schema={schema}
+                        data={data}
+                        form={form}
+                        entity={entity}
+                        schemaKey={schemaKey}
+                        componentName={componentName}
+                    />
+                );
+            case 'image':
+                return (
+                    <ImagePicker
+                        schema={schema}
+                        data={data}
+                        form={form}
+                        entity={entity}
+                        schemaKey={schemaKey}
+                        componentName={componentName}
+                    />
+                );
             default:
                 return <Input />;
         }
@@ -111,7 +144,7 @@ class FormRender extends Component<IProps> {
                                 <Form.Item>
                                     {
                                         form.getFieldDecorator(`${componentName}.${key}`, {
-                                            initialValue: data[key],
+                                            initialValue: data && data[key],
                                         })(<InputNumber />)
                                     }
                                 </Form.Item>
@@ -135,7 +168,7 @@ class FormRender extends Component<IProps> {
                                     <Form.Item>
                                         {
                                             form.getFieldDecorator(`${componentName}.${key}`, {
-                                                initialValue: data[key],
+                                                initialValue: data && data[key],
                                             })(<InputNumber style={{ width: 'inherit' }} />)
                                         }
                                     </Form.Item>
@@ -160,7 +193,7 @@ class FormRender extends Component<IProps> {
                                     <Form.Item>
                                         {
                                             form.getFieldDecorator(`${componentName}.${key}`, {
-                                                initialValue: data[key],
+                                                initialValue: data && data[key],
                                             })(<InputNumber style={{ width: 'inherit' }} />)
                                         }
                                     </Form.Item>

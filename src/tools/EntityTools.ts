@@ -111,7 +111,7 @@ export const selectEntityById = (id: string) => {
     return entity;
 }
 
-export const selectEntity = (entity: Entity) => {
+export const selectEntity = (entity?: Entity) => {
     EventTools.emit('entityselect', entity);
     return entity;
 }

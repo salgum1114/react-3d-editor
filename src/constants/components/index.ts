@@ -1,3 +1,5 @@
 import name from './name';
 
-export default [name];
+export default [
+    name,
+];
