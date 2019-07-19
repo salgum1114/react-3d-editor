@@ -1,4 +1,6 @@
-const animation = {
+import { IComponentDescriptor } from '../components';
+
+const animation: IComponentDescriptor = {
     isSingleProp: false,
     multiple: true,
     schema: {

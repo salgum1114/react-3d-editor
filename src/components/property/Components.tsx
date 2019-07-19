@@ -25,6 +25,7 @@ class Components extends Component<IProps> {
 
     render() {
         const { entity, form, generalComponents } = this.props;
+        console.log(AFRAME.components);
         return (
             <Collapse accordion={true} bordered={false}>
                 {
@@ -32,7 +33,7 @@ class Components extends Component<IProps> {
                     .filter(component => !generalComponents.some(comp => comp === component))
                     .map(key => {
                         const { schema, data } = entity.components[key] as any;
-                        console.log(entity.components[key]);
+                        console.log(key, schema);
                         return (
                             <Collapse.Panel
                                 key={key}

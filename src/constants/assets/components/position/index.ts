@@ -1,16 +1,16 @@
 import { IComponentDescriptor } from '../components';
 
-const scale: IComponentDescriptor = {
+const position: IComponentDescriptor = {
     isSingleProp: true,
-    name: 'scale',
+    name: 'position',
     schema: {
         type: 'vec3',
         default: {
-            x: 1,
-            y: 1,
-            z: 1,
+            x: 0,
+            y: 0,
+            z: 0,
         },
     },
 };
 
-export default scale;
+export default position;

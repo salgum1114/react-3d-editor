@@ -1,10 +1,10 @@
 import { IComponentDescriptor } from '../components';
 
-const video: IComponentDescriptor = {
+const gltfModel: IComponentDescriptor = {
     isSingleProp: true,
     schema: {
-        type: 'video',
+        type: 'model',
     },
 };
 
-export default video;
+export default gltfModel;

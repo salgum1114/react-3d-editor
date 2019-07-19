@@ -7,6 +7,10 @@ import video from './video';
 import file from './file';
 import scale from './scale';
 import color from './color';
+import background from './background';
+import camera from './camera';
+import cursor from './cursor';
+import daydreamControls from './daydream-controls';
 
 const AssetComponents = {
     geometry,
@@ -18,6 +22,7 @@ const AssetComponents = {
     file,
     scale,
     color,
+    'daydream-controls': daydreamControls,
 };
 
 export default AssetComponents;
