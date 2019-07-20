@@ -3,17 +3,20 @@ import { Form } from 'antd';
 import { Entity } from 'aframe';
 import { FormComponentProps } from 'antd/lib/form';
 import debounce from 'lodash/debounce';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
 
 import GeneralComponent from './GeneralComponent';
 import AddComponent from './AddComponent';
 import Components from './Components';
 import { EntityTools } from '../../tools';
 import { Empty } from '../common';
-import { GeneralComponents } from '../../constants/components/components';
+import { GeneralComponents, GeneralComponentType } from '../../constants/components/components';
+
+type EntityType = 'entity' | 'asset';
 
 interface IProps extends FormComponentProps {
     entity?: Entity;
-    type: 'entity' | 'asset';
+    type: EntityType;
 };
 
 class Property extends Component<IProps> {
@@ -25,13 +28,48 @@ class Property extends Component<IProps> {
         }
     }
 
+    getGeneralComponents = (type: EntityType): GeneralComponentType[] => type === 'entity' ? GeneralComponents : ['name']
+
+    renderGeneralComponent = (entity: Entity, form: WrappedFormUtils, generalComponents: GeneralComponentType[]) => {
+        return (
+            <GeneralComponent
+                entity={entity}
+                form={form}
+                generalComponents={generalComponents}
+            />
+        );
+    }
+
+    renderAddComponent = (entity: Entity, type: EntityType, generalComponents: GeneralComponentType[]) => {
+        if (type === 'entity' || entity.tagName.toLowerCase() === 'a-mixin') {
+            return (
+                <AddComponent
+                    entity={entity}
+                    generalComponents={generalComponents}
+                />
+            );
+        }
+        return null;
+    }
+
+    renderComponents = (entity: Entity, form: WrappedFormUtils, generalComponents: GeneralComponentType[]) => {
+        return (
+            <Components
+                entity={entity}
+                form={form}
+                generalComponents={generalComponents}
+            />
+        );
+    }
+
     render() {
         const { entity, form, type = 'entity' } = this.props;
+        const generalComponents = this.getGeneralComponents(type);
         return entity ? (
             <Form style={{ display: 'flex', flexDirection: 'column' }}>
-                <GeneralComponent entity={entity} form={form} generalComponents={type === 'entity' ? GeneralComponents : ['name']} />
-                {(type === 'entity' || entity.tagName.toLowerCase() === 'a-mixin') && <AddComponent entity={entity} generalComponents={type === 'entity' ? GeneralComponents : ['name']} />}
-                <Components entity={entity} form={form} generalComponents={type === 'entity' ? GeneralComponents : ['name']} />
+                {this.renderGeneralComponent(entity, form, generalComponents)}
+                {this.renderAddComponent(entity, type, generalComponents)}
+                {this.renderComponents(entity, form, generalComponents)}
             </Form>
         ) : <Empty />
     }
@@ -44,6 +82,7 @@ export default Form.create({
         const { entity } = props;
         if (entity) {
             const changedComponentName = Object.keys(changedValues)[0];
+            console.log(changedValues, allValues);
             const { schema, isSingleProp } = AFRAME.components[changedComponentName] as any;
             if (!isSingleProp) {
                 const changedSchemaKey = Object.keys(changedValues[changedComponentName])[0];

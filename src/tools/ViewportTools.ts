@@ -138,7 +138,7 @@ class ViewportTools {
         });
         sceneHelpers.add(transformControls);
         EventTools.on('entityupdate', () => {
-            if (inspector.selectedEntity.object3DMap.mesh) {
+            if (inspector.selectedEntity && inspector.selectedEntity.object3DMap.mesh) {
                 this.selectionBox.update(inspector.selected);
             }
         });
@@ -207,24 +207,24 @@ class ViewportTools {
             }
         });
         EventTools.on('entityupdate', detail => {
-            const object = detail.entity.object3D;
-            if (inspector.selected === object) {
+            const { object3D } = detail.entity;
+            if (object3D && inspector.selected === object3D) {
                 // Hack because object3D always has geometry :(
                 if (
-                    object.geometry &&
-                    ((object.geometry.vertices && object.geometry.vertices.length > 0) ||
-                    (object.geometry.attributes &&
-                        object.geometry.attributes.position &&
-                        object.geometry.attributes.position.array.length))
+                    object3D.geometry &&
+                    ((object3D.geometry.vertices && object3D.geometry.vertices.length > 0) ||
+                    (object3D.geometry.attributes &&
+                        object3D.geometry.attributes.position &&
+                        object3D.geometry.attributes.position.array.length))
                 ) {
-                    this.selectionBox.setFromObject(object).update();
+                    this.selectionBox.setFromObject(object3D).update();
                 }
             }
             this.transformControls.update();
-            if (object instanceof AFRAME.THREE.PerspectiveCamera) {
-                object.updateProjectionMatrix();
+            if (object3D instanceof AFRAME.THREE.PerspectiveCamera) {
+                object3D.updateProjectionMatrix();
             }
-            this.updateHelpers(inspector, object);
+            this.updateHelpers(inspector, object3D);
         });
         EventTools.on('windowresize', () => {
             camera.aspect = inspector.container.offsetWidth / inspector.container.offsetHeight;
@@ -266,11 +266,13 @@ class ViewportTools {
      * @memberof ViewportTools
      */
     updateHelpers(inspector: InspectorTools, object: THREE.Object3D) {
-        object.traverse(node => {
-            if (inspector.helpers[node.uuid]) {
-                inspector.helpers[node.uuid].update();
-            }
-        });
+        if (object) {
+            object.traverse(node => {
+                if (inspector.helpers[node.uuid]) {
+                    inspector.helpers[node.uuid].update();
+                }
+            });
+        }
     }
 
     /**

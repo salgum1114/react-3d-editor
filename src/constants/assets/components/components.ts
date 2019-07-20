@@ -3,6 +3,8 @@ import { PropertyTypes } from 'aframe';
 export type PropertyType = PropertyTypes
 | 'video'
 | 'audio'
+| 'file'
+| 'image'
 ;
 
 export type GeometryPrimitive = 'box'
@@ -21,12 +23,63 @@ export type GeometryPrimitive = 'box'
 | 'triangle'
 ;
 
+export type ComponentNames = 'animation'
+| 'camera'
+| 'cursor'
+| 'daydream-controls'
+| 'gearvr-controls'
+| 'geometry'
+| 'gltf-model'
+| 'hand-controls'
+| 'laser-controls'
+| 'light'
+| 'line'
+| 'link'
+| 'look-controls'
+| 'material'
+| 'obj-model'
+| 'oculus-go-controls'
+| 'oculus-touch-controls'
+| 'position'
+| 'raycaster'
+| 'rotation'
+| 'scale'
+| 'shadow'
+| 'sound'
+| 'text'
+| 'tracked-controls'
+| 'tracked-controls-webvr'
+| 'tracked-controls-webxr'
+| 'visible'
+| 'vive-controls'
+| 'vive-focus-controls'
+| 'wasd-controls'
+| 'windows-motion-controls'
+| 'background'
+| 'debug'
+| 'embedded'
+| 'inspector'
+| 'fog'
+| 'keyboard-shortcuts'
+| 'pool'
+| 'screenshot'
+| 'stats'
+| 'vr-mode-ui'
+| 'pivot'
+| 'name'
+| 'loading-screen'
+| 'audio'
+| 'video'
+| 'file'
+| 'image'
+;
+
 export type GeometryDefault = {
     [P in GeometryPrimitive]: any;
 }
 
 export type Record<K extends string = any, T = any> = {
-    [P in K]: T;
+    [P in K]?: T;
 }
 
 export interface ISingleProperty {
@@ -38,20 +91,21 @@ export interface ISingleProperty {
     if?: Record;
     values?: Record;
     schemaChange?: boolean;
+    [key: string]: any;
 }
 
-export type IMultipleProperty<K extends string = any> = {
-    [P in K]: ISingleProperty;
+export interface IMultipleProperty {
+    [key: string]: ISingleProperty;
 }
 
-export type ISchema<K extends string> = ISingleProperty | IMultipleProperty<K>;
+export type ISchema = ISingleProperty | IMultipleProperty;
 
-export interface IComponentDescriptor<K extends string = any> {
+export interface IComponentDescriptor {
     isSingleProp: boolean;
-    schema: ISchema<K>;
+    schema: ISchema;
     multiple?: boolean;
-    dependencies?: string[];
-    name?: string;
+    dependencies?: ComponentNames[];
+    name?: ComponentNames;
 }
 
 export const ControlsHand = ['left', 'right'];
@@ -64,12 +118,16 @@ export const TextBaseline = ['top', 'center', 'bottom'];
 
 export const TextFont = ['roboto', 'aileronsemibold', 'dejavu', 'exo2bold', 'exo2semibold', 'kelsonsans', 'monoid', 'mozillavr', 'sourcecodeprop'];
 
-export const TextSide = ['front', 'back', 'double'];
+export const Side = ['front', 'back', 'double'];
 
 export const TextWhiteSpace = ['normal', 'pre', 'nowrap'];
 
-export const TextShader = ['flat', 'ios10hls', 'msdf', 'portal', 'sdf', 'standard'];
+export const Shader = ['flat', 'ios10hls', 'msdf', 'portal', 'sdf', 'standard'];
 
 export const SoundDistanceModel = ['linear', 'inverse', 'exponential'];
 
 export const RaycasterObjects = ['distance', 'point', 'face', 'faceIndex', 'indices', 'object', 'uv'];
+
+export const MaterialBlending = ['none', 'normal', 'additive', 'subtractive', 'multiply'];
+
+export const MaterialVertexColors = ['none', 'face', 'vertex'];

@@ -7,6 +7,8 @@ import { capitalize } from '../../tools/UtilTools';
 import FormRender from './FormRender';
 import { EventTools } from '../../tools';
 import { GeneralComponentType } from '../../constants/components/components';
+import AssetComponents from '../../constants/assets/components';
+import { ComponentNames } from '../../constants/assets/components/components';
 
 interface IProps extends FormComponentProps {
     entity?: Entity;
@@ -25,15 +27,13 @@ class Components extends Component<IProps> {
 
     render() {
         const { entity, form, generalComponents } = this.props;
-        console.log(AFRAME.components);
         return (
             <Collapse accordion={true} bordered={false}>
                 {
                     entity.components ? Object.keys(entity.components)
                     .filter(component => !generalComponents.some(comp => comp === component))
                     .map(key => {
-                        const { schema, data } = entity.components[key] as any;
-                        console.log(key, schema);
+                        const { schema, data, isSingleProperty } = entity.components[key] as any;
                         return (
                             <Collapse.Panel
                                 key={key}
@@ -53,7 +53,15 @@ class Components extends Component<IProps> {
                                 }
                             >
                                 {
-                                    Object.keys(schema).map(schemaKey => {
+                                    isSingleProperty ? (
+                                        <FormRender
+                                            entity={entity}
+                                            componentName={key}
+                                            data={data}
+                                            schema={schema}
+                                            form={form}
+                                        />
+                                    ) : Object.keys(schema).map(schemaKey => {
                                         const componentData = data[schemaKey];
                                         const componentShcema = schema[schemaKey];
                                         return (
@@ -71,18 +79,13 @@ class Components extends Component<IProps> {
                                 }
                             </Collapse.Panel>
                         );
-                    }) : Object.keys(AFRAME.components)
+                    }) : Object.keys(AssetComponents)
                     .filter(component => entity.hasAttribute(component))
                     .filter(component => !generalComponents.some(comp => comp === component))
                     .map(key => {
-                        const { schema } = AFRAME.components[key] as any;
-                        // console.log(AFRAME.primitives.getMeshMixin());
-                        // console.log(AFRAME.geometries);
-                        // console.log(AFRAME.components);
-                        // console.log(AFRAME.components[key]);
+                        const { schema, isSingleProp } = AssetComponents[key as ComponentNames];
                         const data = entity.getAttribute(key);
-                        // console.log(key, data);
-                        // console.log(schema, key, data);
+                        console.log(key, data);
                         return (
                             <Collapse.Panel
                                 key={key}
@@ -102,7 +105,15 @@ class Components extends Component<IProps> {
                                 }
                             >
                                 {
-                                    Object.keys(schema).map(schemaKey => {
+                                    isSingleProp ? (
+                                        <FormRender
+                                            entity={entity}
+                                            componentName={key}
+                                            data={data}
+                                            schema={schema}
+                                            form={form}
+                                        />
+                                    ) : Object.keys(schema).map(schemaKey => {
                                         const componentData = data[schemaKey];
                                         const componentShcema = schema[schemaKey];
                                         return (

@@ -28,7 +28,7 @@ class RaycasterTools {
         const mouseCursor = document.createElement('a-entity');
         mouseCursor.setAttribute('id', 'aframeInspectorMouseCursor');
         mouseCursor.setAttribute('cursor', 'rayOrigin', 'mouse');
-        mouseCursor.setAttribute('data-aframe-inspector', 'true');
+        mouseCursor.setAttribute('data-aframe-inspector', true);
         mouseCursor.setAttribute('raycaster', {
             interval: 100,
             objects: 'a-scene :not([data-aframe-inspector])',

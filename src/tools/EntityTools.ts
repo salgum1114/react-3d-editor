@@ -50,7 +50,17 @@ export const updateEntity = (entity: Entity, propertyName: string, value: any) =
             entity.setAttribute(splitName[0], parameters);
         } else {
             // Set property.
-            entity.setAttribute(splitName[0], splitName[1], value);
+            if (entity.tagName.toLowerCase() === 'a-mixin') {
+                const attributes = Object.assign({}, entity.getAttribute(splitName[0]), {
+                    [splitName[1]]: value,
+                });
+                const attributesStr = Object.keys(attributes).reduce((prev, attribute) => {
+                    return `${prev}${attribute}: ${attributes[attribute]};`;
+                }, '');
+                entity.setAttribute(splitName[0], attributesStr);
+            } else {
+                entity.setAttribute(splitName[0], splitName[1], value);
+            }
         }
     } else {
         if (value === null || value === undefined) {

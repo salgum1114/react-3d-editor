@@ -1,4 +1,4 @@
-import { IComponentDescriptor, TextAlign, TextAnchor, TextBaseline, TextFont, TextSide, TextWhiteSpace, TextShader } from '../components';
+import { IComponentDescriptor, TextAlign, TextAnchor, TextBaseline, TextFont, Side, TextWhiteSpace, Shader } from '../components';
 
 const text: IComponentDescriptor = {
     isSingleProp: false,
@@ -62,12 +62,12 @@ const text: IComponentDescriptor = {
         shader: {
             type: 'string',
             default: 'sdf',
-            oneOf: TextShader,
+            oneOf: Shader,
         },
         side: {
             type: 'string',
             default: 'front',
-            oneOf: TextSide,
+            oneOf: Side,
         },
         tabSize: {
             type: 'number',

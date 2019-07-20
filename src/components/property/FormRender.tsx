@@ -120,10 +120,11 @@ class FormRender extends Component<IProps> {
             case 'vec4':
                 return this.renderVec4FormItem();
             default:
+                const ckey = schemaKey ? `${componentName}.${schemaKey}` : componentName;
                 return (
                     <Form.Item key={schema.key} colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
                         {
-                            form.getFieldDecorator(`${schemaKey ? `${componentName}.${schemaKey}` : componentName}`, {
+                            form.getFieldDecorator(`${ckey}`, {
                                 valuePropName: schema.type === 'boolean' ? 'checked' : 'value',
                                 initialValue: data,
                             })(this.getComponent())
@@ -135,15 +136,16 @@ class FormRender extends Component<IProps> {
 
     renderVec2FormItem = () => {
         const { schema, data, form, schemaKey, componentName } = this.props;
+        const ckey = schemaKey ? `${componentName}.${schemaKey}` : componentName;
         return (
             <Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
                 {
                     Object.keys(schema.default).map(key => {
                         return (
-                            <Col key={`${schemaKey ? `${componentName}.${schemaKey}` : componentName}.${key}`} span={12}>
+                            <Col key={`${ckey}.${key}`} span={12}>
                                 <Form.Item>
                                     {
-                                        form.getFieldDecorator(`${componentName}.${key}`, {
+                                        form.getFieldDecorator(`${ckey}.${key}`, {
                                             initialValue: data && data[key],
                                         })(<InputNumber />)
                                     }
@@ -158,16 +160,17 @@ class FormRender extends Component<IProps> {
 
     renderVec3FormItem = () => {
         const { schema, data, form, schemaKey, componentName } = this.props;
+        const ckey = schemaKey ? `${componentName}.${schemaKey}` : componentName;
         return (
             <Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
                 <Row gutter={8}>
                     {
                         Object.keys(schema.default).map(key => {
                             return (
-                                <Col key={`${schemaKey ? `${componentName}.${schemaKey}` : componentName}.${key}`} md={24} lg={8}>
+                                <Col key={`${ckey}.${key}`} md={24} lg={8}>
                                     <Form.Item>
                                         {
-                                            form.getFieldDecorator(`${componentName}.${key}`, {
+                                            form.getFieldDecorator(`${ckey}.${key}`, {
                                                 initialValue: data && data[key],
                                             })(<InputNumber style={{ width: 'inherit' }} />)
                                         }
@@ -183,16 +186,17 @@ class FormRender extends Component<IProps> {
 
     renderVec4FormItem = () => {
         const { schema, data, form, componentName, schemaKey } = this.props;
+        const ckey = schemaKey ? `${componentName}.${schemaKey}` : componentName;
         return (
             <Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
                 <Row gutter={8}>
                     {
                         Object.keys(schema.default).map(key => {
                             return (
-                                <Col key={`${schemaKey ? `${componentName}.${schemaKey}` : componentName}.${key}`} md={24} lg={6}>
+                                <Col key={`${ckey}.${key}`} md={24} lg={6}>
                                     <Form.Item>
                                         {
-                                            form.getFieldDecorator(`${componentName}.${key}`, {
+                                            form.getFieldDecorator(`${ckey}.${key}`, {
                                                 initialValue: data && data[key],
                                             })(<InputNumber style={{ width: 'inherit' }} />)
                                         }
