@@ -5,15 +5,18 @@ import { FormComponentProps } from 'antd/lib/form';
 
 import FormRender from './FormRender';
 import { GeneralComponentType } from '../../constants/components/components';
+import Mixins from './Mixins';
+import { EntityType } from '../../constants';
 
 interface IProps extends FormComponentProps {
     entity?: Entity;
     generalComponents?: GeneralComponentType[];
+    type?: EntityType;
 }
 
 class GeneralComponent extends Component<IProps> {
     render() {
-        const { entity, form, generalComponents } = this.props;
+        const { entity, form, type, generalComponents } = this.props;
         return (
             <Collapse bordered={false} defaultActiveKey={['general']}>
                 <Collapse.Panel key={'general'} header={'General'}>
@@ -31,7 +34,11 @@ class GeneralComponent extends Component<IProps> {
                                     };
                                 }
                             } else {
-                                data = entity.getAttribute(componentName);
+                                if (componentName === 'name') {
+                                    data = entity.title;
+                                } else {
+                                    data = entity.getAttribute(componentName);
+                                }
                             }
                             return (
                                 <FormRender
@@ -45,6 +52,7 @@ class GeneralComponent extends Component<IProps> {
                             )
                         })
                     }
+                    {type === 'entity' && <Mixins entity={entity} />}
                 </Collapse.Panel>
             </Collapse>
         );

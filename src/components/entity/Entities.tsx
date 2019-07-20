@@ -124,7 +124,8 @@ class Entities extends Component<{}, IState> {
             });
         });
         EventTools.on('entityupdate', (detail: IDetailEntity) => {
-            if (detail.component === 'name') {
+            if (detail.entity.object3D && detail.component === 'name') {
+                console.log(detail);
                 const treeNodes = this.buildTreeNode(AFRAME.INSPECTOR.sceneEl);
                 this.setState({
                     treeNodes,
@@ -171,6 +172,7 @@ class Entities extends Component<{}, IState> {
                     title = en.tagName;
                 }
                 en.title = title.toString();
+                en.setAttribute('name', title.toString());
                 const childTreeNode: IEntity = {
                     key: en.id,
                     id,

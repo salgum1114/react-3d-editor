@@ -85,7 +85,6 @@ class Components extends Component<IProps> {
                     .map(key => {
                         const { schema, isSingleProp } = AssetComponents[key as ComponentNames];
                         const data = entity.getAttribute(key);
-                        console.log(key, data);
                         return (
                             <Collapse.Panel
                                 key={key}

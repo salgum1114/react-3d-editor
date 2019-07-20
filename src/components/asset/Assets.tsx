@@ -8,7 +8,7 @@ import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
 import { SidebarContainer } from '../common';
 import { EventTools, AssetTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
-import { IEntity, getIcon } from '../../constants';
+import { IEntity, getIcon, IDetailEntity } from '../../constants';
 import AddEmpty from '../common/AddEmpty';
 import { capitalize } from '../../tools/UtilTools';
 
@@ -46,6 +46,15 @@ class Assets extends Component<{}, IState> {
                 selectedKeys: [],
             });
         });
+        EventTools.on('entityupdate', (detail: IDetailEntity) => {
+            if (!detail.entity.object3D && detail.component === 'name') {
+                detail.entity.title = detail.value;
+                const assets = this.buildAssets(AFRAME.INSPECTOR.sceneEl);
+                this.setState({
+                    assets,
+                });
+            }
+        });
     }
 
     /**
@@ -66,13 +75,10 @@ class Assets extends Component<{}, IState> {
                     title = en.title;
                 } else if (en.id) {
                     title = capitalize(en.id);
-                } else if (en.hasAttribute('name')) {
-                    title = en.getAttribute('name');
                 } else {
                     title = en.tagName.toLowerCase();
                 }
                 en.title = title.toString();
-                en.setAttribute('name', title.toString());
                 assets.push({
                     key: en.id,
                     type: en.tagName.toLowerCase(),

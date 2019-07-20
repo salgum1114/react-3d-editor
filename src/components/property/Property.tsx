@@ -30,11 +30,12 @@ class Property extends Component<IProps> {
 
     getGeneralComponents = (type: EntityType): GeneralComponentType[] => type === 'entity' ? GeneralComponents : ['name']
 
-    renderGeneralComponent = (entity: Entity, form: WrappedFormUtils, generalComponents: GeneralComponentType[]) => {
+    renderGeneralComponent = (entity: Entity, form: WrappedFormUtils, type: EntityType, generalComponents: GeneralComponentType[]) => {
         return (
             <GeneralComponent
                 entity={entity}
                 form={form}
+                type={type}
                 generalComponents={generalComponents}
             />
         );
@@ -67,7 +68,7 @@ class Property extends Component<IProps> {
         const generalComponents = this.getGeneralComponents(type);
         return entity ? (
             <Form style={{ display: 'flex', flexDirection: 'column' }}>
-                {this.renderGeneralComponent(entity, form, generalComponents)}
+                {this.renderGeneralComponent(entity, form, type, generalComponents)}
                 {this.renderAddComponent(entity, type, generalComponents)}
                 {this.renderComponents(entity, form, generalComponents)}
             </Form>
@@ -82,7 +83,6 @@ export default Form.create({
         const { entity } = props;
         if (entity) {
             const changedComponentName = Object.keys(changedValues)[0];
-            console.log(changedValues, allValues);
             const { schema, isSingleProp } = AFRAME.components[changedComponentName] as any;
             if (!isSingleProp) {
                 const changedSchemaKey = Object.keys(changedValues[changedComponentName])[0];

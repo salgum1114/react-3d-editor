@@ -6,9 +6,8 @@ import { SidebarContainer } from '../common';
 import { EventTools } from '../../tools';
 import Property from './Property';
 import Icon from 'polestar-icons';
-import { IDetailEntity, getIcon } from '../../constants';
+import { getIcon } from '../../constants';
 import { capitalize } from '../../tools/UtilTools';
-import AssetProperty from './AssetProperty';
 
 interface IState {
     selectedEntity?: Entity;
@@ -39,10 +38,7 @@ class Properties extends Component {
                 selectedAsset: asset,
             });
         });
-        EventTools.on('entityupdate', debounce((detail: IDetailEntity) => {
-            if (detail.component === 'name') {
-                detail.entity.title = detail.value;
-            }
+        EventTools.on('entityupdate', debounce(() => {
             this.forceUpdate();
         }, 200));
         EventTools.on('componentadd', () => {
@@ -91,29 +87,7 @@ class Properties extends Component {
                 <div>{'Properties'}</div>
             </>
         );
-        let type = 'entity';
-        if (selected) {
-            switch (selected.tagName.toLowerCase()) {
-                case 'a-asset-item':
-                    type = 'asset';
-                    break;
-                case 'a-mixin':
-                    type = 'asset';
-                    break;
-                case 'img':
-                    type = 'asset';
-                    break;
-                case 'audio':
-                    type = 'asset';
-                    break;
-                case 'video':
-                    type = 'asset';
-                    break;
-                default:
-                    type = 'entity';
-                    break;
-            }
-        }
+        const type = selected && selected.object3D ? 'entity' : 'asset';
         return (
             <SidebarContainer
                 title={title}

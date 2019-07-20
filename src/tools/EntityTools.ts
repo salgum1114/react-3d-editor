@@ -37,8 +37,6 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
 };
 
 export const updateEntity = (entity: Entity, propertyName: string, value: any) => {
-    console.log(entity, propertyName, value);
-    console.log(entity.object3D);
     let splitName;
     if (propertyName.indexOf('.') !== -1) {
         // Multi-prop
@@ -50,7 +48,7 @@ export const updateEntity = (entity: Entity, propertyName: string, value: any) =
             entity.setAttribute(splitName[0], parameters);
         } else {
             // Set property.
-            if (entity.tagName.toLowerCase() === 'a-mixin') {
+            if (!entity.object3D) {
                 const attributes = Object.assign({}, entity.getAttribute(splitName[0]), {
                     [splitName[1]]: value,
                 });
@@ -68,7 +66,13 @@ export const updateEntity = (entity: Entity, propertyName: string, value: any) =
             entity.removeAttribute(propertyName);
         } else {
             // Set property.
-            entity.setAttribute(propertyName, value);
+            if (entity.object3D) {
+                entity.setAttribute(propertyName, value);
+            } else {
+                if (propertyName === 'name') {
+                    entity.title = value;
+                }
+            }
         }
     }
     EventTools.emit('entityupdate', {
