@@ -1,1 +1,1 @@
-export default ['name', 'image'];
+export default ['image'];

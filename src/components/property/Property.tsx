@@ -11,6 +11,8 @@ import Components from './Components';
 import { EntityTools } from '../../tools';
 import { Empty } from '../common';
 import { GeneralComponents, GeneralComponentType } from '../../constants/components/components';
+import AssetComponents from '../../constants/assets/components';
+import { ComponentNames } from '../../constants/assets/components/components';
 
 type EntityType = 'entity' | 'asset';
 
@@ -54,10 +56,29 @@ class Property extends Component<IProps> {
     }
 
     renderComponents = (entity: Entity, form: WrappedFormUtils, generalComponents: GeneralComponentType[]) => {
+        let type = 'entity';
+        switch (entity.tagName.toLowerCase()) {
+            case 'img':
+                type = 'asset';
+                break;
+            case 'a-asset-item':
+                type = 'asset';
+                break;
+            case 'video':
+                type = 'asset';
+                break;
+            case 'audio':
+                type = 'asset';
+                break;
+            default:
+                type = 'entity';
+                break;
+        }
         return (
             <Components
                 entity={entity}
                 form={form}
+                type={type}
                 generalComponents={generalComponents}
             />
         );
@@ -67,7 +88,7 @@ class Property extends Component<IProps> {
         const { entity, form, type = 'entity' } = this.props;
         const generalComponents = this.getGeneralComponents(type);
         return entity ? (
-            <Form style={{ display: 'flex', flexDirection: 'column' }}>
+            <Form style={{ display: 'flex', flexDirection: 'column' }} colon={false}>
                 {this.renderGeneralComponent(entity, form, type, generalComponents)}
                 {this.renderAddComponent(entity, type, generalComponents)}
                 {this.renderComponents(entity, form, generalComponents)}
@@ -83,6 +104,10 @@ export default Form.create({
         const { entity } = props;
         if (entity) {
             const changedComponentName = Object.keys(changedValues)[0];
+            if (!entity.object3D && changedComponentName === 'src') {
+                updateEntity(entity, changedComponentName, changedValues[changedComponentName]);
+                return;
+            }
             const { schema, isSingleProp } = AFRAME.components[changedComponentName] as any;
             if (!isSingleProp) {
                 const changedSchemaKey = Object.keys(changedValues[changedComponentName])[0];

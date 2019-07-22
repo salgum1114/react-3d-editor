@@ -5,28 +5,26 @@ import { FormComponentProps } from 'antd/lib/form';
 
 import { capitalize } from '../../tools/UtilTools';
 import FormRender from './FormRender';
-import { EventTools } from '../../tools';
+import { EntityTools } from '../../tools';
 import { GeneralComponentType } from '../../constants/components/components';
 import AssetComponents from '../../constants/assets/components';
 import { ComponentNames } from '../../constants/assets/components/components';
+import AssetSchema from '../../constants/assets';
 
 interface IProps extends FormComponentProps {
     entity?: Entity;
     generalComponents?: GeneralComponentType[];
+    type: string;
 }
 
 class Components extends Component<IProps> {
     handleClick = (componentName: string) => {
         const { entity } = this.props;
-        entity.removeAttribute(componentName);
-        EventTools.emit('componentremove', {
-            entity,
-            component: componentName,
-        });
+        EntityTools.removeComponent(entity, componentName);
     }
 
     render() {
-        const { entity, form, generalComponents } = this.props;
+        const { entity, form, type, generalComponents } = this.props;
         return (
             <Collapse accordion={true} bordered={false}>
                 {
@@ -34,22 +32,23 @@ class Components extends Component<IProps> {
                     .filter(component => !generalComponents.some(comp => comp === component))
                     .map(key => {
                         const { schema, data, isSingleProperty } = entity.components[key] as any;
+                        console.log(key, data);
                         return (
                             <Collapse.Panel
                                 key={key}
                                 header={capitalize(key)}
                                 extra={
-                                <Icon
-                                    type="close"
-                                    onClick={(e: React.MouseEvent) => {
-                                        e.stopPropagation();
-                                        Modal.confirm({
-                                            title: 'Remove component',
-                                            content: `Do you really want to remove component ${key}?`,
-                                            onOk: () => this.handleClick(key),
-                                        });
-                                    }}
-                                />
+                                    <Icon
+                                        type="close"
+                                        onClick={(e: React.MouseEvent) => {
+                                            e.stopPropagation();
+                                            Modal.confirm({
+                                                title: 'Remove component',
+                                                content: `Do you really want to remove component ${key}?`,
+                                                onOk: () => this.handleClick(key),
+                                            });
+                                        }}
+                                    />
                                 }
                             >
                                 {
@@ -79,7 +78,7 @@ class Components extends Component<IProps> {
                                 }
                             </Collapse.Panel>
                         );
-                    }) : Object.keys(AssetComponents)
+                    }) : type === 'entity' ? Object.keys(AssetComponents)
                     .filter(component => entity.hasAttribute(component))
                     .filter(component => !generalComponents.some(comp => comp === component))
                     .map(key => {
@@ -90,17 +89,17 @@ class Components extends Component<IProps> {
                                 key={key}
                                 header={capitalize(key)}
                                 extra={
-                                <Icon
-                                    type="close"
-                                    onClick={(e: React.MouseEvent) => {
-                                        e.stopPropagation();
-                                        Modal.confirm({
-                                            title: 'Remove component',
-                                            content: `Do you really want to remove component ${key}?`,
-                                            onOk: () => this.handleClick(key),
-                                        });
-                                    }}
-                                />
+                                    <Icon
+                                        type="close"
+                                        onClick={(e: React.MouseEvent) => {
+                                            e.stopPropagation();
+                                            Modal.confirm({
+                                                title: 'Remove component',
+                                                content: `Do you really want to remove component ${key}?`,
+                                                onOk: () => this.handleClick(key),
+                                            });
+                                        }}
+                                    />
                                 }
                             >
                                 {
@@ -128,6 +127,23 @@ class Components extends Component<IProps> {
                                         );
                                     })
                                 }
+                            </Collapse.Panel>
+                        );
+                    }) : AssetSchema[entity.tagName.toLowerCase()].map((schemaKey: ComponentNames) => {
+                        const { schema } = AssetComponents[schemaKey];
+                        const data = entity.getAttribute('src');
+                        return (
+                            <Collapse.Panel
+                                key={'src'}
+                                header={capitalize(schemaKey)}
+                            >
+                                <FormRender
+                                    entity={entity}
+                                    componentName={'src'}
+                                    data={data}
+                                    schema={schema}
+                                    form={form}
+                                />
                             </Collapse.Panel>
                         );
                     })

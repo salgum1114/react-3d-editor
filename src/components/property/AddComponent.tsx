@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Select, Modal, Input } from 'antd';
 import { Entity } from 'aframe';
 
-import { EventTools } from '../../tools';
+import { EntityTools } from '../../tools';
 import { capitalize } from '../../tools/UtilTools';
 import { GeneralComponentType } from '../../constants/components/components';
 
@@ -50,11 +50,7 @@ class AddComponent extends Component<IProps, IState> {
 
     handleAddComponent = (componentId: string) => {
         const { entity } = this.props;
-        entity.setAttribute(componentId, '');
-        EventTools.emit('componentadd', {
-            entity,
-            component: componentId,
-        });
+        EntityTools.addComponent(entity, componentId);
     }
 
     render() {

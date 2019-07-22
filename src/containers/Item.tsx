@@ -38,6 +38,11 @@ class Item extends Component<{}, IItemState> {
                             <Icon name="github" style={{ fontSize: '1.25rem' }} />
                         </a>
                     </div>
+                    <div className="editor-item-tools-actions">
+                        <Icon className="editor-icon" name="download" />
+                        <Icon className="editor-icon" name="upload" />
+                        <Icon className="editor-icon" name="times" />
+                    </div>
                 </div>
                 <div className="editor-item-tree">
                     <SplitPane

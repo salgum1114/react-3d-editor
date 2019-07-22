@@ -7,7 +7,6 @@ import { EventTools } from '../../tools';
 import Property from './Property';
 import Icon from 'polestar-icons';
 import { getIcon } from '../../constants';
-import { capitalize } from '../../tools/UtilTools';
 
 interface IState {
     selectedEntity?: Entity;
@@ -64,7 +63,7 @@ class Properties extends Component {
             if (selected.title) {
                 entityTitle = selected.title;
             } else if (selected.id) {
-                entityTitle = capitalize(selected.id);
+                entityTitle = selected.id;
             } else if (selected.hasAttribute('name')){
                 entityTitle = selected.getAttribute('name');
             } else {

@@ -1,1 +1,2 @@
-export default ['name', 'file'] as string[];
+export default ['file'];
+

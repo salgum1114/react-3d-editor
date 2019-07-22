@@ -100,8 +100,8 @@ export interface IAttributes {
 }
 
 export interface IPrimitive {
-    key: PrimitiveType | string;
-    type: PrimitiveType | string;
+    key: AllType | string;
+    type: AllType | string;
     title?: string;
     description?: string;
     icon?: string;
@@ -119,6 +119,7 @@ export interface IEntity {
     parentKey?: string | number;
     entity?: Entity;
     children?: IEntity[];
+    mixin?: string;
 }
 
 export interface IDetailEntity {
@@ -361,5 +362,43 @@ export const primitives: IPrimitive[] = [
         description: 'The videosphere primitive plays 360° videos in the background of the scene. Videospheres are a large sphere with the video texture mapped to the inside.',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-videosphere.html',
         attributes: [],
+    },
+];
+
+export const assetPrimitives: IPrimitive[] = [
+    {
+        key: 'a-mixin',
+        type: 'a-mixin',
+        title: 'Mixin',
+        description: 'Mixins provide a way to compose and reuse commonly-used sets of component properties.',
+        url: 'https://aframe.io/docs/0.9.0/core/mixins.html',
+    },
+    {
+        key: 'a-asset-item',
+        type: 'a-asset-item',
+        title: 'Asset Item',
+        description: 'Miscellaneous assets such as 3D models and materials',
+        url: 'https://aframe.io/docs/0.9.0/core/asset-management-system.html',
+    },
+    {
+        key: 'audio',
+        type: 'audio',
+        title: 'Audio',
+        description: 'Sound files',
+        url: 'https://aframe.io/docs/0.9.0/core/asset-management-system.html',
+    },
+    {
+        key: 'img',
+        type: 'img',
+        title: 'Image',
+        description: 'Image textures',
+        url: 'https://aframe.io/docs/0.9.0/core/asset-management-system.html',
+    },
+    {
+        key: 'video',
+        type: 'video',
+        title: 'Video',
+        description: 'Video textures',
+        url: 'https://aframe.io/docs/0.9.0/core/asset-management-system.html',
     },
 ];

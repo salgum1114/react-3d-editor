@@ -1,4 +1,5 @@
-import { ComponentNames, IComponentDescriptor, Record } from './components';
+import { ComponentNames, IComponentDescriptor } from './components';
+import { Record } from '../../../types/utils';
 import geometry from './geometry';
 import image from './image';
 import material from './material';

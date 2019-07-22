@@ -1,4 +1,5 @@
 import { PropertyTypes } from 'aframe';
+import { Record } from '../../../types/utils';
 
 export type PropertyType = PropertyTypes
 | 'video'
@@ -76,10 +77,6 @@ export type ComponentNames = 'animation'
 
 export type GeometryDefault = {
     [P in GeometryPrimitive]: any;
-}
-
-export type Record<K extends string = any, T = any> = {
-    [P in K]?: T;
 }
 
 export interface ISingleProperty {

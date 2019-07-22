@@ -35,7 +35,13 @@ class GeneralComponent extends Component<IProps> {
                                 }
                             } else {
                                 if (componentName === 'name') {
-                                    data = entity.title;
+                                    if (entity.title) {
+                                        data = entity.title;
+                                    } else if (entity.id) {
+                                        data = entity.id;
+                                    } else {
+                                        data = entity.tagName.toLowerCase();
+                                    }
                                 } else {
                                     data = entity.getAttribute(componentName);
                                 }

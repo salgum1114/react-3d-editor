@@ -9,7 +9,6 @@ import { SidebarContainer, Scrollbar, Empty } from '../common';
 import { IEntity, IDetailEntity, IPrimitive, catalogs, primitives, getIcon } from '../../constants';
 import { EntityTools, EventTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
-import { capitalize } from '../../tools/UtilTools';
 
 type ViewTypes = 'card' | 'list';
 
@@ -125,7 +124,6 @@ class Entities extends Component<{}, IState> {
         });
         EventTools.on('entityupdate', (detail: IDetailEntity) => {
             if (detail.entity.object3D && detail.component === 'name') {
-                console.log(detail);
                 const treeNodes = this.buildTreeNode(AFRAME.INSPECTOR.sceneEl);
                 this.setState({
                     treeNodes,
@@ -167,7 +165,7 @@ class Entities extends Component<{}, IState> {
                 } else if (en.title) {
                     title = en.title;
                 } else if (en.id) {
-                    title = capitalize(en.id);
+                    title = en.id;
                 } else {
                     title = en.tagName;
                 }

@@ -220,11 +220,13 @@ class ViewportTools {
                     this.selectionBox.setFromObject(object3D).update();
                 }
             }
-            this.transformControls.update();
-            if (object3D instanceof AFRAME.THREE.PerspectiveCamera) {
-                object3D.updateProjectionMatrix();
+            if (object3D) {
+                this.transformControls.update();
+                if (object3D instanceof AFRAME.THREE.PerspectiveCamera) {
+                    object3D.updateProjectionMatrix();
+                }
+                this.updateHelpers(inspector, object3D);
             }
-            this.updateHelpers(inspector, object3D);
         });
         EventTools.on('windowresize', () => {
             camera.aspect = inspector.container.offsetWidth / inspector.container.offsetHeight;

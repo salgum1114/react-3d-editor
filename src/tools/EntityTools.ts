@@ -48,16 +48,33 @@ export const updateEntity = (entity: Entity, propertyName: string, value: any) =
             entity.setAttribute(splitName[0], parameters);
         } else {
             // Set property.
-            if (!entity.object3D) {
+            if (entity.object3D) {
+                entity.setAttribute(splitName[0], splitName[1], value);
+            } else {
                 const attributes = Object.assign({}, entity.getAttribute(splitName[0]), {
                     [splitName[1]]: value,
                 });
                 const attributesStr = Object.keys(attributes).reduce((prev, attribute) => {
                     return `${prev}${attribute}: ${attributes[attribute]};`;
                 }, '');
+                const mixins: any[] = [];
+                if (entity.tagName.toLowerCase() === 'a-mixin') {
+                    Array.from(AFRAME.INSPECTOR.sceneEl.children).forEach(node => {
+                        if (node.hasAttribute('mixin') && node.getAttribute('mixin').includes(entity.id)) {
+                            const mixin = node.getAttribute('mixin');
+                            mixins.push({
+                                entity: node,
+                                mixin,
+                            });
+                        }
+                    });
+                }
                 entity.setAttribute(splitName[0], attributesStr);
-            } else {
-                entity.setAttribute(splitName[0], splitName[1], value);
+                if (entity.tagName.toLowerCase() === 'a-mixin') {
+                    mixins.forEach(mixin => {
+                        mixin.entity.setAttribute('mixin', mixin.mixin);
+                    });
+                }
             }
         }
     } else {
@@ -69,8 +86,27 @@ export const updateEntity = (entity: Entity, propertyName: string, value: any) =
             if (entity.object3D) {
                 entity.setAttribute(propertyName, value);
             } else {
+                const mixins: any[] = [];
+                if (entity.tagName.toLowerCase() === 'a-mixin') {
+                    Array.from(AFRAME.INSPECTOR.sceneEl.children).forEach(node => {
+                        if (node.hasAttribute('mixin') && node.getAttribute('mixin').includes(entity.id)) {
+                            const mixin = node.getAttribute('mixin');
+                            mixins.push({
+                                entity: node,
+                                mixin,
+                            });
+                        }
+                    });
+                }
                 if (propertyName === 'name') {
                     entity.title = value;
+                } else {
+                    entity.setAttribute(propertyName, value);
+                }
+                if (entity.tagName.toLowerCase() === 'a-mixin') {
+                    mixins.forEach(mixin => {
+                        mixin.entity.setAttribute('mixin', mixin.mixin);
+                    });
                 }
             }
         }
@@ -156,4 +192,54 @@ export const findClosestEntity = (entity: Entity) => {
         return prevEntity;
     }
     return null;
+}
+
+export const addComponent = (entity: Entity, component: string) => {
+    const mixins: any[] = [];
+    if (entity.tagName.toLowerCase() === 'a-mixin') {
+        Array.from(AFRAME.INSPECTOR.sceneEl.children).forEach(node => {
+            if (node.hasAttribute('mixin') && node.getAttribute('mixin').includes(entity.id)) {
+                const mixin = node.getAttribute('mixin');
+                mixins.push({
+                    entity: node,
+                    mixin,
+                });
+            }
+        });
+    }
+    entity.setAttribute(component, '');
+    if (entity.tagName.toLowerCase() === 'a-mixin') {
+        mixins.forEach(mixin => {
+            mixin.entity.setAttribute('mixin', mixin.mixin);
+        });
+    }
+    EventTools.emit('componentadd', {
+        entity,
+        component,
+    });
+}
+
+export const removeComponent = (entity: Entity, component: string) => {
+    const mixins: any[] = [];
+    if (entity.tagName.toLowerCase() === 'a-mixin') {
+        Array.from(AFRAME.INSPECTOR.sceneEl.children).forEach(node => {
+            if (node.hasAttribute('mixin') && node.getAttribute('mixin').includes(entity.id)) {
+                const mixin = node.getAttribute('mixin');
+                mixins.push({
+                    entity: node,
+                    mixin,
+                });
+            }
+        });
+    }
+    entity.removeAttribute(component);
+    if (entity.tagName.toLowerCase() === 'a-mixin') {
+        mixins.forEach(mixin => {
+            mixin.entity.setAttribute('mixin', mixin.mixin);
+        });
+    }
+    EventTools.emit('componentremove', {
+        entity,
+        component,
+    });
 }

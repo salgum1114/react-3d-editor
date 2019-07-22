@@ -1,7 +1,8 @@
 import { Entity } from 'aframe';
+import uuid from 'uuid/v4';
 
 import { EventTools } from './';
-import { AssetType } from '../constants';
+import { IPrimitive } from '../constants';
 
 export const loadAframeAssets = () => {
     let images = [];
@@ -29,20 +30,20 @@ export const loadAframeAssets = () => {
     xhr.send();
 };
 
-export const createAsset = (type: AssetType, callback?: (...args: any) => void) => {
-    const asset = document.createElement(type);
+export const createAsset = (item: IPrimitive, callback?: (...args: any) => void) => {
+    const { type, title } = item;
+    const asset = document.createElement(item.type);
+    asset.setAttribute('id', `${type}_${uuid()}`)
+    asset.setAttribute('title', title);
+    if (type !== 'a-mixin') {
+        asset.setAttribute('src', '');
+    }
     document.getElementsByTagName('a-assets')[0].appendChild(asset);
-    asset.addEventListener('loaded', () => {
-        EventTools.emit('assetcreate', asset);
-        if (callback) {
-            callback(asset);
-        }
-    });
+    EventTools.emit('assetcreate', asset);
+    if (callback) {
+        callback(asset);
+    }
     return asset;
-};
-
-export const updateAsset = () => {
-
 };
 
 export const removeAsset = (asset: Entity) => {

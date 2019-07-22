@@ -1,1 +1,0 @@
-export default ['name'].concat(Object.keys(AFRAME.components)) as string[];

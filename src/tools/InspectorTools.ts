@@ -216,8 +216,11 @@ class InspectorTools {
         EventTools.on('entitycreate', (entity: Entity) => {
             this.selectEntity(entity);
         });
-        EventTools.on('assetselect', (asset: Entity) => {
+        EventTools.on('assetcreate', (asset: Entity) => {
             this.selectAsset(asset);
+        });
+        EventTools.on('assetselect', (asset: Entity) => {
+            this.selectAsset(asset, false);
         });
         document.addEventListener('child-detached', event => {
             const entity = event.detail.el;
@@ -340,9 +343,14 @@ class InspectorTools {
     /**
      * @description Select the asset
      * @param {Entity} asset
+     * @param {boolean} [emit=true]
      */
-    selectAsset = (asset: Entity) => {
+    selectAsset = (asset: Entity, emit: boolean = true) => {
         this.selectedAsset = asset;
+        if (emit) {
+            EventTools.emit('entityselect');
+            EventTools.emit('assetselect', asset);
+        }
     }
 
     /**

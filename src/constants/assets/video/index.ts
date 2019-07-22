@@ -1,1 +1,1 @@
-export default ['name', 'video'] as string[];
+export default ['video'];

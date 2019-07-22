@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { Layout, Button } from 'antd';
 import classnames from 'classnames';
 import store from 'store';
+import SplitPane from 'react-split-pane';
 
 import '../styles/index.less';
 import Setting from './Setting';
 import Item from './Item';
 import { Toolbar } from '../components/toolbar';
 import { Inspector } from '../components/inspector';
-import SplitPane from 'react-split-pane';
 
 interface IState {
     inspectorEnabled: boolean;
@@ -98,7 +98,7 @@ class Editor extends Component<IProps, IState> {
                         primary="second"
                         allowResize={inspectorEnabled}
                         size={inspectorEnabled ? settingPane : 0}
-                        minSize={230}
+                        minSize={300}
                         maxSize={400}
                         onDragFinished={this.handleSettingPane}
                     >

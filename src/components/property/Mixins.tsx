@@ -5,8 +5,8 @@ import { EventTools } from '../../tools';
 import { Entity } from 'aframe';
 
 interface IMixin {
-    id: string | number;
-    title: string;
+    key: string | number;
+    label: string;
 }
 
 interface IProps {
@@ -15,7 +15,7 @@ interface IProps {
 
 interface IState {
     mixins: IMixin[];
-    selectedItems: string[];
+    selectedItems: IMixin[];
 }
 
 class Mixins extends PureComponent<IProps, IState> {
@@ -35,20 +35,23 @@ class Mixins extends PureComponent<IProps, IState> {
         this.buildMixins(nextProps.entity);
     }
 
-    getMixins = (selectedItems: string[]) => {
+    getMixins = (selectedItems: IMixin[]) => {
         return Array.from(document.querySelectorAll('a-mixin'))
         .map(mixin => {
             return {
-                id: mixin.id,
-                title: mixin.getAttribute('title') || mixin.getAttribute('name'),
+                key: mixin.id,
+                label: mixin.getAttribute('title') || mixin.id,
             };
         })
-        .filter(mixin => selectedItems.indexOf(mixin.id) === -1);
+        .filter(mixin => !selectedItems.some((item: IMixin) => item.key === mixin.key));
     }
 
-    buildMixins = (entity: Entity) => {
+    buildMixins = (entity: any) => {
         if (entity) {
-            const selectedItems = entity.hasAttribute('mixin') ? entity.getAttribute('mixin').split(' ') : [];
+            const selectedItems = entity.mixinEls.map((mixin: Entity) => ({
+                key: mixin.id,
+                label: mixin.getAttribute('title') || mixin.id,
+            }));
             this.setState({
                 selectedItems,
                 mixins: this.getMixins(selectedItems),
@@ -56,9 +59,9 @@ class Mixins extends PureComponent<IProps, IState> {
         }
     }
 
-    handleUpdateMixin = (selectedItems: string[]) => {
+    handleUpdateMixin = (selectedItems: IMixin[]) => {
         const { entity } = this.props;
-        const value = selectedItems.map(item => item).join(' ');
+        const value = selectedItems.map(item => item.key).join(' ');
         entity.setAttribute('mixin', value);
         EventTools.emit('entityupdate', {
             component: 'mixin',
@@ -80,13 +83,16 @@ class Mixins extends PureComponent<IProps, IState> {
                     placeholder={'Select the mixin'}
                     value={selectedItems}
                     mode="multiple"
+                    labelInValue={true}
                     onChange={this.handleUpdateMixin}
+                    optionFilterProp="children"
+                    filterOption={(input, option: any) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {
                         mixins.map(mixin => {
                             return (
-                                <Select.Option key={mixin.id} value={mixin.id}>
-                                    {mixin.title}
+                                <Select.Option key={mixin.key} value={mixin.key}>
+                                    {mixin.label}
                                 </Select.Option>
                             );
                         })

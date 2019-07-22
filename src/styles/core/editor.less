@@ -44,6 +44,11 @@ html, body, #root, .container {
         align-items: center;
         margin: 0 8px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        &-actions {
+            i:nth-child(n) {
+                margin-right: 8px;
+            }
+        }
     }
     .editor-item-search {
         margin: 8px;
@@ -163,4 +168,27 @@ html, body, #root, .container {
     width: 100%;
     align-items: center;
     justify-content: center;
+}
+
+.editor-picker {
+    &-form {
+        display: flex;
+        margin: 8px;
+    }
+    &-preview {
+        display: flex;
+        justify-content: center;
+        height: 256px;
+    }
+    &-img-container {
+        width: 256px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+    }
 }

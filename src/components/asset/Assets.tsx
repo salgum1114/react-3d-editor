@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import Icon from 'polestar-icons';
 import { Entity } from 'aframe';
-import { Modal, Tree } from 'antd';
+import { Modal, Tree, Row, Col, Card, Tabs, Input } from 'antd';
 import uuid from 'uuid/v4';
 import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
 
-import { SidebarContainer } from '../common';
+import { SidebarContainer, Scrollbar, Empty, AddEmpty } from '../common';
 import { EventTools, AssetTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
-import { IEntity, getIcon, IDetailEntity } from '../../constants';
-import AddEmpty from '../common/AddEmpty';
-import { capitalize } from '../../tools/UtilTools';
+import { IEntity, getIcon, IDetailEntity, IPrimitive, assetPrimitives, catalogs } from '../../constants';
 
 interface IState {
     assets: IEntity[];
     visible: boolean;
     selectedKeys: string[];
     spinning: boolean;
+    searchPrimitives?: string;
+    searchCatalogs?: string;
 }
 
 class Assets extends Component<{}, IState> {
@@ -25,6 +25,8 @@ class Assets extends Component<{}, IState> {
         visible: false,
         selectedKeys: [],
         spinning: true,
+        searchPrimitives: '',
+        searchCatalogs: '',
     }
 
     componentDidMount() {
@@ -34,6 +36,23 @@ class Assets extends Component<{}, IState> {
                 assets,
                 spinning: false,
             });
+        });
+        EventTools.on('assetcreate', () => {
+            const assets = this.buildAssets(AFRAME.INSPECTOR.sceneEl);
+            this.setState({
+                assets,
+            });
+        });
+        EventTools.on('assetselect', (asset: Entity) => {
+            if (asset) {
+                this.setState({
+                    selectedKeys: [asset.id],
+                });
+            } else {
+                this.setState({
+                    selectedKeys: [],
+                });
+            }
         });
         EventTools.on('assetremove', () => {
             const assets = this.buildAssets(AFRAME.INSPECTOR.sceneEl);
@@ -74,11 +93,10 @@ class Assets extends Component<{}, IState> {
                 if (en.title) {
                     title = en.title;
                 } else if (en.id) {
-                    title = capitalize(en.id);
+                    title = en.id;
                 } else {
                     title = en.tagName.toLowerCase();
                 }
-                en.title = title.toString();
                 assets.push({
                     key: en.id,
                     type: en.tagName.toLowerCase(),
@@ -101,6 +119,15 @@ class Assets extends Component<{}, IState> {
                 visible: !prevState.visible,
             };
         });
+    }
+
+    /**
+     * @description Add the asset
+     * @param {IPrimitive} item
+     */
+    private handleAddAsset = (item: IPrimitive) => {
+        this.handleModalVisible();
+        AssetTools.createAsset(item);
     }
 
     /**
@@ -137,6 +164,26 @@ class Assets extends Component<{}, IState> {
     }
 
     /**
+     * @description Search in Primitives
+     * @param {string} searchPrimitives
+     */
+    private handleSearchPrimitives = (searchPrimitives: string) => {
+        this.setState({
+            searchPrimitives,
+        });
+    }
+
+    /**
+     * @description Search in Catalogs
+     * @param {string} searchCatalogs
+     */
+    private handleSearchCatalogs = (searchCatalogs: string) => {
+        this.setState({
+            searchCatalogs,
+        });
+    }
+
+    /**
      * @description Render the tree node
      * @param {IEntity} item
      * @returns
@@ -152,8 +199,66 @@ class Assets extends Component<{}, IState> {
         );
     }
 
+    /**
+     * @description Render the items with Card
+     * @param {IPrimitive[]} items
+     * @param {string} searchText
+     * @returns
+     */
+    private renderCardItems = (items: IPrimitive[], searchText: string) => {
+        return (
+            <Scrollbar>
+                {
+                    items.length ? (
+                        <Row gutter={16} style={{ margin: 0 }}>
+                            {
+                                items
+                                .filter(item => item.title.includes(searchText.toLowerCase()) || item.description.includes(searchText.toLowerCase()))
+                                .map(item => {
+                                    return (
+                                        <Col key={item.key} md={24} lg={12} xl={6} onClick={() => this.handleAddAsset(item)}>
+                                            <Card
+                                                hoverable={true}
+                                                title={item.title}
+                                                extra={
+                                                    <a className="editor-item-help-icon" onClick={e => e.stopPropagation()} target="_blank" href={item.url}>
+                                                        <Icon name="question-circle-o" />
+                                                    </a>
+                                                }
+                                                style={{ marginBottom: 16 }}
+                                                bodyStyle={{ padding: 12, height: 120 }}
+                                            >
+                                                <div className="editor-item-card-desc">
+                                                    {item.description}
+                                                </div>
+                                            </Card>
+                                        </Col>
+                                    );
+                                })
+                            }
+                        </Row>
+                    ) : <Empty />
+                }
+            </Scrollbar>
+        )
+    }
+
+    /**
+     * Render the search form
+     *
+     * @param {(value: string) => void} callback
+     * @returns
+     */
+    private renderSearch = (callback: (value: string) => void) => {
+        return (
+            <div style={{ flex: 1, paddingRight: 16 }}>
+                <Input placeholder="Search for Asset..." onChange={e => callback(e.target.value)} />
+            </div>
+        )
+    }
+
     render() {
-        const { assets, visible, spinning, selectedKeys } = this.state;
+        const { assets, visible, spinning, selectedKeys, searchPrimitives, searchCatalogs } = this.state;
         return (
             <SidebarContainer
                 titleStyle={{ border: 0 }}
@@ -188,7 +293,28 @@ class Assets extends Component<{}, IState> {
                     width="75%"
                     style={{ height: '75%' }}
                 >
-                    test
+                    <Tabs tabPosition="left">
+                        <Tabs.TabPane key="primitives" tab="Primitives">
+                            <div style={{ display: 'flex', height: '100%', flexDirection: 'column' }}>
+                                <div style={{ display: 'flex', padding: '0 8px 16px 8px' }}>
+                                    {this.renderSearch(this.handleSearchPrimitives)}
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    {this.renderCardItems(assetPrimitives, searchPrimitives)}
+                                </div>
+                            </div>
+                        </Tabs.TabPane>
+                        <Tabs.TabPane key="catalogs" tab="Catalogs">
+                            <div style={{ display: 'flex', height: '100%', flexDirection: 'column' }}>
+                                <div style={{ display: 'flex', padding: '0 8px 16px 8px' }}>
+                                    {this.renderSearch(this.handleSearchCatalogs)}
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    {this.renderCardItems(catalogs, searchCatalogs)}
+                                </div>
+                            </div>
+                        </Tabs.TabPane>
+                    </Tabs>
                 </Modal>
             </SidebarContainer>
         );

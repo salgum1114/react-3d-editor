@@ -1,1 +1,1 @@
-export default ['name', 'audio'];
+export default ['audio'];
