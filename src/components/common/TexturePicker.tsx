@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Modal, Input, Icon } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { Entity } from 'aframe';
+import Textures, { ITexture } from './Textures';
 
 interface IProps extends FormComponentProps {
     schema: any;
@@ -17,19 +18,40 @@ interface IState {
     visible?: boolean;
 }
 
-class TexturePicker extends Component<IProps> {
+class TexturePicker extends Component<IProps, IState> {
     state = {
         value: this.props.data instanceof HTMLImageElement ? `#${this.props.data.id}` : this.props.data,
         visible: false,
     }
 
-    handleClick = () => {
-        this.setState({
-            visible: !this.state.visible,
+    /**
+     * @description
+     * @param {ITexture} texture
+     */
+    private handleChangeTexture = (texture: ITexture) => {
+        const { onChange } = this.props;
+        if (onChange) {
+            onChange(texture.url);
+            this.handleModalVisible();
+        }
+    }
+
+    /**
+     * @description Change to visible in Modal
+     */
+    private handleModalVisible = () => {
+        this.setState((prevState: IState) => {
+            return {
+                visible: !prevState.visible,
+            };
         });
     }
 
-    handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * @description Change to src
+     * @param {React.ChangeEvent<HTMLInputElement>} e
+     */
+    private handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { onChange } = this.props;
         if (onChange) {
             onChange(e.target.value);
@@ -44,14 +66,17 @@ class TexturePicker extends Component<IProps> {
         const { visible, value } = this.state;
         return (
             <>
-                <Input defaultValue={value} value={value} onChange={this.handleChangeInput} addonAfter={<Icon type="shop" onClick={this.handleClick} />} />
+                <Input defaultValue={value} value={value} onChange={this.handleChangeInput} addonAfter={<Icon type="shop" onClick={this.handleModalVisible} />} />
                 <Modal
+                    className="editor-item-modal"
                     visible={visible}
-                    closable={true}
-                    onCancel={this.handleClick}
-                    footer={[]}
+                    onCancel={this.handleModalVisible}
+                    footer={null}
+                    title={'Textures'}
+                    width="75%"
+                    style={{ height: '75%' }}
                 >
-
+                    <Textures onChange={this.handleChangeTexture} />
                 </Modal>
             </>
         );

@@ -100,3 +100,20 @@ export const saveBlob = (blob: Blob, filename: string) => {
 };
 
 export const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1) : false;
+
+export const formatTime = (seconds: number): string => {
+    const date = new Date(1970, 0, 1);
+    date.setSeconds(seconds);
+    return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, '$1');
+};
+
+export const formatBytes = (bytes: number, decimals: number = 1, binaryUnits: boolean = false) => {
+    if (bytes === 0) {
+        return '0 Bytes';
+    }
+    const unitMultiple = (binaryUnits) ? 1024 : 1000;
+    const unitNames = (unitMultiple === 1024) ? // 1000 bytes in 1 Kilobyte (KB) or 1024 bytes for the binary version (KiB)
+        ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'] : ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const unitChanges = Math.floor(Math.log(bytes) / Math.log(unitMultiple));
+    return parseFloat((bytes / Math.pow(unitMultiple, unitChanges)).toFixed(decimals || 0)) + ' ' + unitNames[unitChanges];
+};

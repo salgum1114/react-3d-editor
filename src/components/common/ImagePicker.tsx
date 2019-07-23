@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import TexturePicker from './TexturePicker';
 import { Entity } from 'aframe';
+import { FormComponentProps } from 'antd/lib/form';
 
-interface IProps {
+import TexturePicker from './TexturePicker';
+
+interface IProps extends FormComponentProps {
     schema: any;
     entity?: Entity;
     data?: any;

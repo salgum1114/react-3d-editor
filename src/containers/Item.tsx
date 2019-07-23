@@ -5,6 +5,7 @@ import store from 'store';
 
 import { Assets } from '../components/asset';
 import { Entities } from '../components/entity';
+import database from '../database';
 
 interface IItemState {
     middlePane: number | string;
@@ -19,7 +20,7 @@ class Item extends Component<{}, IItemState> {
      * @description Set the new size in middle pane
      * @param {number} newSize
      */
-    handleMiddlePane = (newSize: number) => {
+    private handleMiddlePane = (newSize: number) => {
         store.set('middlePane', newSize);
         this.setState({
             middlePane: newSize,

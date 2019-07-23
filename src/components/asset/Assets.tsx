@@ -5,7 +5,7 @@ import { Modal, Tree, Row, Col, Card, Tabs, Input } from 'antd';
 import uuid from 'uuid/v4';
 import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
 
-import { SidebarContainer, Scrollbar, Empty, AddEmpty } from '../common';
+import { SidebarContainer, Scrollbar, Empty, AddEmpty, Textures } from '../common';
 import { EventTools, AssetTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
 import { IEntity, getIcon, IDetailEntity, IPrimitive, assetPrimitives, catalogs } from '../../constants';
@@ -304,15 +304,8 @@ class Assets extends Component<{}, IState> {
                                 </div>
                             </div>
                         </Tabs.TabPane>
-                        <Tabs.TabPane key="catalogs" tab="Catalogs">
-                            <div style={{ display: 'flex', height: '100%', flexDirection: 'column' }}>
-                                <div style={{ display: 'flex', padding: '0 8px 16px 8px' }}>
-                                    {this.renderSearch(this.handleSearchCatalogs)}
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    {this.renderCardItems(catalogs, searchCatalogs)}
-                                </div>
-                            </div>
+                        <Tabs.TabPane key="textures" tab="Textures">
+                            <Textures />
                         </Tabs.TabPane>
                     </Tabs>
                 </Modal>

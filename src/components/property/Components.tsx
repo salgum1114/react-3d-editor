@@ -18,7 +18,11 @@ interface IProps extends FormComponentProps {
 }
 
 class Components extends Component<IProps> {
-    handleClick = (componentName: string) => {
+    /**
+     * @description Remove component
+     * @param {string} componentName
+     */
+    handleRemoveComponent = (componentName: string) => {
         const { entity } = this.props;
         EntityTools.removeComponent(entity, componentName);
     }
@@ -32,7 +36,6 @@ class Components extends Component<IProps> {
                     .filter(component => !generalComponents.some(comp => comp === component))
                     .map(key => {
                         const { schema, data, isSingleProperty } = entity.components[key] as any;
-                        console.log(key, data);
                         return (
                             <Collapse.Panel
                                 key={key}
@@ -45,7 +48,7 @@ class Components extends Component<IProps> {
                                             Modal.confirm({
                                                 title: 'Remove component',
                                                 content: `Do you really want to remove component ${key}?`,
-                                                onOk: () => this.handleClick(key),
+                                                onOk: () => this.handleRemoveComponent(key),
                                             });
                                         }}
                                     />
@@ -96,7 +99,7 @@ class Components extends Component<IProps> {
                                             Modal.confirm({
                                                 title: 'Remove component',
                                                 content: `Do you really want to remove component ${key}?`,
-                                                onOk: () => this.handleClick(key),
+                                                onOk: () => this.handleRemoveComponent(key),
                                             });
                                         }}
                                     />
