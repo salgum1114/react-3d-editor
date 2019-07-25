@@ -19,7 +19,7 @@ export class Database {
     }
 
     public save(doc: PouchDB.Core.PutDocument<Record>, options?: PouchDB.Core.PutOptions): Promise<PouchDB.Core.Response> {
-        return this.pouch.get(doc._id).then(() => {
+        return this.pouch.get(doc._id, { attachments: false }).then(() => {
             return this.update(doc, options);
         }).catch(() => {
             return this.create(doc, options);
@@ -28,7 +28,7 @@ export class Database {
 
     public async create(doc: PouchDB.Core.PutDocument<Record>, options?: PouchDB.Core.PutOptions): Promise<PouchDB.Core.Response> {
         try {
-            return await this.pouch.put(doc, { ...options, force: true });
+            return this.pouch.put(doc, { ...options, force: true });
         } catch (error) {
             throw new Error(error);
         }
@@ -38,7 +38,7 @@ export class Database {
         try {
             const findDoc = await this.pouch.get(doc._id);
             const mergedDoc = Object.assign({}, findDoc, doc);
-            return await this.pouch.put(mergedDoc, { ...options, force: true });
+            return this.pouch.put(mergedDoc, { ...options, force: true });
         } catch (error) {
             throw new Error(error);
         }
@@ -47,7 +47,54 @@ export class Database {
     public async delete(id: string, options?: PouchDB.Core.Options): Promise<PouchDB.Core.Response> {
         try {
             const findDoc = await this.pouch.get(id);
-            return await this.pouch.remove({ _id: findDoc._id, _rev: findDoc._rev }, options);
+            return this.pouch.remove({ _id: findDoc._id, _rev: findDoc._rev }, options);
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    public async getById(id: string): Promise<PouchDB.Core.Response & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta> {
+        try {
+            return this.pouch.get(id, { attachments: true });
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    public async saveBlob(id: string, attachmentId: string, attachment: PouchDB.Core.AttachmentData, type: string): Promise<PouchDB.Core.Response> {
+        try {
+            const findDoc = await this.pouch.get(id, { attachments: true });
+            if (!findDoc._attachments) {
+                findDoc._attachments = {};
+            }
+            Object.assign(findDoc._attachments, {
+                [attachmentId]: {
+                    content_type: type,
+                    data: attachment,
+                },
+            });
+            return this.pouch.put(findDoc, { force: true });
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    public async bulkBlobs(doc: PouchDB.Core.PutDocument<Record>): Promise<PouchDB.Core.Response> {
+        try {
+            const findDoc = await this.pouch.get(doc._id, { attachments: true });
+            if (!findDoc._attachments) {
+                findDoc._attachments = {};
+            }
+            Object.assign(findDoc._attachments, doc._attachments);
+            return this.pouch.put(findDoc, { force: true });
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    public async getBlob(id: string, attachmentId: string, rev: string): Promise<Blob | Buffer> {
+        try {
+            return this.pouch.getAttachment(id, attachmentId, { rev });
         } catch (error) {
             throw new Error(error);
         }

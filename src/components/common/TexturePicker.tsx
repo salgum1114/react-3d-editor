@@ -19,9 +19,32 @@ interface IState {
 }
 
 class TexturePicker extends Component<IProps, IState> {
-    state = {
+    state: IState = {
         value: this.props.data instanceof HTMLImageElement ? `#${this.props.data.id}` : this.props.data,
         visible: false,
+    }
+
+    /**
+     * @description Get etity type
+     * @param {Entity} entity
+     * @param {string} componentName
+     * @param {string} schemaKey
+     * @returns {string | undefined}
+     */
+    private getType = (entity: Entity, componentName: string, schemaKey: string) => {
+        let type;
+        if (entity.tagName.toLowerCase() === 'img') {
+            type = 'image';
+        } else if (entity.tagName.toLowerCase() === 'video') {
+            type = 'video';
+        } else if (entity.tagName.toLowerCase() === 'audio') {
+            type = 'audio';
+        } else if (componentName === 'sound') {
+            type = 'audio';
+        } else if (componentName === 'material') {
+            type = 'image/video';
+        }
+        return type;
     }
 
     /**
@@ -32,6 +55,9 @@ class TexturePicker extends Component<IProps, IState> {
         const { onChange } = this.props;
         if (onChange) {
             onChange(texture.url);
+            this.setState({
+                value: texture.url,
+            });
             this.handleModalVisible();
         }
     }
@@ -66,7 +92,12 @@ class TexturePicker extends Component<IProps, IState> {
         const { visible, value } = this.state;
         return (
             <>
-                <Input defaultValue={value} value={value} onChange={this.handleChangeInput} addonAfter={<Icon type="shop" onClick={this.handleModalVisible} />} />
+                <Input
+                    defaultValue={value}
+                    value={value.length > 100 ? value.substring(0, 100).concat('...') : value}
+                    onChange={this.handleChangeInput}
+                    addonAfter={<Icon type="shop" onClick={this.handleModalVisible} />}
+                />
                 <Modal
                     className="editor-item-modal"
                     visible={visible}
@@ -76,7 +107,7 @@ class TexturePicker extends Component<IProps, IState> {
                     width="75%"
                     style={{ height: '75%' }}
                 >
-                    <Textures onChange={this.handleChangeTexture} />
+                    <Textures onChange={this.handleChangeTexture} type={this.getType(entity, componentName, schemaKey)} />
                 </Modal>
             </>
         );

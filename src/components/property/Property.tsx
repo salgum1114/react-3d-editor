@@ -11,8 +11,6 @@ import Components from './Components';
 import { EntityTools } from '../../tools';
 import { Empty } from '../common';
 import { GeneralComponents, GeneralComponentType } from '../../constants/components/components';
-import AssetComponents from '../../constants/assets/components';
-import { ComponentNames } from '../../constants/assets/components/components';
 
 type EntityType = 'entity' | 'asset';
 

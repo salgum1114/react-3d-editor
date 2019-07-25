@@ -117,3 +117,19 @@ export const formatBytes = (bytes: number, decimals: number = 1, binaryUnits: bo
     const unitChanges = Math.floor(Math.log(bytes) / Math.log(unitMultiple));
     return parseFloat((bytes / Math.pow(unitMultiple, unitChanges)).toFixed(decimals || 0)) + ' ' + unitNames[unitChanges];
 };
+
+export const b64toBlob = (b64Data: string, contentType: string = '', sliceSize: number= 512) => {
+    const byteCharacters = window.atob(b64Data);
+    const byteArrays = [];
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+    }
+    const blob = new Blob(byteArrays, {type: contentType});
+    return blob;
+}

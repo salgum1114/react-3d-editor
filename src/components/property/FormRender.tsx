@@ -18,7 +18,12 @@ class FormRender extends Component<IProps> {
     getComponent = () => {
         const { schema, data, form, entity, schemaKey, componentName } = this.props;
         if (schemaKey) {
-            if (componentName === 'material' && (schemaKey === 'envMap' || schemaKey === 'src')) {
+            if (
+                schemaKey === 'file'
+                || schemaKey === 'mtl'
+                || schemaKey === 'obj'
+                || (componentName === 'material' && (schemaKey === 'envMap' || schemaKey === 'src'))
+            ) {
                 return (
                     <TexturePicker
                         schema={schema}

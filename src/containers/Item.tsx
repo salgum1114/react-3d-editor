@@ -42,7 +42,7 @@ class Item extends Component<{}, IItemState> {
                     <div className="editor-item-tools-actions">
                         <Icon className="editor-icon" name="download" />
                         <Icon className="editor-icon" name="upload" />
-                        <Icon className="editor-icon" name="times" />
+                        <Icon className="editor-icon" name="times" onClick={() => {database.clear();}} />
                     </div>
                 </div>
                 <div className="editor-item-tree">
