@@ -86,7 +86,11 @@ class Components extends Component<IProps> {
                     .filter(component => !generalComponents.some(comp => comp === component))
                     .map(key => {
                         const { schema, isSingleProp } = AssetComponents[key as ComponentNames];
-                        const data = entity.getAttribute(key);
+                        const AframeComponent = AFRAME.components[key] as any;
+                        let data = entity.getAttribute(key);
+                        if (isSingleProp && AframeComponent && AframeComponent.schema) {
+                            data = AframeComponent.schema.parse(data);
+                        }
                         return (
                             <Collapse.Panel
                                 key={key}

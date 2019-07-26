@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import Icon from 'polestar-icons';
 import { Entity } from 'aframe';
 import { Modal, Tree, Row, Col, Card, Tabs, Input } from 'antd';
-import uuid from 'uuid/v4';
 import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
 
 import { SidebarContainer, Scrollbar, Empty, AddEmpty, Textures } from '../common';
 import { EventTools, AssetTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
-import { IEntity, getIcon, IDetailEntity, IPrimitive, assetPrimitives, catalogs } from '../../constants';
+import { IEntity, IDetailEntity, IPrimitive, assetPrimitives } from '../../constants';
 
 interface IState {
     assets: IEntity[];
@@ -31,14 +30,14 @@ class Assets extends Component<{}, IState> {
 
     componentDidMount() {
         EventTools.on('sceneloaded', (scene: IScene) => {
-            const assets = this.buildAssets(scene);
+            const assets = AssetTools.buildAssets(scene);
             this.setState({
                 assets,
                 spinning: false,
             });
         });
         EventTools.on('assetcreate', () => {
-            const assets = this.buildAssets(AFRAME.INSPECTOR.sceneEl);
+            const assets = AssetTools.buildAssets(AFRAME.INSPECTOR.sceneEl);
             this.setState({
                 assets,
             });
@@ -55,7 +54,7 @@ class Assets extends Component<{}, IState> {
             }
         });
         EventTools.on('assetremove', () => {
-            const assets = this.buildAssets(AFRAME.INSPECTOR.sceneEl);
+            const assets = AssetTools.buildAssets(AFRAME.INSPECTOR.sceneEl);
             this.setState({
                 assets,
             });
@@ -68,46 +67,12 @@ class Assets extends Component<{}, IState> {
         EventTools.on('entityupdate', (detail: IDetailEntity) => {
             if (!detail.entity.object3D && detail.component === 'name') {
                 detail.entity.title = detail.value;
-                const assets = this.buildAssets(AFRAME.INSPECTOR.sceneEl);
+                const assets = AssetTools.buildAssets(AFRAME.INSPECTOR.sceneEl);
                 this.setState({
                     assets,
                 });
             }
         });
-    }
-
-    /**
-     * @description Building assets
-     * @param {IScene} scene
-     * @returns {IEntity[]} assets
-     */
-    private buildAssets = (scene: IScene) => {
-        const assets: IEntity[] = [];
-        if (scene.firstElementChild.id === 'assets') {
-            for (let i = 0; i < scene.firstElementChild.children.length; i++) {
-                const en = scene.firstElementChild.children[i] as Entity;
-                if (!en.id) {
-                    en.id = uuid();
-                }
-                let title;
-                if (en.title) {
-                    title = en.title;
-                } else if (en.id) {
-                    title = en.id;
-                } else {
-                    title = en.tagName.toLowerCase();
-                }
-                assets.push({
-                    key: en.id,
-                    type: en.tagName.toLowerCase(),
-                    title,
-                    entity: en,
-                    icon: getIcon(en.tagName.toLowerCase()),
-                });
-            }
-            return assets;
-        }
-        return assets;
     }
 
     /**

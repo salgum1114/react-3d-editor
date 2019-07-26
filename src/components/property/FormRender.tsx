@@ -17,24 +17,24 @@ interface IProps extends FormComponentProps {
 class FormRender extends Component<IProps> {
     getComponent = () => {
         const { schema, data, form, entity, schemaKey, componentName } = this.props;
-        if (schemaKey) {
-            if (
-                schemaKey === 'file'
-                || schemaKey === 'mtl'
-                || schemaKey === 'obj'
-                || (componentName === 'material' && (schemaKey === 'envMap' || schemaKey === 'src'))
-            ) {
-                return (
-                    <TexturePicker
-                        schema={schema}
-                        data={data}
-                        form={form}
-                        entity={entity}
-                        schemaKey={schemaKey}
-                        componentName={componentName}
-                    />
-                );
-            }
+        if (
+            schema.type === 'model'
+            || schema.type === 'file'
+            || schema.type === 'map'
+            || schemaKey === 'mtl'
+            || schemaKey === 'obj'
+            || (componentName === 'material' && (schemaKey === 'envMap' || schemaKey === 'src'))
+        ) {
+            return (
+                <TexturePicker
+                    schema={schema}
+                    data={data}
+                    form={form}
+                    entity={entity}
+                    schemaKey={schemaKey}
+                    componentName={componentName}
+                />
+            );
         }
         if (schemaKey === 'loop') {
             return <Switch />;
@@ -66,17 +66,6 @@ class FormRender extends Component<IProps> {
                 }
                 return <Input />;
             }
-            case 'map':
-                return (
-                    <TexturePicker
-                        schema={schema}
-                        data={data}
-                        form={form}
-                        entity={entity}
-                        schemaKey={schemaKey}
-                        componentName={componentName}
-                    />
-                );
             case 'audio':
                 return (
                     <AudioPicker

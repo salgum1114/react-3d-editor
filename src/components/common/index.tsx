@@ -8,3 +8,5 @@ export { default as ImagePicker } from './ImagePicker';
 export { default as VideoPicker } from './VideoPicker';
 export { default as AudioPicker } from './AudioPicker';
 export { default as Textures } from './Textures';
+export { default as Mentions } from './Mentions';
+export { default as AutoComplete } from './AutoComplete';

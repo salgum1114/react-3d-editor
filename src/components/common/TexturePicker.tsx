@@ -1,8 +1,13 @@
-import React, { Component } from 'react';
-import { Modal, Input, Icon } from 'antd';
+import React, { PureComponent } from 'react';
+import { Modal, Icon } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { Entity } from 'aframe';
+import debounce from 'lodash/debounce';
+import { DataSourceItemType } from 'antd/lib/auto-complete';
+
 import Textures, { ITexture } from './Textures';
+import { AssetTools, EventTools } from '../../tools';
+import AutoComplete from './AutoComplete';
 
 interface IProps extends FormComponentProps {
     schema: any;
@@ -11,17 +16,44 @@ interface IProps extends FormComponentProps {
     componentName?: string;
     schemaKey?: string;
     onChange?: (value?: any) => void;
+    prefixUrl?: boolean;
 }
 
 interface IState {
     value?: string;
     visible?: boolean;
+    assets: DataSourceItemType[];
 }
 
-class TexturePicker extends Component<IProps, IState> {
+class TexturePicker extends PureComponent<IProps, IState> {
     state: IState = {
-        value: this.props.data instanceof HTMLImageElement ? `#${this.props.data.id}` : this.props.data,
+        value: this.props.data instanceof HTMLImageElement ? this.props.data.id : (this.props.data || ''),
         visible: false,
+        assets: [],
+    }
+
+    componentDidMount() {
+        this.setAssets();
+        EventTools.on('assetcreate', () => {
+            this.setAssets();
+        });
+        EventTools.on('assetremove', () => {
+            this.setAssets();
+        });
+    }
+
+    /**
+     * @description Set the assets for autocomplete
+     */
+    private setAssets = (): void => {
+        this.setState({
+            assets: AssetTools.buildAssets(AFRAME.INSPECTOR.sceneEl, ['a-mixin']).map(asset => {
+                return {
+                    value: asset.key.toString(),
+                    text: asset.title.toString(),
+                };
+            }),
+        });
     }
 
     /**
@@ -52,9 +84,9 @@ class TexturePicker extends Component<IProps, IState> {
      * @param {ITexture} texture
      */
     private handleChangeTexture = (texture: ITexture) => {
-        const { onChange } = this.props;
+        const { onChange, prefixUrl = true } = this.props;
         if (onChange) {
-            onChange(texture.url);
+            onChange(prefixUrl ? `url(${texture.url})` : texture.url);
             this.setState({
                 value: texture.url,
             });
@@ -77,25 +109,45 @@ class TexturePicker extends Component<IProps, IState> {
      * @description Change to src
      * @param {React.ChangeEvent<HTMLInputElement>} e
      */
-    private handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    private handleChangeSrc = (value: any) => {
+        this.debouncedChangeSrc(value);
+        this.setState({
+            value,
+        });
+    }
+
+    /**
+     * @description Debounce value
+     * @param {*} value
+     */
+    private debouncedChangeSrc = debounce((value: any) => {
         const { onChange } = this.props;
         if (onChange) {
-            onChange(e.target.value);
-            this.setState({
-                value: e.target.value,
-            });
+            onChange(value);
         }
+    }, 200)
+
+    /**
+     * @description  Select the asset in registration assets
+     * @param {*} value
+     */
+    private handleSelectSrc = (value: any) => {
+        this.debouncedChangeSrc(`#${value}`);
     }
 
     render() {
-        const { schema, form, entity, schemaKey, componentName } = this.props;
-        const { visible, value } = this.state;
+        const { entity, schemaKey, componentName } = this.props;
+        const { visible, value, assets } = this.state;
         return (
             <>
-                <Input
-                    defaultValue={value}
+                <AutoComplete
+                    onChange={this.handleChangeSrc}
+                    onSelect={this.handleSelectSrc}
                     value={value.length > 100 ? value.substring(0, 100).concat('...') : value}
-                    onChange={this.handleChangeInput}
+                    dataSource={(entity.object3D || entity.hasAttribute('material')) && assets}
+                    filterOption={(inputValue, option: any) =>
+                        option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                    }
                     addonAfter={<Icon type="shop" onClick={this.handleModalVisible} />}
                 />
                 <Modal

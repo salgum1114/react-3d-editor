@@ -56,7 +56,6 @@ class Textures extends Component<IProps, IState> {
                     loading: false,
                 });
             } else {
-                console.log(response._attachments);
                 Object.keys(response._attachments).forEach((key, index) => {
                     const attachment = response._attachments[key];
                     if (attachment instanceof Blob) {
@@ -127,9 +126,7 @@ class Textures extends Component<IProps, IState> {
                     }),
                 });
             }, { _id: 'images', _attachments: {} });
-            database.bulkBlobs(doc).then(response => {
-                console.log(response);
-            }).catch(error => {
+            database.bulkBlobs(doc).catch(error => {
                 this.setState({
                     loading: false,
                 });
@@ -139,9 +136,10 @@ class Textures extends Component<IProps, IState> {
         Object.keys(files).forEach((value: string, index: number) => {
             const file = files[parseInt(value, 10)]
             const reader = new FileReader();
-            reader.onloadend = e => {
-                const url = e.target.result as string;
-                // const url = window.URL.createObjectURL(file);
+            reader.onloadend = () => {
+                const url = reader.result as string;
+                // const blobUrl = window.URL.createObjectURL(file);
+                console.log(file);
                 if (file.type.includes('image')) {
                     const image = new Image();
                     image.src = url;
@@ -370,7 +368,11 @@ class Textures extends Component<IProps, IState> {
      */
     private renderTypeFilter = (type: FilterType) => {
         return (
-            <Select defaultValue={this.state.selectedFilterType} style={{ width: 120 }} onChange={this.handleFilterType}>
+            <Select
+                defaultValue={this.state.selectedFilterType}
+                style={{ width: 120 }}
+                onChange={this.handleFilterType}
+            >
                 <Select.Option value="all">
                     {'All'}
                 </Select.Option>

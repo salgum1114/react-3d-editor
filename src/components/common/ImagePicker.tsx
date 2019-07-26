@@ -27,6 +27,7 @@ class ImagePicker extends Component<IProps> {
                         schemaKey={schemaKey}
                         componentName={componentName}
                         onChange={onChange}
+                        prefixUrl={false}
                     />
                 </div>
                 <div className="editor-picker-preview">

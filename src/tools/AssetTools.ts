@@ -2,7 +2,8 @@ import { Entity } from 'aframe';
 import uuid from 'uuid/v4';
 
 import { EventTools } from './';
-import { IPrimitive } from '../constants';
+import { IPrimitive, IEntity, getIcon } from '../constants';
+import { IScene } from './InspectorTools';
 
 export const loadAframeAssets = () => {
     let images = [];
@@ -63,3 +64,40 @@ export const removeSelectedAsset = () => {
 export const selectAsset = (asset?: Entity) => {
     EventTools.emit('assetselect', asset);
 };
+
+/**
+ * @description Building assets
+ * @param {IScene} scene
+ * @returns {IEntity[]} assets
+ */
+export const buildAssets = (scene: IScene, filterTypes?: string[]) => {
+    const assets: IEntity[] = [];
+    if (scene.firstElementChild.id === 'assets') {
+        for (let i = 0; i < scene.firstElementChild.children.length; i++) {
+            const en = scene.firstElementChild.children[i] as Entity;
+            if (filterTypes && filterTypes.some(type => type === en.tagName.toLowerCase())) {
+                continue;
+            }
+            if (!en.id) {
+                en.id = uuid();
+            }
+            let title;
+            if (en.title) {
+                title = en.title;
+            } else if (en.id) {
+                title = en.id;
+            } else {
+                title = en.tagName.toLowerCase();
+            }
+            assets.push({
+                key: en.id,
+                type: en.tagName.toLowerCase(),
+                title,
+                entity: en,
+                icon: getIcon(en.tagName.toLowerCase()),
+            });
+        }
+        return assets;
+    }
+    return assets;
+}

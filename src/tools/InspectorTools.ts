@@ -1,4 +1,5 @@
 import { Entity, Scene } from 'aframe';
+import 'aframe-extras';
 
 import { ObjectMapper, Omit } from '../types/utils';
 import {
@@ -104,11 +105,12 @@ class InspectorTools {
      * @param {boolean} playCamera
      */
     initScene = (inspector: HTMLElement, options: IInsepctorOptions) => {
-        const scene = document.createElement('a-scene');
+        const scene = document.createElement('a-scene') as IScene;
+        this.loadAssets(scene, this.exampleAssets());
+        this.loadEntities(scene, this.exampleEntities());
         const { playerCamera = true } = options;
         if (playerCamera) {
-            scene.appendChild(this.initAssets());
-            scene.appendChild(this.initEntities());
+            this.loadPlayerCamera(scene);
         }
         inspector.appendChild(scene);
         scene.id = 'scene';
@@ -118,8 +120,8 @@ class InspectorTools {
         scene.style.left = '0';
     }
 
-    initAssets = () => {
-        return document.createRange().createContextualFragment(`
+    exampleAssets = () => {
+        return `
             <a-assets id="assets">
                 <a-mixin id="blue" material="color: #4CC3D9"></a-mixin>
                 <a-mixin id="blueBox" geometry="primitive: box; depth: 2; height: 5; width: 1" material="color: #4CC3D9"></a-mixin>
@@ -133,11 +135,11 @@ class InspectorTools {
                 <img id="crateImg" src="https://aframe.io/sample-assets/assets/images/wood/crate.gif" crossOrigin="true">
                 <img id="floorImg" src="https://aframe.io/sample-assets/assets/images/terrain/grasslight-big.jpg" crossOrigin="true">
             </a-assets>
-        `);
+        `;
     }
 
-    initEntities = () => {
-        return document.createRange().createContextualFragment(`
+    exampleEntities = () => {
+        return `
             <a-entity id="environment" environment="preset: forest; fog: false"></a-entity>
             <!-- Meshes. -->
             <a-entity id="blueBox" mixin="blueBox" position="0 8 0"></a-entity>
@@ -158,19 +160,7 @@ class InspectorTools {
 
             <!-- Lights. -->
             <a-entity id="pointLight" light="type: directional; intensity: 1" position="0 3 3"></a-entity>
-
-            <!-- Camera. -->
-            <a-entity id="cameraWrapper" position="0 1.6 8">
-                <a-entity id="camera" camera look-controls wasd-controls>
-                <!-- Cursor. -->
-                <a-entity id="cursor" position="0 0 -2"
-                            geometry="primitive: ring; radiusOuter: 0.016; radiusInner: 0.01"
-                            material="color: #ff9; shader: flat; transparent: true; opacity: 0.5"
-                            scale="2 2 2" raycaster>
-                </a-entity>
-                </a-entity>
-            </a-entity>
-        `.trim());
+        `;
     }
 
     initCamera = () => {
@@ -226,6 +216,33 @@ class InspectorTools {
             const entity = event.detail.el;
             this.removeObject(entity.object3D);
         });
+    }
+
+    loadEntities = (scene: IScene, fragment: string) => {
+        scene.appendChild(document.createRange().createContextualFragment(fragment.trim()));
+    }
+
+    loadAssets = (scene: IScene, fragment: string) => {
+        scene.appendChild(document.createRange().createContextualFragment(fragment.trim()))
+    }
+
+    loadPlayerCamera = (scene: IScene, fragment?: string) => {
+        const playerCamera = document.createRange().createContextualFragment(
+            fragment ? fragment.trim() : `
+            <!-- Camera. -->
+            <a-entity id="playerCamera" position="0 1.6 8">
+                <a-entity id="camera" camera look-controls wasd-controls>
+                    <!-- Cursor. -->
+                    <a-entity id="cursor" position="0 0 -2"
+                                geometry="primitive: ring; radiusOuter: 0.016; radiusInner: 0.01"
+                                material="color: #ff9; shader: flat; transparent: true; opacity: 0.5"
+                                scale="2 2 2" raycaster>
+                    </a-entity>
+                </a-entity>
+            </a-entity>
+            `.trim(),
+        );
+        scene.appendChild(playerCamera);
     }
 
     removeObject = (object: THREE.Object3D) => {
