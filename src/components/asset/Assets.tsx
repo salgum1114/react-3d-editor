@@ -7,7 +7,8 @@ import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
 import { SidebarContainer, Scrollbar, Empty, AddEmpty, Textures } from '../common';
 import { EventTools, AssetTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
-import { IEntity, IDetailEntity, IPrimitive, assetPrimitives } from '../../constants';
+import { IEntity, IDetailEntity, IPrimitive, assetPrimitives, getIcon } from '../../constants';
+import { ITexture } from '../common/Textures';
 
 interface IState {
     assets: IEntity[];
@@ -59,10 +60,13 @@ class Assets extends Component<{}, IState> {
                 assets,
             });
         });
-        EventTools.on('entityselect', () => {
-            this.setState({
-                selectedKeys: [],
-            });
+        EventTools.on('entityselect', (entity: Entity) => {
+            if (entity) {
+                this.setState({
+                    selectedKeys: [],
+                });
+                EventTools.emit('assetselect');
+            }
         });
         EventTools.on('entityupdate', (detail: IDetailEntity) => {
             if (!detail.entity.object3D && detail.component === 'name') {
@@ -106,7 +110,7 @@ class Assets extends Component<{}, IState> {
         }, () => {
             if (selectedKeys.length) {
                 AssetTools.selectAsset(e.node.props.dataRef.entity);
-                EventTools.emit('objectselect');
+                EventTools.emit('entityselect');
             } else {
                 AssetTools.selectAsset();
             }
@@ -139,13 +143,47 @@ class Assets extends Component<{}, IState> {
     }
 
     /**
-     * @description Search in Catalogs
-     * @param {string} searchCatalogs
+     * @description Click to texture
+     * @param {ITexture} texture
      */
-    private handleSearchCatalogs = (searchCatalogs: string) => {
-        this.setState({
-            searchCatalogs,
-        });
+    private handleClickTexture = (texture: ITexture) => {
+        const asset: IPrimitive = {
+            key: '',
+            type: '',
+            title: texture.name,
+            attributes: [
+                {
+                    attribute: 'src',
+                    default: texture.url,
+                },
+            ],
+        };
+        if (texture.type.includes('image')) {
+            Object.assign(asset, {
+                key: 'img',
+                type: 'img',
+                icon: getIcon('img'),
+            });
+        } else if (texture.type.includes('video')) {
+            Object.assign(asset, {
+                key: 'video',
+                type: 'video',
+                icon: getIcon('video'),
+            });
+        } else if (texture.type.includes('audio')) {
+            Object.assign(asset, {
+                key: 'audio',
+                type: 'audio',
+                icon: getIcon('audio'),
+            });
+        } else {
+            Object.assign(asset, {
+                key: 'a-asset-item',
+                type: 'a-asset-item',
+                icon: getIcon('a-asset-item'),
+            });
+        }
+        this.handleAddAsset(asset);
     }
 
     /**
@@ -270,7 +308,7 @@ class Assets extends Component<{}, IState> {
                             </div>
                         </Tabs.TabPane>
                         <Tabs.TabPane key="textures" tab="Textures">
-                            <Textures />
+                            <Textures onClick={this.handleClickTexture} />
                         </Tabs.TabPane>
                     </Tabs>
                 </Modal>

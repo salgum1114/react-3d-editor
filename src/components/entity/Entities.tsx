@@ -9,6 +9,7 @@ import { SidebarContainer, Scrollbar, Empty } from '../common';
 import { IEntity, IDetailEntity, IPrimitive, catalogs, primitives, getIcon } from '../../constants';
 import { EntityTools, EventTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
+import { isInspector } from '../../tools/EntityTools';
 
 type ViewTypes = 'card' | 'list';
 
@@ -39,7 +40,7 @@ class Entities extends Component<{}, IState> {
 
     componentDidMount() {
         EventTools.on('sceneloaded', (scene: IScene) => {
-            const treeNodes = this.buildTreeNode(scene);
+            const treeNodes = EntityTools.buildEntities(scene);
             this.setState({
                 treeNodes,
                 spinning: false,
@@ -98,6 +99,12 @@ class Entities extends Component<{}, IState> {
                 expandedKeys: Array.from(this.state.expandedKeys),
             });
         });
+        EventTools.on('entityclone', () => {
+            const treeNodes = EntityTools.buildEntities(AFRAME.INSPECTOR.sceneEl);
+            this.setState({
+                treeNodes,
+            });
+        });
         EventTools.on('entityselect', (entity: Entity) => {
             if (entity) {
                 this.setState({
@@ -117,78 +124,19 @@ class Entities extends Component<{}, IState> {
             }
         });
         EventTools.on('objectremove', () => {
-            const treeNodes = this.buildTreeNode(AFRAME.INSPECTOR.sceneEl);
+            const treeNodes = EntityTools.buildEntities(AFRAME.INSPECTOR.sceneEl);
             this.setState({
                 treeNodes,
             });
         });
         EventTools.on('entityupdate', (detail: IDetailEntity) => {
             if (detail.entity.object3D && detail.component === 'name') {
-                const treeNodes = this.buildTreeNode(AFRAME.INSPECTOR.sceneEl);
+                const treeNodes = EntityTools.buildEntities(AFRAME.INSPECTOR.sceneEl);
                 this.setState({
                     treeNodes,
                 });
             }
         });
-    }
-
-    /**
-     * @description Building tree
-     * @param {IScene} scene
-     * @returns {IEntity[]} treeNodes
-     */
-    private buildTreeNode = (scene: IScene) => {
-        const treeNodes: IEntity[] = [{
-            key: scene.id,
-            id: scene.object3D.id,
-            type: scene.tagName.toLowerCase(),
-            title: scene.object3D.name.length ? scene.object3D.name : scene.title,
-            icon: 'eye',
-            entity: scene as Entity,
-            children: [],
-        }];
-        const traverseBuildTreeNode = (treeNode: IEntity) => {
-            for (let i = 0; i < treeNode.entity.children.length; i++) {
-                const en = treeNode.entity.children[i] as Entity;
-                if (en.dataset.isInspector || !en.isEntity
-                || en.isInspector || 'aframeInspector' in en.dataset
-                || en.hasAttribute('aframe-injected')) {
-                    continue;
-                }
-                if (!en.id) {
-                    en.id = uuid();
-                }
-                const { id, name } = en.object3D;
-                let title;
-                if (name.length) {
-                    title = name;
-                } else if (en.title) {
-                    title = en.title;
-                } else if (en.id) {
-                    title = en.id;
-                } else {
-                    title = en.tagName;
-                }
-                en.title = title.toString();
-                en.setAttribute('name', title.toString());
-                const childTreeNode: IEntity = {
-                    key: en.id,
-                    id,
-                    type: en.tagName.toLowerCase(),
-                    title,
-                    icon: getIcon(en.tagName.toLowerCase()),
-                    entity: en,
-                    children: [],
-                    parentKey: treeNode.key,
-                };
-                treeNode.children.push(childTreeNode);
-                if (en.children && en.children.length) {
-                    traverseBuildTreeNode(childTreeNode);
-                }
-            }
-        }
-        traverseBuildTreeNode(treeNodes[0]);
-        return treeNodes;
     }
 
     /**
@@ -378,6 +326,7 @@ class Entities extends Component<{}, IState> {
                                                         <Icon name="question-circle-o" />
                                                     </a>
                                                 }
+                                                cover={item.image && <img src={item.image} />}
                                                 style={{ marginBottom: 16 }}
                                                 bodyStyle={{ padding: 12, height: 120 }}
                                             >

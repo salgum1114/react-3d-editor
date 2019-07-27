@@ -2,6 +2,7 @@ import Icon from 'polestar-icons';
 import React, { Component } from 'react';
 import { Spin, Row, Col, Card, Button, Input, Select } from 'antd';
 import isEmpty from 'lodash/isEmpty';
+import { Entity } from 'aframe';
 
 import AddEmpty from './AddEmpty';
 import Scrollbar from './Scrollbar';
@@ -18,12 +19,13 @@ export interface ITexture {
     width?: number;
     height?: number;
     duration?: number;
+    file?: Blob;
 }
 
-type FilterType = 'all' | 'image' | 'video' | 'audio' | 'image/video' | string;
+type FilterType = 'all' | 'image' | 'video' | 'audio' | 'image/video' | 'etc' | string;
 
 interface IProps {
-    onChange?: (value?: any) => void;
+    onClick?: (value?: any) => void;
     type?: FilterType;
 }
 
@@ -33,6 +35,14 @@ interface IState {
     searchTexture: string;
     selectedFilterType: FilterType;
 }
+
+const selectFilterTypes = [
+    { value: 'all', text: 'All' },
+    { value: 'image', text: 'Image' },
+    { value: 'video', text: 'Video' },
+    { value: 'audio', text: 'Audio' },
+    { value: 'etc', text: 'Etc.' },
+];
 
 class Textures extends Component<IProps, IState> {
     state: IState = {
@@ -58,7 +68,7 @@ class Textures extends Component<IProps, IState> {
             } else {
                 Object.keys(response._attachments).forEach((key, index) => {
                     const attachment = response._attachments[key];
-                    if (attachment instanceof Blob) {
+                    if (attachment.data instanceof Blob) {
                         filelist[index] = new File([attachment.data], key, { type: attachment.content_type });
                     } else {
                         filelist[index] = new File([b64toBlob(attachment.data)], key, { type: attachment.content_type });
@@ -77,21 +87,33 @@ class Textures extends Component<IProps, IState> {
      * @description Handle file chooser in input element
      */
     private handleAddTexture = () => {
-        const { textures, selectedFilterType } = this.state;
+        const { type } = this.props;
+        const { selectedFilterType } = this.state;
+        const allTypes = ['image/*', 'video/*', 'audio/*', '.obj', '.mtl', '.gltf'];
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
-        if (!textures.length) {
-            input.setAttribute('accept', '*');
-        } else {
-            if (selectedFilterType === 'image') {
-                input.setAttribute('accept', 'image/*');
-            } else if (selectedFilterType === 'video') {
-                input.setAttribute('accept', 'video/*');
-            } else if (selectedFilterType === 'audio') {
-                input.setAttribute('accept', 'audio/*');
-            } else {
-                input.setAttribute('accept', '*');
+        const setAcceptType = (type: string, input: Entity) => {
+            if (type === 'image') {
+                input.setAttribute('accept', allTypes[0]);
+            } else if (type === 'video') {
+                input.setAttribute('accept', allTypes[1]);
+            } else if (type === 'audio') {
+                input.setAttribute('accept', allTypes[2]);
+            } else if (type === 'image/video') {
+                input.setAttribute('accept', `${allTypes[0]}, ${allTypes[1]}`);
+            } else if (type === 'etc') {
+                allTypes.splice(0, 3);
+                input.setAttribute('accept', allTypes.join(','));
             }
+        }
+        if (typeof type === 'undefined') {
+            if (selectedFilterType === 'all') {
+                input.setAttribute('accept', allTypes);
+            } else {
+                setAcceptType(selectedFilterType, input);
+            }
+        } else {
+            setAcceptType(type, input);
         }
         input.setAttribute('multiple', true);
         input.hidden = true;
@@ -120,7 +142,7 @@ class Textures extends Component<IProps, IState> {
                 return Object.assign(prev, {
                     _attachments: Object.assign(prev._attachments, {
                         [file.name]: {
-                            content_type: file.type,
+                            content_type: file.type.length ? file.type : 'application/octet-stream',
                             data: file,
                         },
                     }),
@@ -136,10 +158,9 @@ class Textures extends Component<IProps, IState> {
         Object.keys(files).forEach((value: string, index: number) => {
             const file = files[parseInt(value, 10)]
             const reader = new FileReader();
+            const type = file.type.length ? file.type : 'application/octet-stream';
             reader.onloadend = () => {
-                const url = reader.result as string;
-                // const blobUrl = window.URL.createObjectURL(file);
-                console.log(file);
+                const url = window.URL.createObjectURL(file);
                 if (file.type.includes('image')) {
                     const image = new Image();
                     image.src = url;
@@ -148,27 +169,29 @@ class Textures extends Component<IProps, IState> {
                             id: file.name,
                             name: file.name,
                             size: file.size,
-                            type: file.type,
+                            type,
                             width: image.width,
                             height: image.height,
                             url,
+                            file,
                         };
                         this.setState({
                             textures: this.state.textures.concat(texture),
                         });
                     }
                 } else if (file.type.includes('video')) {
-                    const video = document.createElement('video') as HTMLVideoElement;
+                    const video = document.createElement('video') as any;
                     video.src = url;
                     video.onloadedmetadata = () => {
                         const texture: ITexture = {
                             id: file.name,
                             name: file.name,
                             size: file.size,
-                            type: file.type,
+                            type,
                             width: video.videoWidth,
                             height: video.videoHeight,
                             url,
+                            file,
                             duration: video.duration,
                         };
                         this.setState({
@@ -183,8 +206,9 @@ class Textures extends Component<IProps, IState> {
                             id: file.name,
                             name: file.name,
                             size: file.size,
-                            type: file.type,
+                            type,
                             url,
+                            file,
                             duration: audio.duration,
                         };
                         this.setState({
@@ -196,8 +220,9 @@ class Textures extends Component<IProps, IState> {
                         id: file.name,
                         name: file.name,
                         size: file.size,
-                        type: file.type,
+                        type,
                         url,
+                        file,
                     };
                     this.setState({
                         textures: this.state.textures.concat(texture),
@@ -214,8 +239,7 @@ class Textures extends Component<IProps, IState> {
                     loading: false,
                 });
             }
-            reader.readAsDataURL(file);
-            // reader.readAsBinaryString(file);
+            reader.readAsBinaryString(file);
         });
     }
 
@@ -224,9 +248,9 @@ class Textures extends Component<IProps, IState> {
      * @param {ITexture} texture
      */
     private handleSelectTexture = (texture: ITexture) => {
-        const { onChange } = this.props;
-        if (onChange) {
-            onChange(texture);
+        const { onClick } = this.props;
+        if (onClick) {
+            onClick(texture);
         }
     }
 
@@ -267,11 +291,15 @@ class Textures extends Component<IProps, IState> {
                         return texture.type.includes(filterTypes[0]) || texture.type.includes(filterTypes[1]);
                     }
                     return texture.type.includes(selectedFilterType);
+                } else if (type === 'etc') {
+                    return texture.type.includes('application');
                 }
                 return texture.type.includes(type);
             } else {
                 if (selectedFilterType === 'all') {
                     return true;
+                } else if (selectedFilterType === 'etc') {
+                    return texture.type.includes('application');
                 }
                 return texture.type.includes(selectedFilterType);
             }
@@ -366,31 +394,43 @@ class Textures extends Component<IProps, IState> {
      * @description Render filter
      * @returns {React.ReactNode}
      */
-    private renderTypeFilter = (type: FilterType) => {
-        return (
+    private renderTypeFilter = () => {
+        const { type } = this.props;
+        return typeof type === 'undefined' ? (
             <Select
                 defaultValue={this.state.selectedFilterType}
                 style={{ width: 120 }}
                 onChange={this.handleFilterType}
             >
-                <Select.Option value="all">
-                    {'All'}
-                </Select.Option>
-                <Select.Option value="image">
-                    {'Image'}
-                </Select.Option>
-                <Select.Option value="video">
-                    {'Video'}
-                </Select.Option>
                 {
-                    type !== 'image/video' && (
-                        <Select.Option value="audio">
-                            {'Audio'}
-                        </Select.Option>
-                    )
+                    selectFilterTypes.map(filterType => {
+                        return (
+                            <Select.Option key={filterType.value} value={filterType.value}>
+                                {filterType.text}
+                            </Select.Option>
+                        );
+                    })
                 }
             </Select>
-        );
+        ) : (type === 'image/video' ? (
+            <Select
+                defaultValue={this.state.selectedFilterType}
+                style={{ width: 120 }}
+                onChange={this.handleFilterType}
+            >
+                {
+                    selectFilterTypes
+                    .filter(filterType => filterType.value === 'all' || filterType.value === 'image' || filterType.value === 'video')
+                    .map(filterType => {
+                        return (
+                            <Select.Option key={filterType.value} value={filterType.value}>
+                                {filterType.text}
+                            </Select.Option>
+                        );
+                    })
+                }
+            </Select>
+        ) : null)
     }
 
     render() {
@@ -407,9 +447,9 @@ class Textures extends Component<IProps, IState> {
                     ) : (
                         <div style={{ display: 'flex', height: '100%', flexDirection: 'column' }}>
                             <div style={{ display: 'flex', padding: '0 8px 16px 8px' }}>
-                                {(typeof type === 'undefined' || type === 'image/video') && this.renderTypeFilter(type)}
+                                {this.renderTypeFilter()}
                                 {this.renderSearch()}
-                                {typeof type === 'undefined' && this.renderActions()}
+                                {this.renderActions()}
                             </div>
                             <div style={{ flex: 1}}>
                                 {this.renderCardItems(textures, searchTexture, selectedFilterType)}

@@ -55,7 +55,7 @@ export class Database {
 
     public async getById(id: string): Promise<PouchDB.Core.Response & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta> {
         try {
-            return this.pouch.get(id, { attachments: true });
+            return this.pouch.get(id, { attachments: true, binary: true });
         } catch (error) {
             throw new Error(error);
         }

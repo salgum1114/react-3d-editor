@@ -35,6 +35,7 @@ class Properties extends Component {
         EventTools.on('assetselect', (asset: Entity) => {
             this.setState({
                 selectedAsset: asset,
+                selectedEntity: null,
             });
         });
         EventTools.on('entityupdate', debounce(() => {

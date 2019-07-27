@@ -46,8 +46,22 @@ class TexturePicker extends PureComponent<IProps, IState> {
      * @description Set the assets for autocomplete
      */
     private setAssets = (): void => {
+        const { schemaKey, componentName } = this.props;
         this.setState({
-            assets: AssetTools.buildAssets(AFRAME.INSPECTOR.sceneEl, ['a-mixin']).map(asset => {
+            assets: AssetTools.buildAssets(AFRAME.INSPECTOR.sceneEl, ['a-mixin'])
+            .filter(asset => {
+                if (componentName === 'file') {
+                    return true;
+                } else if ((componentName === 'obj-model' || componentName === 'gltf-model') && asset.type === 'a-asset-item') {
+                    return true;
+                } else if (componentName === 'material' && (asset.type === 'img' || asset.type === 'video')) {
+                    return true;
+                } else if (componentName === 'sound' && asset.type === 'audio')  {
+                    return true;
+                }
+                return false;
+            })
+            .map(asset => {
                 return {
                     value: asset.key.toString(),
                     text: asset.title.toString(),
@@ -75,6 +89,8 @@ class TexturePicker extends PureComponent<IProps, IState> {
             type = 'audio';
         } else if (componentName === 'material') {
             type = 'image/video';
+        } else if (componentName === 'obj-model' || componentName === 'gltf-model') {
+            type = 'etc';
         }
         return type;
     }
@@ -83,7 +99,7 @@ class TexturePicker extends PureComponent<IProps, IState> {
      * @description
      * @param {ITexture} texture
      */
-    private handleChangeTexture = (texture: ITexture) => {
+    private handleClickTexture = (texture: ITexture) => {
         const { onChange, prefixUrl = true } = this.props;
         if (onChange) {
             onChange(prefixUrl ? `url(${texture.url})` : texture.url);
@@ -144,7 +160,7 @@ class TexturePicker extends PureComponent<IProps, IState> {
                     onChange={this.handleChangeSrc}
                     onSelect={this.handleSelectSrc}
                     value={value.length > 100 ? value.substring(0, 100).concat('...') : value}
-                    dataSource={(entity.object3D || entity.hasAttribute('material')) && assets}
+                    dataSource={(entity.object3D || entity.tagName.toLowerCase() === 'a-mixin') && assets}
                     filterOption={(inputValue, option: any) =>
                         option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                     }
@@ -159,7 +175,7 @@ class TexturePicker extends PureComponent<IProps, IState> {
                     width="75%"
                     style={{ height: '75%' }}
                 >
-                    <Textures onChange={this.handleChangeTexture} type={this.getType(entity, componentName, schemaKey)} />
+                    <Textures onClick={this.handleClickTexture} type={this.getType(entity, componentName, schemaKey)} />
                 </Modal>
             </>
         );

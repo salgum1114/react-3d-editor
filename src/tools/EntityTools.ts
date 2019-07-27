@@ -1,11 +1,14 @@
 import uuid from 'uuid/v4';
 import { Entity } from 'aframe';
 
-import { IPrimitive } from '../constants/primitives/primitives';
+import { IPrimitive, IEntity } from '../constants/primitives/primitives';
 import EventTools from './EventTools';
+import { IScene } from './InspectorTools';
+import { getIcon } from '../constants';
 
 export const createEntity = (primitive: IPrimitive, callback?: (...args: any) => void) => {
     const { type, title, attributes } = primitive;
+    console.log(primitive, 'createEntity');
     const entity = document.createElement(type);
     entity.setAttribute('id', `${type}_${uuid()}`);
     entity.setAttribute('title', title);
@@ -15,6 +18,11 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
             callback(entity);
         }
     })
+    attributes.forEach(attr => {
+        if (attr.default) {
+            entity.setAttribute(attr.attribute, `${attr.default}`);
+        }
+    });
     if (type === 'a-entity') {
         if (AFRAME.INSPECTOR.selectedEntity) {
             AFRAME.INSPECTOR.selectedEntity.appendChild(entity);
@@ -23,11 +31,6 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
         }
         return entity;
     }
-    attributes.forEach(attr => {
-        if (attr.defaultValue) {
-            entity.setAttribute(attr.attribute, `${attr.defaultValue}`);
-        }
-    });
     if (AFRAME.INSPECTOR.selectedEntity) {
         AFRAME.INSPECTOR.selectedEntity.appendChild(entity);
     } else {
@@ -146,12 +149,22 @@ export const removeSelectedEntity = () => {
     }
 }
 
-export const cloneEntity = (entity: Entity) => {
+export const cloneEntity = (entity: Entity, deep?: boolean) => {
     entity.flushToDOM();
-    const clonedEntity = entity.cloneNode(true);
+    const clonedEntity = entity.cloneNode(deep) as Entity;
     clonedEntity.addEventListener('loaded', () => {
+        if (clonedEntity.isPlaying) {
+            clonedEntity.pause();
+        }
+        if (entity.hasAttribute('mixin')) {
+            clonedEntity.setAttribute('mixin', entity.getAttribute('mixin'));
+        }
+        selectEntity(clonedEntity);
         EventTools.emit('entityclone', clonedEntity);
     });
+    clonedEntity.setAttribute('scale', AFRAME.components.scale.schema.stringify(entity.object3D.scale));
+    clonedEntity.id = `${entity.tagName.toLowerCase()}_${uuid()}`;
+    AFRAME.INSPECTOR.sceneEl.appendChild(clonedEntity);
     return clonedEntity;
 }
 
@@ -242,4 +255,69 @@ export const removeComponent = (entity: Entity, component: string) => {
         entity,
         component,
     });
+}
+
+/**
+ * @description Building tree
+ * @param {IScene} scene
+ * @returns {IEntity[]} treeNodes
+ */
+export const buildEntities = (scene: IScene) => {
+    const treeNodes: IEntity[] = [{
+        key: scene.id,
+        id: scene.object3D.id,
+        type: scene.tagName.toLowerCase(),
+        title: scene.object3D.name.length ? scene.object3D.name : scene.title,
+        icon: 'eye',
+        entity: scene as Entity,
+        children: [],
+    }];
+    const traverseBuildTreeNode = (treeNode: IEntity) => {
+        for (let i = 0; i < treeNode.entity.children.length; i++) {
+            const en = treeNode.entity.children[i] as Entity;
+            if (isInspector(en)) {
+                continue;
+            }
+            if (!en.id) {
+                en.id = uuid();
+            }
+            const { id, name } = en.object3D;
+            let title;
+            if (name.length) {
+                title = name;
+            } else if (en.title) {
+                title = en.title;
+            } else if (en.id) {
+                title = en.id;
+            } else {
+                title = en.tagName;
+            }
+            en.title = title.toString();
+            en.setAttribute('name', title.toString());
+            const childTreeNode: IEntity = {
+                key: en.id,
+                id,
+                type: en.tagName.toLowerCase(),
+                title,
+                icon: getIcon(en.tagName.toLowerCase()),
+                entity: en,
+                children: [],
+                parentKey: treeNode.key,
+            };
+            treeNode.children.push(childTreeNode);
+            if (en.children && en.children.length) {
+                traverseBuildTreeNode(childTreeNode);
+            }
+        }
+    }
+    traverseBuildTreeNode(treeNodes[0]);
+    return treeNodes;
+};
+
+export const isInspector = (en: Entity) => {
+    return 'isInpsector' in en.dataset
+    || 'aframeInspector' in en.dataset
+    || !en.isEntity
+    || en.isInspector
+    || en.hasAttribute('aframe-injected');
 }

@@ -5,11 +5,12 @@ import { FormComponentProps } from 'antd/lib/form';
 
 import { capitalize } from '../../tools/UtilTools';
 import FormRender from './FormRender';
-import { EntityTools } from '../../tools';
+import { EntityTools, EventTools } from '../../tools';
 import { GeneralComponentType } from '../../constants/components/components';
 import AssetComponents from '../../constants/assets/components';
 import { ComponentNames } from '../../constants/assets/components/components';
 import AssetSchema from '../../constants/assets';
+import { IDetailEntity } from '../../constants';
 
 interface IProps extends FormComponentProps {
     entity?: Entity;
@@ -17,20 +18,47 @@ interface IProps extends FormComponentProps {
     type: string;
 }
 
-class Components extends Component<IProps> {
+interface IState {
+    activeKey?: string | string[];
+}
+
+class Components extends Component<IProps, IState> {
+    state: IState = {
+        activeKey: undefined,
+    }
+
+    componentDidMount() {
+        EventTools.on('componentadd', (detail: IDetailEntity) => {
+            this.setState({
+                activeKey: detail.component,
+            });
+        });
+    }
+
     /**
      * @description Remove component
      * @param {string} componentName
      */
-    handleRemoveComponent = (componentName: string) => {
+    private handleRemoveComponent = (componentName: string) => {
         const { entity } = this.props;
         EntityTools.removeComponent(entity, componentName);
     }
 
+    /**
+     * @description Change the collapse
+     * @param {(string | string[])} key
+     */
+    private handleChangeCollapse = (activeKey: string | string[]) => {
+        this.setState({
+            activeKey,
+        });
+    }
+
     render() {
         const { entity, form, type, generalComponents } = this.props;
+        const { activeKey } = this.state;
         return (
-            <Collapse accordion={true} bordered={false}>
+            <Collapse activeKey={activeKey} accordion={true} bordered={false} onChange={this.handleChangeCollapse}>
                 {
                     entity.components ? Object.keys(entity.components)
                     .filter(component => !generalComponents.some(comp => comp === component))

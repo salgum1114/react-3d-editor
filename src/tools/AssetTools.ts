@@ -32,13 +32,18 @@ export const loadAframeAssets = () => {
 };
 
 export const createAsset = (item: IPrimitive, callback?: (...args: any) => void) => {
-    const { type, title } = item;
+    const { type, title, attributes } = item;
     const asset = document.createElement(item.type);
     asset.setAttribute('id', `${type}_${uuid()}`)
     asset.setAttribute('title', title);
     if (type !== 'a-mixin') {
         asset.setAttribute('src', '');
     }
+    attributes.forEach(attr => {
+        if (attr.default) {
+            asset.setAttribute(attr.attribute, `${attr.default}`);
+        }
+    });
     document.getElementsByTagName('a-assets')[0].appendChild(asset);
     EventTools.emit('assetcreate', asset);
     if (callback) {
@@ -48,10 +53,12 @@ export const createAsset = (item: IPrimitive, callback?: (...args: any) => void)
 };
 
 export const removeAsset = (asset: Entity) => {
-    const assets = document.getElementsByTagName('a-assets')[0];
+    const assets = document.querySelector('a-assets');
     if (assets.hasChildNodes()) {
-        asset.parentNode.removeChild(asset);
+        const closest = findClosestAsset(asset);
+        assets.removeChild(asset);
         EventTools.emit('assetremove');
+        EventTools.emit('assetselect', closest);
     }
 };
 
@@ -64,6 +71,20 @@ export const removeSelectedAsset = () => {
 export const selectAsset = (asset?: Entity) => {
     EventTools.emit('assetselect', asset);
 };
+
+export const findClosestAsset = (asset: Entity) => {
+    // First we try to find the after the asset
+    const nextAsset = asset.nextElementSibling;
+    if (nextAsset) {
+        return nextAsset;
+    }
+    // Otherwise try to find before the asset
+    const prevAsset = asset.previousElementSibling;
+    if (prevAsset) {
+        return prevAsset;
+    }
+    return null;
+}
 
 /**
  * @description Building assets

@@ -1,5 +1,5 @@
 import EventTools from './EventTools';
-import { EntityTools, InspectorTools } from '.';
+import { EntityTools, InspectorTools, AssetTools } from '.';
 import { ObjectMapper } from '../types/utils';
 import { getOS } from './UtilTools';
 
@@ -40,6 +40,9 @@ class ShortcutTools {
             if (this.inspector.selectedEntity) {
                 this.inspector.selectEntity(null);
             }
+            if (this.inspector.selectedAsset) {
+                this.inspector.selectAsset(null);
+            }
         }
         // w: translate
         if (keyCode === 87) {
@@ -71,7 +74,11 @@ class ShortcutTools {
         }
         // backspace & supr: remove selected entity
         if (keyCode === 8 || keyCode === 46) {
-            EntityTools.removeSelectedEntity();
+            if (AFRAME.INSPECTOR.selectedEntity) {
+                EntityTools.removeSelectedEntity();
+            } else if (AFRAME.INSPECTOR.selectedAsset) {
+                AssetTools.removeSelectedAsset();
+            }
         }
         // d: clone selected entity
         if (keyCode === 68) {
@@ -127,7 +134,7 @@ class ShortcutTools {
                 // x: cut selected entity
                 if (event.keyCode === 88) {
                     this.inspector.entityToCopy = this.inspector.selectedEntity;
-                    EntityTools.removeSelectedEntity(true);
+                    EntityTools.removeSelectedEntity();
                 }
                 // c: copy selected entity
                 if (event.keyCode === 67) {

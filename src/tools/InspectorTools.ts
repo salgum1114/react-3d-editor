@@ -106,12 +106,20 @@ class InspectorTools {
      */
     initScene = (inspector: HTMLElement, options: IInsepctorOptions) => {
         const scene = document.createElement('a-scene') as IScene;
-        this.loadAssets(scene, this.exampleAssets());
-        this.loadEntities(scene, this.exampleEntities());
+        const assets = document.createElement('a-assets');
+        assets.id = 'assets';
+        scene.appendChild(assets);
+        this.loadAssets(scene);
+        // this.loadAssets(scene, this.exampleAssets());
         const { playerCamera = true } = options;
         if (playerCamera) {
-            this.loadPlayerCamera(scene);
+            // this.loadPlayerCamera(scene);
         }
+        scene.querySelector('a-assets').addEventListener('loaded', () => {
+            console.log('a-assets loaded');
+            this.loadEntities(scene);
+            // this.loadEntities(scene, this.exampleEntities());
+        });
         inspector.appendChild(scene);
         scene.id = 'scene';
         scene.title = 'Scene';
@@ -122,19 +130,18 @@ class InspectorTools {
 
     exampleAssets = () => {
         return `
-            <a-assets id="assets">
-                <a-mixin id="blue" material="color: #4CC3D9"></a-mixin>
-                <a-mixin id="blueBox" geometry="primitive: box; depth: 2; height: 5; width: 1" material="color: #4CC3D9"></a-mixin>
-                <a-mixin id="box" geometry="primitive: box; depth: 1; height: 1; width: 1"></a-mixin>
-                <a-mixin id="cylinder" geometry="primitive: cylinder; height: 0.3; radius: 0.75; segmentsRadial: 6"></a-mixin>
-                <a-mixin id="green" material="color: #7BC8A4"></a-mixin>
-                <a-mixin id="orange" material="color: #F16745"></a-mixin>
-                <a-mixin id="purple" material="color: #93648D"></a-mixin>
-                <a-mixin id="short" scale="1 0.5 1"></a-mixin>
-                <a-mixin id="yellow" material="color: #FFC65D"></a-mixin>
-                <img id="crateImg" src="https://aframe.io/sample-assets/assets/images/wood/crate.gif" crossOrigin="true">
-                <img id="floorImg" src="https://aframe.io/sample-assets/assets/images/terrain/grasslight-big.jpg" crossOrigin="true">
-            </a-assets>
+            <a-mixin id="blue" material="color: #4CC3D9"></a-mixin>
+            <a-mixin id="blueBox" geometry="primitive: box; depth: 2; height: 5; width: 1" material="color: #4CC3D9"></a-mixin>
+            <a-mixin id="box" geometry="primitive: box; depth: 1; height: 1; width: 1"></a-mixin>
+            <a-mixin id="cylinder" geometry="primitive: cylinder; height: 0.3; radius: 0.75; segmentsRadial: 6"></a-mixin>
+            <a-mixin id="green" material="color: #7BC8A4"></a-mixin>
+            <a-mixin id="orange" material="color: #F16745"></a-mixin>
+            <a-mixin id="purple" material="color: #93648D"></a-mixin>
+            <a-mixin id="short" scale="1 0.5 1"></a-mixin>
+            <a-mixin id="yellow" material="color: #FFC65D"></a-mixin>
+            <img id="crateImg" src="https://aframe.io/sample-assets/assets/images/wood/crate.gif" crossOrigin="true">
+            <img id="floorImg" src="https://aframe.io/sample-assets/assets/images/terrain/grasslight-big.jpg" crossOrigin="true">
+            <a-asset-item id="buster_drone" src="/catalogs/buster_drone/scene.gltf" />
         `;
     }
 
@@ -160,6 +167,9 @@ class InspectorTools {
 
             <!-- Lights. -->
             <a-entity id="pointLight" light="type: directional; intensity: 1" position="0 3 3"></a-entity>
+
+            <!-- Buster Drone -->
+            <a-entity gltf-model="#buster_drone" animation-mixer position="1 1 1" scale="0.01 0.01 0.01" />
         `;
     }
 
@@ -218,12 +228,12 @@ class InspectorTools {
         });
     }
 
-    loadEntities = (scene: IScene, fragment: string) => {
+    loadEntities = (scene: IScene, fragment: string = '') => {
         scene.appendChild(document.createRange().createContextualFragment(fragment.trim()));
     }
 
-    loadAssets = (scene: IScene, fragment: string) => {
-        scene.appendChild(document.createRange().createContextualFragment(fragment.trim()))
+    loadAssets = (scene: IScene, fragment: string = '') => {
+        scene.querySelector('a-assets').appendChild(document.createRange().createContextualFragment(fragment.trim()))
     }
 
     loadPlayerCamera = (scene: IScene, fragment?: string) => {
@@ -245,10 +255,10 @@ class InspectorTools {
         scene.appendChild(playerCamera);
     }
 
-    removeObject = (object: THREE.Object3D) => {
+    removeObject = (object3D: THREE.Object3D) => {
         // Remove just the helper as the object will be deleted by A-Frame
-        this.removeHelpers(object);
-        EventTools.emit('objectremove', object);
+        this.removeHelpers(object3D);
+        EventTools.emit('objectremove', object3D);
     }
 
     addHelper = (object: THREE.Object3D) => {
@@ -281,8 +291,8 @@ class InspectorTools {
         helper.update();
     }
 
-    removeHelpers = (object: THREE.Object3D) => {
-        object.traverse(node => {
+    removeHelpers = (object3D: THREE.Object3D) => {
+        object3D.traverse(node => {
             const helper = this.helpers[node.uuid];
             if (helper) {
                 this.sceneHelpers.remove(helper);

@@ -91,12 +91,17 @@ export type EntityType = PrimitiveType | CoreType | string;
 export interface IAttribute {
     attribute: string;
     componentMapping?: string;
-    defaultValue?: string | number | boolean;
+    default?: string | number | boolean;
     value?: string | number | boolean;
 }
 
 export interface IAttributes {
     [key: string]: IAttribute;
+}
+
+export interface ITemplate {
+    entity: string;
+    asset?: string;
 }
 
 export interface IPrimitive {
@@ -108,6 +113,7 @@ export interface IPrimitive {
     image?: string;
     url?: string;
     attributes?: IAttribute[];
+    template?: ITemplate;
 }
 
 export interface IEntity {
@@ -372,6 +378,7 @@ export const assetPrimitives: IPrimitive[] = [
         title: 'Mixin',
         description: 'Mixins provide a way to compose and reuse commonly-used sets of component properties.',
         url: 'https://aframe.io/docs/0.9.0/core/mixins.html',
+        attributes: [],
     },
     {
         key: 'a-asset-item',
@@ -379,6 +386,7 @@ export const assetPrimitives: IPrimitive[] = [
         title: 'Asset Item',
         description: 'Miscellaneous assets such as 3D models and materials',
         url: 'https://aframe.io/docs/0.9.0/core/asset-management-system.html',
+        attributes: [],
     },
     {
         key: 'audio',
@@ -386,6 +394,7 @@ export const assetPrimitives: IPrimitive[] = [
         title: 'Audio',
         description: 'Sound files',
         url: 'https://aframe.io/docs/0.9.0/core/asset-management-system.html',
+        attributes: [],
     },
     {
         key: 'img',
@@ -393,6 +402,7 @@ export const assetPrimitives: IPrimitive[] = [
         title: 'Image',
         description: 'Image textures',
         url: 'https://aframe.io/docs/0.9.0/core/asset-management-system.html',
+        attributes: [],
     },
     {
         key: 'video',
@@ -400,5 +410,6 @@ export const assetPrimitives: IPrimitive[] = [
         title: 'Video',
         description: 'Video textures',
         url: 'https://aframe.io/docs/0.9.0/core/asset-management-system.html',
+        attributes: [],
     },
 ];
