@@ -1,14 +1,30 @@
 import uuid from 'uuid/v4';
-import { Entity } from 'aframe';
+import { Entity, Schema, Component } from 'aframe';
 
 import { IPrimitive, IEntity } from '../constants/primitives/primitives';
 import EventTools from './EventTools';
 import { IScene } from './InspectorTools';
 import { getIcon } from '../constants';
+import { Record } from '../types/utils';
+import { UtilTools } from '.';
 
 export const createEntity = (primitive: IPrimitive, callback?: (...args: any) => void) => {
-    const { type, title, attributes } = primitive;
-    console.log(primitive, 'createEntity');
+    const { type, title, attributes, fragment } = primitive;
+    if (fragment && fragment.asset) {
+        AFRAME.INSPECTOR.sceneEl.querySelector('a-assets').appendChild(createFragment(fragment.entity));
+    }
+    if (fragment && fragment.entity) {
+        const createdFragment = createFragment(fragment.entity);
+        const { firstChild } = createdFragment;
+        firstChild.addEventListener('loaded', () => {
+            EventTools.emit('entitycreate', firstChild);
+            if (callback) {
+                callback(firstChild);
+            }
+        });
+        AFRAME.INSPECTOR.sceneEl.appendChild(createdFragment);
+        return firstChild;
+    }
     const entity = document.createElement(type);
     entity.setAttribute('id', `${type}_${uuid()}`);
     entity.setAttribute('title', title);
@@ -20,7 +36,13 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
     })
     attributes.forEach(attr => {
         if (attr.default) {
-            entity.setAttribute(attr.attribute, `${attr.default}`);
+            let splitName;
+            if (attr.attribute.indexOf('.') !== -1) {
+                splitName = attr.attribute.split('.');
+                entity.setAttribute(splitName[0], splitName[1], attr.default);
+            } else {
+                entity.setAttribute(attr.attribute, attr.default);
+            }
         }
     });
     if (type === 'a-entity') {
@@ -37,6 +59,10 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
         AFRAME.scenes[0].appendChild(entity);
     }
     return entity;
+};
+
+export const createFragment = (fragment: string) => {
+    return document.createRange().createContextualFragment(fragment.trim());
 };
 
 export const updateEntity = (entity: Entity, propertyName: string, value: any) => {
@@ -320,4 +346,328 @@ export const isInspector = (en: Entity) => {
     || !en.isEntity
     || en.isInspector
     || en.hasAttribute('aframe-injected');
+};
+
+/**
+ * Return the clipboard representation to be used to copy to the clipboard
+ * @param  {Element} entity Entity to copy to clipboard
+ * @return {string} Entity clipboard representation
+ */
+export function getEntityClipboardRepresentation(entity: Element) {
+    const clone = prepareForSerialization(entity) as Element;
+    return clone.outerHTML;
+};
+
+/**
+ * Returns a copy of the DOM hierarchy prepared for serialization.
+ * The process optimises component representation to avoid values coming from
+ * primitive attributes, mixins and defaults.
+ *
+ * @param {Element} entity Root of the DOM hierarchy.
+ * @return {Element} Copy of the DOM hierarchy ready for serialization.
+ */
+const prepareForSerialization = (entity: Element): Element => {
+    const clone = entity.cloneNode(false) as Element;
+    const children = entity.childNodes;
+    for (let i = 0, l = children.length; i < l; i++) {
+        const child = children[i] as HTMLElement;
+        if (
+            child.nodeType !== Node.ELEMENT_NODE ||
+            (!child.hasAttribute('aframe-injected') &&
+            !child.hasAttribute('data-aframe-inspector') &&
+            !child.hasAttribute('data-aframe-canvas'))
+        ) {
+            clone.appendChild(prepareForSerialization(children[i] as Entity));
+        }
+    }
+    optimizeComponents(clone, entity);
+    return clone;
+};
+
+/**
+ * Removes from copy those components or components' properties that comes from
+ * primitive attributes, mixins, injected default components or schema defaults.
+ *
+ * @param {Element} copy   Destinatary element for the optimization.
+ * @param {Element} source Element to be optimized.
+ */
+const optimizeComponents = (copy: Element, source: Element) => {
+    const removeAttribute = HTMLElement.prototype.removeAttribute;
+    const setAttribute = HTMLElement.prototype.setAttribute;
+    const components = source.components || {};
+    Object.keys(components).forEach(name => {
+        const component = components[name];
+        const result = getImplicitValue(component, source);
+        const isInherited = result[1];
+        const implicitValue = result[0];
+        const currentValue = source.getAttribute(name);
+        const optimalUpdate = getOptimalUpdate(
+            component,
+            implicitValue,
+            currentValue,
+        );
+        const doesNotNeedUpdate = optimalUpdate === null;
+        if (isInherited && doesNotNeedUpdate) {
+            removeAttribute.call(copy, name);
+        } else {
+            const schema = component.schema;
+            const value = stringifyComponentValue(schema, optimalUpdate);
+            setAttribute.call(copy, name, value);
+        }
+    });
+};
+
+/**
+ * @param  {Schema} schema The component schema.
+ * @param  {any}    data   The component value.
+ * @return {string}        The string representation of data according to the
+ *                         passed component's schema.
+ */
+const stringifyComponentValue = (schema: Schema<any>, data: any) => {
+    const single = () => {
+        return schema.stringify(data);
+    }
+    const multi = () => {
+        const propertyBag = {} as Record;
+        Object.keys(data).forEach(function(name) {
+            if (schema[name]) {
+                propertyBag[name] = schema[name].stringify(data[name]);
+            }
+        });
+        return AFRAME.utils.styleParser.stringify(propertyBag);
+    }
+    data = typeof data === 'undefined' ? {} : data;
+    if (data === null) {
+        return '';
+    }
+    return (isSingleProperty(schema) ? single : multi)();
+};
+
+/**
+ * Computes the value for a component coming from primitive attributes,
+ * mixins, primitive defaults, a-frame default components and schema defaults.
+ * In this specific order.
+ *
+ * In other words, it is the value of the component if the author would have not
+ * overridden it explicitly.
+ *
+ * @param {Component} component Component to calculate the value of.
+ * @param {Element}   source    Element owning the component.
+ * @return                      A pair with the computed value for the component of source and a flag indicating if the component is completely inherited from other sources (`true`) or genuinely owned by the source entity (`false`).
+ */
+const getImplicitValue = (component: Component, source: any) => {
+    let isInherited = false;
+    const single = () => {
+        let value = getMixedValue(component, null, source);
+        if (value === undefined) {
+            value = getInjectedValue(component, null, source);
+        }
+        if (value !== undefined) {
+            isInherited = true;
+        } else {
+            value = getDefaultValue(component, null, source);
+        }
+        if (value !== undefined) {
+            // XXX: This assumes parse is idempotent
+            return component.schema.parse(value);
+        }
+        return value;
+    }
+    const multi = () => {
+        let value = {} as Record;
+        Object.keys(component.schema).forEach(propertyName => {
+            let propertyValue = getFromAttribute(component, propertyName, source);
+            if (propertyValue === undefined) {
+                propertyValue = getMixedValue(component, propertyName, source);
+            }
+            if (propertyValue === undefined) {
+                propertyValue = getInjectedValue(component, propertyName, source);
+            }
+            if (propertyValue !== undefined) {
+                isInherited = isInherited || true;
+            } else {
+                propertyValue = getDefaultValue(component, propertyName, source);
+            }
+            if (propertyValue !== undefined) {
+                const { parse } = component.schema[propertyName];
+                value = value || {};
+                // XXX: This assumes parse is idempotent
+                value[propertyName] = parse(propertyValue);
+            }
+        });
+        return value;
+    }
+    const value = (isSingleProperty(component.schema) ? single : multi)();
+    return [value, isInherited];
+};
+
+/**
+ * Gets the value for the component's property coming from a primitive
+ * attribute.
+ *
+ * Primitives have mappings from attributes to component's properties.
+ * The function looks for a present attribute in the source element which
+ * maps to the specified component's property.
+ *
+ * @param  {Component} component    Component to be found.
+ * @param  {string}    propertyName Component's property to be found.
+ * @param  {Element}   source       Element owning the component.
+ * @return {any}                    The value of the component's property coming
+ *                                  from the primitive's attribute if any or
+ *                                  `undefined`, otherwise.
+ */
+const getFromAttribute = (component: Component, propertyName: string, source: any) => {
+    let value;
+    const mappings = source.mappings || {};
+    const route = component.name + '.' + propertyName;
+    const findAttribute = (mappings: any, route: string) => {
+        const attributes = Object.keys(mappings);
+        for (let i = 0, l = attributes.length; i < l; i++) {
+            const attribute = attributes[i];
+            if (mappings[attribute] === route) {
+                return attribute;
+            }
+        }
+        return undefined;
+    }
+    const primitiveAttribute = findAttribute(mappings, route);
+    if (primitiveAttribute && source.hasAttribute(primitiveAttribute)) {
+        value = source.getAttribute(primitiveAttribute);
+    }
+    return value;
 }
+
+/**
+ * Gets the value for a component or component's property coming from mixins of
+ * an element.
+ *
+ * If the component or component's property is not provided by mixins, the
+ * functions will return `undefined`.
+ *
+ * @param {Component} component      Component to be found.
+ * @param {string}    [propertyName] If provided, component's property to be
+ *                                   found.
+ * @param {Element}   source         Element owning the component.
+ * @return                           The value of the component or components'
+ *                                   property coming from mixins of the source.
+ */
+const getMixedValue = (component: Component, propertyName: string, source: any) => {
+    let value;
+    const reversedMixins = source.mixinEls.reverse();
+    for (let i = 0; value === undefined && i < reversedMixins.length; i++) {
+        const mixin = reversedMixins[i];
+        if (mixin.attributes.hasOwnProperty(component.name)) {
+            if (!propertyName) {
+                value = mixin.getAttribute(component.name);
+            } else {
+                value = mixin.getAttribute(component.name)[propertyName];
+            }
+        }
+    }
+    return value;
+}
+
+/**
+ * Gets the value for a component or component's property coming from primitive
+ * defaults or a-frame defaults. In this specific order.
+ *
+ * @param {Component} component      Component to be found.
+ * @param {string}    [propertyName] If provided, component's property to be
+ *                                   found.
+ * @param {Element}   source         Element owning the component.
+ * @return                           The component value coming from the
+ *                                   injected default components of source.
+ */
+const getInjectedValue = (component: Component, propertyName: string, source: any) => {
+    let value;
+    const primitiveDefaults = source.defaultComponentsFromPrimitive || {};
+    const aFrameDefaults = source.defaultComponents || {};
+    const defaultSources = [primitiveDefaults, aFrameDefaults];
+    for (let i = 0; value === undefined && i < defaultSources.length; i++) {
+        const defaults = defaultSources[i];
+        if (defaults.hasOwnProperty(component.name)) {
+            if (!propertyName) {
+                value = defaults[component.name];
+            } else {
+                value = defaults[component.name][propertyName];
+            }
+        }
+    }
+    return value;
+}
+
+/**
+ * Gets the value for a component or component's property coming from schema
+ * defaults.
+ *
+ * @param {Component} component      Component to be found.
+ * @param {string}    [propertyName] If provided, component's property to be
+ *                                   found.
+ * @param {Element}   source         Element owning the component.
+ * @return                           The component value coming from the schema
+ *                                   default.
+ */
+const getDefaultValue = (component: Component, propertyName: string, source: any) => {
+    if (!propertyName) {
+        return component.schema.default;
+    }
+    return component.schema[propertyName].default;
+}
+
+/**
+ * Returns the minimum value for a component with an implicit value to equal a
+ * reference value. A `null` optimal value means that there is no need for an
+ * update since the implicit value and the reference are equal.
+ *
+ * @param {Component} component Component of the computed value.
+ * @param {any}       implicit  The implicit value of the component.
+ * @param {any}       reference The reference value for the component.
+ * @return                      the minimum value making the component to equal
+ *                              the reference value.
+ */
+const getOptimalUpdate = (component: Component, implicit: any, reference: any) => {
+    if (UtilTools.equal(implicit, reference)) {
+        return null;
+    }
+    if (isSingleProperty(component.schema)) {
+        return reference;
+    }
+    const optimal = {} as Record;
+    Object.keys(reference).forEach(key => {
+        const needsUpdate = !UtilTools.equal(reference[key], implicit[key]);
+        if (needsUpdate) {
+            optimal[key] = reference[key];
+        }
+    });
+    return optimal;
+}
+
+/**
+ * @param {Schema} schema   Component's schema to test if it is single property.
+ * @return {boolean}        if component is single property.
+ */
+const isSingleProperty = (schema: Schema) => {
+    return AFRAME.schema.isSingleProperty(schema);
+}
+
+/**
+ * Detect element's Id collision and returns a valid one
+ * @param  {string} baseId Proposed Id
+ * @return {string}        Valid Id based on the proposed Id
+ */
+const getUniqueId = (baseId: string) => {
+    if (!document.getElementById(baseId)) {
+        return baseId;
+    }
+    let i = 2;
+    // If the baseId ends with _#, it extracts the baseId removing the suffix
+    const groups = baseId.match(/(\w+)-(\d+)/);
+    if (groups) {
+        baseId = groups[1];
+        i = groups[2];
+    }
+    while (document.getElementById(baseId + '-' + i)) {
+        i++;
+    }
+    return baseId + '-' + i;
+};

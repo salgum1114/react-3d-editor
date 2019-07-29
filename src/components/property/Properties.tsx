@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { Entity } from 'aframe';
 import debounce from 'lodash/debounce';
+import Clipboard from 'clipboard';
 
 import { SidebarContainer } from '../common';
-import { EventTools } from '../../tools';
+import { EventTools, EntityTools, UtilTools } from '../../tools';
 import Property from './Property';
 import Icon from 'polestar-icons';
 import { getIcon } from '../../constants';
+import { message } from 'antd';
 
 interface IState {
     selectedEntity?: Entity;
@@ -49,6 +51,17 @@ class Properties extends Component {
         });
     }
 
+    /**
+     * @description Copy to clipboard
+     */
+    private handleEntityClipboard = () => {
+        const { selectedEntity, selectedAsset } = this.state;
+        const selected = selectedEntity || selectedAsset;
+        const html = EntityTools.getEntityClipboardRepresentation(selected);
+        UtilTools.clibpoard(html);
+        message.info('Copied to clipboard');
+    }
+
     render() {
         const { selectedEntity, selectedAsset } = this.state;
         let entityTitle;
@@ -78,7 +91,7 @@ class Properties extends Component {
                     <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entityTitle}</div>
                 </div>
                 <div>
-                    <Icon name="clipboard" className="editor-icon" />
+                    <Icon name="clipboard" className="editor-icon" onClick={this.handleEntityClipboard} />
                 </div>
             </>
         ) : (

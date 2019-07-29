@@ -133,3 +133,13 @@ export const b64toBlob = (b64Data: string, contentType: string = '', sliceSize: 
     const blob = new Blob(byteArrays, {type: contentType});
     return blob;
 }
+
+export const clibpoard = (text: string): void => {
+    const textarea = document.createElement('textarea') as any;
+    document.body.appendChild(textarea);
+    textarea.value = text;
+    textarea.focus();
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+};

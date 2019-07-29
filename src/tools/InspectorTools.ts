@@ -109,7 +109,7 @@ class InspectorTools {
         const assets = document.createElement('a-assets');
         assets.id = 'assets';
         scene.appendChild(assets);
-        this.loadAssets(scene);
+        this.loadAssets(scene, '<video id="sample_video" autoplay="true" src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" />');
         // this.loadAssets(scene, this.exampleAssets());
         const { playerCamera = true } = options;
         if (playerCamera) {
@@ -229,11 +229,11 @@ class InspectorTools {
     }
 
     loadEntities = (scene: IScene, fragment: string = '') => {
-        scene.appendChild(document.createRange().createContextualFragment(fragment.trim()));
+        return scene.appendChild(document.createRange().createContextualFragment(fragment.trim()));
     }
 
     loadAssets = (scene: IScene, fragment: string = '') => {
-        scene.querySelector('a-assets').appendChild(document.createRange().createContextualFragment(fragment.trim()))
+        return scene.querySelector('a-assets').appendChild(document.createRange().createContextualFragment(fragment.trim()))
     }
 
     loadPlayerCamera = (scene: IScene, fragment?: string) => {
@@ -252,7 +252,7 @@ class InspectorTools {
             </a-entity>
             `.trim(),
         );
-        scene.appendChild(playerCamera);
+        return scene.appendChild(playerCamera);
     }
 
     removeObject = (object3D: THREE.Object3D) => {

@@ -17,6 +17,7 @@ interface IProps extends FormComponentProps {
     schemaKey?: string;
     onChange?: (value?: any) => void;
     prefixUrl?: boolean;
+    baseUrl?: boolean;
 }
 
 interface IState {
@@ -27,7 +28,7 @@ interface IState {
 
 class TexturePicker extends PureComponent<IProps, IState> {
     state: IState = {
-        value: this.props.data instanceof HTMLImageElement ? this.props.data.id : (this.props.data || ''),
+        value: this.props.data instanceof HTMLElement ? this.props.data.id : (this.props.data || ''),
         visible: false,
         assets: [],
     }
@@ -40,6 +41,14 @@ class TexturePicker extends PureComponent<IProps, IState> {
         EventTools.on('assetremove', () => {
             this.setAssets();
         });
+    }
+
+    componentWillReceiveProps(nextProps: IProps) {
+        if (nextProps.data !== this.props.data) {
+            this.setState({
+                value: nextProps.data instanceof HTMLElement ? nextProps.data.id : (nextProps.data || ''),
+            });
+        }
     }
 
     /**
@@ -100,13 +109,36 @@ class TexturePicker extends PureComponent<IProps, IState> {
      * @param {ITexture} texture
      */
     private handleClickTexture = (texture: ITexture) => {
-        const { onChange, prefixUrl = true } = this.props;
-        if (onChange) {
-            onChange(prefixUrl ? `url(${texture.url})` : texture.url);
+        const { onChange, entity, prefixUrl = true, baseUrl = true, componentName } = this.props;
+        const setValue = (value: string) => {
+            if (entity.tagName.toLowerCase() === 'a-asset-item'
+            || entity.tagName.toLowerCase() === 'a-mixin' && componentName === 'sound') {
+                onChange(value);
+            } else {
+                onChange(prefixUrl ? `url(${value})` : value);
+            }
             this.setState({
-                value: texture.url,
+                value,
             });
             this.handleModalVisible();
+        }
+        if (onChange) {
+            const tagName = entity.tagName.toLowerCase();
+            if (tagName === 'a-mixin' && (componentName === 'obj-model' || componentName === 'gltf-model' || componentName === 'sound')
+            || tagName === 'a-asset-item') {
+                setValue(texture.url);
+                return;
+            }
+            if (baseUrl) {
+                const reader = new FileReader();
+                reader.readAsDataURL(texture.file);
+                reader.onload = () => {
+                    const url = reader.result as string;
+                    setValue(url);
+                };
+            } else {
+                setValue(texture.url);
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import CameraTools from './CameraTools';
 import InspectorTools from './InspectorTools';
 import HistoryTools from './HistoryTools';
 import * as AssetTools from './AssetTools';
+import * as UtilTools from './UtilTools';
 
 export {
     EntityTools,
@@ -18,4 +19,5 @@ export {
     InspectorTools,
     HistoryTools,
     AssetTools,
+    UtilTools,
 }

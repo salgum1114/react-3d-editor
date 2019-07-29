@@ -3,13 +3,12 @@ import { Tree, List, Modal, Tabs, Radio, Input, message, Row, Col, Card, Avatar 
 import { Entity } from 'aframe';
 import Icon from 'polestar-icons';
 import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
-import uuid from 'uuid/v4';
+import difference from 'lodash/difference';
 
 import { SidebarContainer, Scrollbar, Empty } from '../common';
 import { IEntity, IDetailEntity, IPrimitive, catalogs, primitives, getIcon } from '../../constants';
 import { EntityTools, EventTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
-import { isInspector } from '../../tools/EntityTools';
 
 type ViewTypes = 'card' | 'list';
 
@@ -47,56 +46,11 @@ class Entities extends Component<{}, IState> {
             });
         });
         EventTools.on('entitycreate', (entity: Entity) => {
-            if (this.state.selectedKeys.length === 0) {
-                if (!this.state.expandedKeys.some(key => key === 'scene')) {
-                    this.state.expandedKeys.push('scene');
-                }
-                this.state.treeNodes[0].children.push({
-                    key: entity.id,
-                    id: entity.object3D.id,
-                    type: entity.tagName.toLowerCase(),
-                    title: entity.title,
-                    icon: getIcon(entity.tagName.toLowerCase()),
-                    children: [],
-                    entity,
-                    parentKey: 'scene',
-                });
-            } else {
-                if (this.state.selectedKeys[0] === 'scene') {
-                    if (!this.state.expandedKeys.some(key => key === 'scene')) {
-                        this.state.expandedKeys.push('scene');
-                    }
-                    this.state.treeNodes[0].children.push({
-                        key: entity.id,
-                        id: entity.object3D.id,
-                        type: entity.tagName.toLowerCase(),
-                        title: entity.title,
-                        icon: getIcon(entity.tagName.toLowerCase()),
-                        children: [],
-                        entity,
-                        parentKey: 'scene',
-                    });
-                } else {
-                    const selectedKey = this.state.selectedKeys[0];
-                    const parentNode = this.findTreeNode(selectedKey, this.state.treeNodes);
-                    if (!this.state.expandedKeys.some(key => key === parentNode.key)) {
-                        this.state.expandedKeys.push(parentNode.key.toString());
-                    }
-                    parentNode.children.push({
-                        key: entity.id,
-                        id: entity.object3D.id,
-                        type: entity.tagName.toLowerCase(),
-                        title: entity.title,
-                        icon: getIcon(entity.tagName.toLowerCase()),
-                        children: [],
-                        entity,
-                        parentKey: selectedKey,
-                    });
-                }
-            }
+            const treeNodes = EntityTools.buildEntities(AFRAME.INSPECTOR.sceneEl);
+            const diffKeys = difference([entity.parentElement.id], this.state.expandedKeys);
             this.setState({
-                treeNodes: this.state.treeNodes,
-                expandedKeys: Array.from(this.state.expandedKeys),
+                treeNodes,
+                expandedKeys: Array.from(this.state.expandedKeys.concat(diffKeys)),
             });
         });
         EventTools.on('entityclone', () => {
@@ -228,6 +182,7 @@ class Entities extends Component<{}, IState> {
      * @param {string[]} expandedKeys
      */
     private handleExpandEntity = (expandedKeys: string[]) => {
+        console.log(expandedKeys);
         this.setState({
             expandedKeys,
         });
@@ -322,7 +277,7 @@ class Entities extends Component<{}, IState> {
                                                 hoverable={true}
                                                 title={item.title}
                                                 extra={
-                                                    <a className="editor-item-help-icon" onClick={e => e.stopPropagation()} target="_blank" href={item.url}>
+                                                    item.url && <a className="editor-item-help-icon" onClick={e => e.stopPropagation()} target="_blank" href={item.url}>
                                                         <Icon name="question-circle-o" />
                                                     </a>
                                                 }
@@ -367,9 +322,9 @@ class Entities extends Component<{}, IState> {
                                         title={
                                             <div style={{ display: 'flex' }}>
                                                 <a style={{ flex: 1 }} onClick={() => { this.handleAddEntity(item); }}>{item.title}</a>
-                                                <div style={{ alignSelf: 'flex-end' }}>
+                                                {item.url && <div style={{ alignSelf: 'flex-end' }}>
                                                     <a className="editor-item-help-icon" target="_blank" href={item.url}><Icon name="question-circle-o" /></a>
-                                                </div>
+                                                </div>}
                                             </div>
                                         }
                                         description={item.description}

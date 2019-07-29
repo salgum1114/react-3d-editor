@@ -101,6 +101,7 @@ export default Form.create({
     onValuesChange: (props: IProps, changedValues: any, allValues: any) => {
         const { entity } = props;
         if (entity) {
+            console.log(changedValues);
             const changedComponentName = Object.keys(changedValues)[0];
             if (!entity.object3D && changedComponentName === 'src') {
                 updateEntity(entity, changedComponentName, changedValues[changedComponentName]);

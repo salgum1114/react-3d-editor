@@ -65,7 +65,7 @@ class Item extends Component<{}, IItemState> {
                     <div className="editor-item-tools-actions">
                         <Icon className="editor-icon" name="download" />
                         <Icon className="editor-icon" name="upload" />
-                        <Icon className="editor-icon" name="times" onClick={() => {database.clear();}} />
+                        <Icon className="editor-icon" name="save" />
                         <Icon className="editor-icon" name="question-circle-o" onClick={this.handleHelpModalVisible} />
                     </div>
                 </div>

@@ -28,10 +28,11 @@ class ImagePicker extends Component<IProps> {
                         componentName={componentName}
                         onChange={onChange}
                         prefixUrl={false}
+                        baseUrl={false}
                     />
                 </div>
                 <div className="editor-picker-preview">
-                    <div className="editor-picker-img-container">
+                    <div className="editor-picker-container">
                         <img src={data} alt="" />
                     </div>
                 </div>

@@ -21,8 +21,7 @@ class FormRender extends Component<IProps> {
             schema.type === 'model'
             || schema.type === 'file'
             || schema.type === 'map'
-            || schemaKey === 'mtl'
-            || schemaKey === 'obj'
+            || componentName === 'obj-model'
             || (componentName === 'material' && (schemaKey === 'envMap' || schemaKey === 'src'))
         ) {
             return (

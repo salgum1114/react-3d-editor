@@ -99,8 +99,8 @@ export interface IAttributes {
     [key: string]: IAttribute;
 }
 
-export interface ITemplate {
-    entity: string;
+export interface IFragement {
+    entity?: string;
     asset?: string;
 }
 
@@ -113,7 +113,7 @@ export interface IPrimitive {
     image?: string;
     url?: string;
     attributes?: IAttribute[];
-    template?: ITemplate;
+    fragment?: IFragement;
 }
 
 export interface IEntity {
@@ -158,7 +158,12 @@ export const primitives: IPrimitive[] = [
         title: 'Camera',
         description: 'The camera primitive determines what the user sees. We can change the viewport by modifying the camera entity’s position and rotation.',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-camera.html',
-        attributes: [],
+        attributes: [
+            {
+                attribute: 'camera',
+                default: 'active: false;',
+            },
+        ],
     },
     {
         key: 'a-circle',
@@ -410,6 +415,15 @@ export const assetPrimitives: IPrimitive[] = [
         title: 'Video',
         description: 'Video textures',
         url: 'https://aframe.io/docs/0.9.0/core/asset-management-system.html',
-        attributes: [],
+        attributes: [
+            {
+                attribute: 'autoplay',
+                default: true,
+            },
+            {
+                attribute: 'loop',
+                default: false,
+            },
+        ],
     },
 ];
