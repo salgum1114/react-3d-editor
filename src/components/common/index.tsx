@@ -11,3 +11,5 @@ export { default as Textures } from './Textures';
 export { default as Mentions } from './Mentions';
 export { default as AutoComplete } from './AutoComplete';
 export { default as ShortcutHelp } from './ShortcutHelp';
+export { default as FramePortal } from './FramePortal';
+export { default as AframePortal } from './AframePortal';

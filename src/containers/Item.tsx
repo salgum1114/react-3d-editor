@@ -5,20 +5,24 @@ import store from 'store';
 
 import { Assets } from '../components/asset';
 import { Entities } from '../components/entity';
-import database from '../database';
 import { Modal } from 'antd';
 import { ShortcutHelp } from '../components/common';
 import { EventTools } from '../tools';
+import { ViewerDialog } from '../components/viewer';
 
 interface IItemState {
     middlePane: number | string;
     helpModalVisible: boolean;
+    arDialogVisible: boolean;
+    defaultDialogVisible: boolean;
 }
 
 class Item extends Component<{}, IItemState> {
     state: IItemState = {
         middlePane: store.get('middlePane') || '50%',
         helpModalVisible: false,
+        arDialogVisible: false,
+        defaultDialogVisible: false,
     }
 
     componentDidMount() {
@@ -49,10 +53,35 @@ class Item extends Component<{}, IItemState> {
         });
     }
 
+    /**
+     * @description Change to ar dialog visible
+     */
+    private handleARDialogVisible = () => {
+        this.setState(prevState => {
+            return {
+                arDialogVisible: !prevState.arDialogVisible,
+            }
+        });
+    }
+
+    /**
+     * @description Change to default dialog visible
+     */
+    private handleDefaultDialogVisible = () => {
+        this.setState(prevState => {
+            return {
+                defaultDialogVisible: !prevState.defaultDialogVisible,
+            }
+        });
+    }
+
     render() {
+        // <a-sky src="https://ucarecdn.com/e1c757bc-73ee-4efe-b068-4f778ce212a3/" rotation="0 -20 0"
         const {
             middlePane,
             helpModalVisible,
+            arDialogVisible,
+            defaultDialogVisible,
         } = this.state;
         return (
             <div className="editor-item-container">
@@ -63,6 +92,8 @@ class Item extends Component<{}, IItemState> {
                         </a>
                     </div>
                     <div className="editor-item-tools-actions">
+                        <Icon className="editor-icon" name="bullseye" onClick={this.handleARDialogVisible} />
+                        <Icon className="editor-icon" name="eye"  onClick={this.handleDefaultDialogVisible} />
                         <Icon className="editor-icon" name="download" />
                         <Icon className="editor-icon" name="upload" />
                         <Icon className="editor-icon" name="save" />
@@ -93,6 +124,8 @@ class Item extends Component<{}, IItemState> {
                 >
                     <ShortcutHelp />
                 </Modal>
+                <ViewerDialog type="ar" visible={arDialogVisible} onClose={this.handleARDialogVisible} />
+                <ViewerDialog type="default" visible={defaultDialogVisible} onClose={this.handleDefaultDialogVisible} />
             </div>
         );
     }

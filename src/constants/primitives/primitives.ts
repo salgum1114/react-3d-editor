@@ -263,6 +263,14 @@ export const primitives: IPrimitive[] = [
         attributes: [],
     },
     {
+        key: 'a-marker',
+        type: 'a-marker',
+        title: 'Marker',
+        description: '',
+        url: 'https://aframe.io/blog/arjs/',
+        attributes: [],
+    },
+    {
         key: 'a-obj-model',
         type: 'a-obj-model',
         title: 'Obj Model',

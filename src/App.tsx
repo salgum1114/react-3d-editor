@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 
 import Editor from './containers/Editor';
+import { ArInspector } from './components/inspector';
 
-class App extends Component<{}, {}> {
+class App extends Component {
     render() {
         return (
             <div className="container">
@@ -18,6 +19,7 @@ class App extends Component<{}, {}> {
                     {/* <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.0/aframe/build/aframe-ar.js" /> */}
                     <title>React 3D Editor</title>
                 </Helmet>
+                {/* <ArInspector /> */}
                 <Editor />
             </div>
         );

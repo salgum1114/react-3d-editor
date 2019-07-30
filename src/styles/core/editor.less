@@ -245,3 +245,58 @@ html, body, #root, .container {
     }
 
 }
+
+.editor-dialog {
+    &-mask {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        outline: 0;
+        overflow: auto;
+        z-index: 1000;
+    }
+    &-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        overflow: auto;
+        outline: 0;
+        background-color: @component-background;
+        border: @border-width-base @border-color-base @border-style-base;
+        border-radius: @border-radius-base;
+        box-shadow: @box-shadow-base;
+        iframe {
+            outline: none;
+            border: none;
+        }
+    }
+    &-title {
+        height: 40px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        word-wrap: break-word;
+        font-size: @font-size-lg;
+        color: @heading-color;
+        font-weight: 500;
+    }
+    &-content {
+        display: flex;
+    }
+    &-dragzone {
+        cursor: move;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 40px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 8px;
+    }
+}

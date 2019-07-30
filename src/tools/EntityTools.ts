@@ -15,8 +15,11 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
     }
     if (fragment && fragment.entity) {
         const createdFragment = createFragment(fragment.entity);
-        const { firstChild } = createdFragment;
+        const firstChild = createdFragment.firstChild as Entity;
         firstChild.addEventListener('loaded', () => {
+            if (firstChild.isPlaying) {
+                firstChild.pause();
+            }
             EventTools.emit('entitycreate', firstChild);
             if (callback) {
                 callback(firstChild);
@@ -29,6 +32,9 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
     entity.setAttribute('id', `${type}_${uuid()}`);
     entity.setAttribute('title', title);
     entity.addEventListener('loaded', () => {
+        if (entity.isPlaying) {
+            entity.pause();
+        }
         EventTools.emit('entitycreate', entity);
         if (callback) {
             callback(entity);

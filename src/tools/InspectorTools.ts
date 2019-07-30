@@ -26,8 +26,15 @@ export interface ICamera extends THREE.Camera {
 }
 
 export interface IInsepctorOptions {
+    id?: string;
     playerCamera?: boolean;
+    ar?: boolean;
 }
+
+const defaultInspectorOptions: IInsepctorOptions = {
+    playerCamera: true,
+    ar: false,
+};
 
 Components.forEach(Comp => Comp());
 
@@ -64,10 +71,33 @@ class InspectorTools {
         this.modules = {};
         this.on = EventTools.on;
         this.opened = false;
-        this.initScene(document.body, options);
+        const mergedOptions = Object.assign({}, defaultInspectorOptions, options);
+        const { id, ar } = mergedOptions;
+        let sceneParentElement = document.body;
+        if (id) {
+            const targetEl = document.getElementById(id);
+            if (targetEl) {
+                sceneParentElement = targetEl;
+            }
+        }
+        const script = document.createElement('script') as any;
+        script.src = '/vendor/ar.js/aframe/build/aframe-ar.min.js';
+        script.async = true;
+        document.head.appendChild(script);
+        if (ar) {
+            script.onload = () => {
+                this.initARScene(sceneParentElement, options);
+            };
+        } else {
+            this.initScene(sceneParentElement, options);
+        }
         this.init();
     }
 
+    /**
+     * @description Initial Inspector
+     * @returns
+     */
     init = () => {
         if (!AFRAME.scenes.length) {
             setTimeout(() => {
@@ -99,8 +129,35 @@ class InspectorTools {
     }
 
     /**
-     * Initial Scene
-     *
+     * @description Inital AR Scene
+     * @param {HTMLElement} inspector
+     * @param {IInsepctorOptions} options
+     */
+    initARScene = (inspector: HTMLElement, options: IInsepctorOptions) => {
+        const scene = document.createElement('a-scene') as IScene;
+        const assets = document.createElement('a-assets');
+        assets.id = 'assets';
+        scene.appendChild(assets);
+        this.loadAssets(scene);
+        this.loadPlayerCamera(scene, '<a-camera-static />');
+        scene.querySelector('a-assets').addEventListener('loaded', () => {
+            console.log('a-assets loaded');
+            // this.loadEntities(scene);
+            this.loadEntities(scene, this.exampleEntities());
+        });
+        inspector.appendChild(scene);
+        scene.setAttribute('embedded', true);
+        scene.setAttribute('arjs', 'debugUIEnabled: false; sourceType: webcam;');
+        scene.setAttribute('vr-mode-ui', false);
+        scene.id = 'scene';
+        scene.title = 'Scene';
+        scene.style.position = 'fixed';
+        scene.style.top = '0';
+        scene.style.left = '0';
+    }
+
+    /**
+     * @description Initial Scene
      * @param {HTMLElement} inspector
      * @param {boolean} playCamera
      */
@@ -109,11 +166,11 @@ class InspectorTools {
         const assets = document.createElement('a-assets');
         assets.id = 'assets';
         scene.appendChild(assets);
-        this.loadAssets(scene, '<video id="sample_video" autoplay="true" src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" />');
+        this.loadAssets(scene);
         // this.loadAssets(scene, this.exampleAssets());
         const { playerCamera = true } = options;
         if (playerCamera) {
-            // this.loadPlayerCamera(scene);
+            this.loadPlayerCamera(scene);
         }
         scene.querySelector('a-assets').addEventListener('loaded', () => {
             console.log('a-assets loaded');

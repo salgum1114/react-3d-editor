@@ -22,8 +22,16 @@ export const catalogs: IPrimitive[] = [
                 default: '0 1 0',
             },
             {
-                attribute: 'animation-mixer',
-                default: 'true',
+                attribute: 'animation-mixer.duration',
+                default: 'AUTO',
+            },
+            {
+                attribute: 'animation-mixer.clip',
+                default: '*',
+            },
+            {
+                attribute: 'animation-mixer.loop',
+                default: 'repeat',
             },
         ],
     },
