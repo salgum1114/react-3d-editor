@@ -3,8 +3,7 @@ import { createPortal } from 'react-dom';
 import Icon from 'polestar-icons';
 import uuid from 'uuid/v4';
 
-import { FramePortal, AframePortal } from '../common';
-import { VRViewer, ARViewer, Viewer } from '.';
+import { AframePortal } from '../common';
 
 type ViewerTypes = 'default' | 'ar' | 'vr';
 
@@ -26,6 +25,8 @@ interface IState {
 }
 
 class ViewerDialog extends Component<ViewerDialogProps, IState> {
+    fullscreen: boolean;
+
     static defaultProps: ViewerDialogProps = {
         type: 'default',
         visible: false,
@@ -61,6 +62,10 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
 
     private handleDragElement = (element: HTMLElement) => {
         const dragMouseDown = (e: MouseEvent) => {
+            if (e.target.tagName.toLowerCase() === 'i') {
+                return;
+            }
+            this.fullscreen = false;
             e = e || window.event;
             e.preventDefault();
             // get the mouse cursor position at startup:
@@ -83,6 +88,9 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
             element.style.left = `${(element.offsetLeft - pos1)}px`;
         }
         const closeDragElement = (e: MouseEvent) => {
+            if (this.fullscreen) {
+                return;
+            }
             let { top, left } = element.style;
             if (element.offsetLeft < 0) {
                 left = `0px`;
@@ -130,6 +138,7 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
     }
 
     private handleFullescreen = () => {
+        this.fullscreen = true;
         const { fullscreen, id, width, height, left, top } = this.state;
         const dialogElement = document.getElementById(id);
         if (fullscreen) {
@@ -146,23 +155,6 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         this.setState({
             fullscreen: !fullscreen,
         });
-    }
-
-    private renderViewer = (type: ViewerTypes) => {
-        switch (type) {
-            case 'ar':
-                return (
-                    <ARViewer />
-                );
-            case 'vr':
-                return (
-                    <VRViewer />
-                );
-            default:
-                return (
-                    <Viewer />
-                );
-        }
     }
 
     private renderContainer = () => {
@@ -191,7 +183,7 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
                         <AframePortal
                             width={width}
                             height={height}
-                            body={type === 'ar' ? `
+                            scene={type === 'ar' ? `
                             <a-scene vr-mode-ui="false" embedded arjs="debugUIEnabled: false; sourceType: webcam;">
                                 <a-marker preset='hiro'>
                                     <a-box position='0 0.5 0' material='color: green;'></a-box>
@@ -209,9 +201,7 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
                             </a-scene>
                             `}
                             ar={type === 'ar'}
-                        >
-                            {this.renderViewer(type)}
-                        </AframePortal>
+                        />
                     </div>
                 </div>
             </div>

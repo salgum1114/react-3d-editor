@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { createPortal } from 'react-dom';
 
 export interface FramePortalProps extends React.IframeHTMLAttributes<HTMLIFrameElement> {
-    body?: string;
+    scene?: string;
     ar?: boolean;
 }
 
@@ -10,6 +10,7 @@ class AframePortal extends PureComponent<FramePortalProps> {
     iframeEl: HTMLIFrameElement;
     head: HTMLHeadElement;
     body: HTMLElement;
+    viewerEl: HTMLDivElement;
 
     constructor(props: FramePortalProps) {
         super(props);
@@ -17,14 +18,14 @@ class AframePortal extends PureComponent<FramePortalProps> {
     }
 
     componentDidMount() {
-        const { body, ar } = this.props;
+        const { scene, ar } = this.props;
         this.head = this.iframeEl.contentDocument.head;
         const aframeScript = document.createElement('script') as any;
         aframeScript.src = 'https://aframe.io/releases/0.9.2/aframe.min.js';
         aframeScript.async = true;
         aframeScript.onload = () => {
             if (!ar) {
-                this.iframeEl.contentDocument.body.querySelector('#viewer').innerHTML = body;
+                this.iframeEl.contentDocument.body.querySelector('#viewer').innerHTML = scene;
             }
         };
         this.head.appendChild(aframeScript);
@@ -33,7 +34,7 @@ class AframePortal extends PureComponent<FramePortalProps> {
             aframeARScript.src = '/vendor/ar.js/aframe/build/aframe-ar.min.js';
             aframeARScript.async = true;
             aframeARScript.onload = () => {
-                this.iframeEl.contentDocument.body.querySelector('#viewer').innerHTML = body;
+                this.iframeEl.contentDocument.body.querySelector('#viewer').innerHTML = scene;
             };
             this.head.appendChild(aframeARScript);
         }
@@ -43,10 +44,10 @@ class AframePortal extends PureComponent<FramePortalProps> {
     }
 
     render() {
-        const { children, body, ar, ...other } = this.props;
+        const { children, scene, ar, ...other } = this.props;
         return (
             <iframe ref={c => { this.iframeEl = c; }} {...other}>
-                {this.body && createPortal(children, this.body)}
+                {this.body && createPortal(<div id="viewer" />, this.body)}
             </iframe>
         );
     }
