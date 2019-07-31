@@ -373,7 +373,7 @@ class Textures extends Component<IProps, IState> {
     private renderSearch = () => {
         return (
             <div style={{ flex: 1, padding: '0 16px' }}>
-                <Input placeholder="Search for Texture..." onChange={e => this.handleSearchTexture(e.target.value)} />
+                <Input allowClear={true} placeholder="Search for Texture..." onChange={e => this.handleSearchTexture(e.target.value)} />
             </div>
         );
     }

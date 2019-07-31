@@ -10,6 +10,7 @@ import {
     HistoryTools,
 } from './';
 import Components from '../constants/components';
+import '../vendor/GLTFExporter';
 
 export interface ICameras {
     perspective?: THREE.PerspectiveCamera;
@@ -65,7 +66,7 @@ class InspectorTools {
     selectedAsset?: Entity;
 
     constructor(options: IInsepctorOptions = {}) {
-        // this.exporters = { gltf: new THREE.GLTFExporter() };
+        this.exporters = { gltf: new THREE.GLTFExporter() };
         this.history = new HistoryTools();
         this.isFirstOpen = true;
         this.modules = {};

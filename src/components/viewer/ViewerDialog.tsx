@@ -4,6 +4,7 @@ import Icon from 'polestar-icons';
 import uuid from 'uuid/v4';
 
 import { AframePortal } from '../common';
+import { getEntityClipboardRepresentation } from '../../tools/EntityTools';
 
 type ViewerTypes = 'default' | 'ar' | 'vr';
 
@@ -183,23 +184,7 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
                         <AframePortal
                             width={width}
                             height={height}
-                            scene={type === 'ar' ? `
-                            <a-scene vr-mode-ui="false" embedded arjs="debugUIEnabled: false; sourceType: webcam;">
-                                <a-marker preset='hiro'>
-                                    <a-box position='0 0.5 0' material='color: green;'></a-box>
-                                </a-marker>
-                                <!-- define a simple camera -->
-                                <a-camera-static />
-                            </a-scene>
-                            ` : `
-                            <a-scene vr-mode-ui="false">
-                                <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-                                <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-                                <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-                                <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-                                <a-sky color="#ECECEC"></a-sky>
-                            </a-scene>
-                            `}
+                            scene={getEntityClipboardRepresentation(AFRAME.INSPECTOR.sceneEl)}
                             ar={type === 'ar'}
                         />
                     </div>

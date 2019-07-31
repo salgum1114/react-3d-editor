@@ -182,7 +182,6 @@ class Entities extends Component<{}, IState> {
      * @param {string[]} expandedKeys
      */
     private handleExpandEntity = (expandedKeys: string[]) => {
-        console.log(expandedKeys);
         this.setState({
             expandedKeys,
         });
@@ -347,7 +346,7 @@ class Entities extends Component<{}, IState> {
     private renderSearch = (callback: (value: string) => void) => {
         return (
             <div style={{ flex: 1, paddingRight: 16 }}>
-                <Input placeholder="Search for Entity..." onChange={e => callback(e.target.value)} />
+                <Input allowClear={true} placeholder="Search for Entity..." onChange={e => callback(e.target.value)} />
             </div>
         )
     }
