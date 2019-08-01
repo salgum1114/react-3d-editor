@@ -82,7 +82,7 @@ class InspectorTools {
             }
         }
         const script = document.createElement('script') as any;
-        script.src = '/vendor/ar.js/aframe/build/aframe-ar.min.js';
+        script.src = './vendor/ar.js/aframe/build/aframe-ar.min.js';
         script.async = true;
         document.head.appendChild(script);
         if (ar) {

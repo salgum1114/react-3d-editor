@@ -6,8 +6,8 @@ export const catalogs: IPrimitive[] = [
         type: 'a-entity',
         title: 'Buster Drone',
         description: 'Buster Drone glTF',
-        url: '/catalogs/buster_drone/scene.gltf',
-        image: '/catalogs/buster_drone/buster_drone.png',
+        url: './catalogs/buster_drone/scene.gltf',
+        image: './catalogs/buster_drone/buster_drone.png',
         attributes: [
             {
                 attribute: 'gltf-model',
@@ -40,8 +40,8 @@ export const catalogs: IPrimitive[] = [
         type: 'a-entity',
         title: 'Black Dragon',
         description: 'Black Dragon glTF',
-        url: '/catalogs/black_dragon/scene.gltf',
-        image: '/catalogs/buster_drone/buster_drone.png',
+        url: './catalogs/black_dragon/scene.gltf',
+        image: './catalogs/buster_drone/buster_drone.png',
         attributes: [
             {
                 attribute: 'gltf-model',
@@ -62,7 +62,7 @@ export const catalogs: IPrimitive[] = [
         type: '',
         title: 'Player Camera',
         description: 'First person narrative camera',
-        image: '/catalogs/buster_drone/buster_drone.png',
+        image: './catalogs/buster_drone/buster_drone.png',
         fragment: {
             entity: `
             <a-entity id="playerCamera" position="0 1.6 8">
