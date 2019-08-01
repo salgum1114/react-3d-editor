@@ -31,7 +31,7 @@ class AframePortal extends PureComponent<FramePortalProps> {
         this.head.appendChild(aframeScript);
         if (ar) {
             const aframeARScript = document.createElement('script') as any;
-            aframeARScript.src = '/vendor/ar.js/aframe/build/aframe-ar.min.js';
+            aframeARScript.src = './vendor/ar.js/aframe/build/aframe-ar.min.js';
             aframeARScript.async = true;
             aframeARScript.onload = () => {
                 this.iframeEl.contentDocument.body.querySelector('#viewer').innerHTML = scene;

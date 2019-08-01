@@ -255,7 +255,7 @@ class Assets extends Component<{}, IState> {
     private renderSearch = (callback: (value: string) => void) => {
         return (
             <div style={{ flex: 1, paddingRight: 16 }}>
-                <Input placeholder="Search for Asset..." onChange={e => callback(e.target.value)} />
+                <Input allowClear={true} placeholder="Search for Asset..." onChange={e => callback(e.target.value)} />
             </div>
         )
     }
