@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Entity } from 'aframe';
 import debounce from 'lodash/debounce';
-import Clipboard from 'clipboard';
 
 import { SidebarContainer } from '../common';
 import { EventTools, EntityTools, UtilTools } from '../../tools';
@@ -62,6 +61,13 @@ class Properties extends Component {
         message.info('Copied to clipboard');
     }
 
+    /**
+     * @description Export entity to GLTF
+     */
+    private handleExportToGLTF = () => {
+        EntityTools.exportToGLTF(this.state.selectedEntity);
+    }
+
     render() {
         const { selectedEntity, selectedAsset } = this.state;
         let entityTitle;
@@ -91,6 +97,7 @@ class Properties extends Component {
                     <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entityTitle}</div>
                 </div>
                 <div>
+                    {selectedEntity && <Icon style={{ marginRight: 4 }} name="save" className="editor-icon" onClick={this.handleExportToGLTF} />}
                     <Icon name="clipboard" className="editor-icon" onClick={this.handleEntityClipboard} />
                 </div>
             </>

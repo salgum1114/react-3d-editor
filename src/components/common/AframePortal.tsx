@@ -18,18 +18,29 @@ class AframePortal extends PureComponent<FramePortalProps> {
     }
 
     componentDidMount() {
-        const { scene, ar } = this.props;
         this.head = this.iframeEl.contentDocument.head;
         const aframeScript = document.createElement('script') as any;
         aframeScript.src = 'https://aframe.io/releases/0.9.2/aframe.min.js';
         aframeScript.async = true;
         aframeScript.onload = () => {
-            if (!ar) {
-                this.iframeEl.contentDocument.body.querySelector('#viewer').innerHTML = scene;
-            }
+            const aframeExtraScript = document.createElement('script') as any;
+            aframeExtraScript.src = 'https://cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js';
+            aframeExtraScript.async = true;
+            aframeExtraScript.onload = this.handleAppendScene;
+            aframeExtraScript.onerror = this.handleAppendScene;
+            this.head.appendChild(aframeExtraScript);
         };
         this.head.appendChild(aframeScript);
-        if (ar) {
+        this.body = this.iframeEl.contentDocument.body;
+        this.body.style.margin = '0';
+        this.forceUpdate();
+    }
+
+    handleAppendScene = () => {
+        const { scene, ar } = this.props;
+        if (!ar) {
+            this.iframeEl.contentDocument.body.querySelector('#viewer').innerHTML = scene;
+        } else {
             const aframeARScript = document.createElement('script') as any;
             aframeARScript.src = './vendor/ar.js/aframe/build/aframe-ar.min.js';
             aframeARScript.async = true;
@@ -38,9 +49,6 @@ class AframePortal extends PureComponent<FramePortalProps> {
             };
             this.head.appendChild(aframeARScript);
         }
-        this.body = this.iframeEl.contentDocument.body;
-        this.body.style.margin = '0';
-        this.forceUpdate();
     }
 
     render() {

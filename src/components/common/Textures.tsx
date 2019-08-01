@@ -89,7 +89,7 @@ class Textures extends Component<IProps, IState> {
     private handleAddTexture = () => {
         const { type } = this.props;
         const { selectedFilterType } = this.state;
-        const allTypes = ['image/*', 'video/*', 'audio/*', '.obj', '.mtl', '.gltf'];
+        const allTypes = ['image/*', 'video/*', 'audio/*', '.obj', '.mtl', '.gltf', '.glb'];
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
         const setAcceptType = (type: string, input: Entity) => {

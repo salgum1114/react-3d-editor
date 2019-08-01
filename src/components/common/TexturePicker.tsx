@@ -112,7 +112,8 @@ class TexturePicker extends PureComponent<IProps, IState> {
         const { onChange, entity, prefixUrl = true, baseUrl = true, componentName } = this.props;
         const setValue = (value: string) => {
             if (entity.tagName.toLowerCase() === 'a-asset-item'
-            || entity.tagName.toLowerCase() === 'a-mixin' && componentName === 'sound') {
+            || entity.tagName.toLowerCase() === 'a-mixin' && componentName === 'sound'
+            || componentName === 'gltf-model') {
                 onChange(value);
             } else {
                 onChange(prefixUrl ? `url(${value})` : value);

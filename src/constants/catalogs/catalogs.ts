@@ -23,7 +23,7 @@ export const catalogs: IPrimitive[] = [
             },
             {
                 attribute: 'animation-mixer.duration',
-                default: 'AUTO',
+                default: '0',
             },
             {
                 attribute: 'animation-mixer.clip',

@@ -7,7 +7,7 @@ import { Assets } from '../components/asset';
 import { Entities } from '../components/entity';
 import { Modal } from 'antd';
 import { ShortcutHelp } from '../components/common';
-import { EventTools } from '../tools';
+import { EventTools, EntityTools } from '../tools';
 import { ViewerDialog } from '../components/viewer';
 
 interface IItemState {
@@ -75,8 +75,14 @@ class Item extends Component<{}, IItemState> {
         });
     }
 
+    /**
+     * @description Export entity to GLTF
+     */
+    private handleExportToGLTF = () => {
+        EntityTools.exportToGLTF(AFRAME.INSPECTOR.sceneEl);
+    }
+
     render() {
-        // <a-sky src="https://ucarecdn.com/e1c757bc-73ee-4efe-b068-4f778ce212a3/" rotation="0 -20 0"
         const {
             middlePane,
             helpModalVisible,
@@ -96,7 +102,7 @@ class Item extends Component<{}, IItemState> {
                         <Icon className="editor-icon" name="eye"  onClick={this.handleDefaultDialogVisible} />
                         <Icon className="editor-icon" name="download" />
                         <Icon className="editor-icon" name="upload" />
-                        <Icon className="editor-icon" name="save" />
+                        <Icon className="editor-icon" name="save" onClick={this.handleExportToGLTF} />
                         <Icon className="editor-icon" name="question-circle-o" onClick={this.handleHelpModalVisible} />
                     </div>
                 </div>

@@ -10,7 +10,7 @@ import {
     HistoryTools,
 } from './';
 import Components from '../constants/components';
-import '../vendor/GLTFExporter';
+import '../lib/GLTFExporter';
 
 export interface ICameras {
     perspective?: THREE.PerspectiveCamera;
@@ -34,7 +34,6 @@ export interface IInsepctorOptions {
 
 const defaultInspectorOptions: IInsepctorOptions = {
     playerCamera: true,
-    ar: false,
 };
 
 Components.forEach(Comp => Comp());
@@ -66,14 +65,14 @@ class InspectorTools {
     selectedAsset?: Entity;
 
     constructor(options: IInsepctorOptions = {}) {
-        this.exporters = { gltf: new THREE.GLTFExporter() };
+        this.exporters = { gltf: new AFRAME.THREE.GLTFExporter() };
         this.history = new HistoryTools();
         this.isFirstOpen = true;
         this.modules = {};
         this.on = EventTools.on;
         this.opened = false;
         const mergedOptions = Object.assign({}, defaultInspectorOptions, options);
-        const { id, ar } = mergedOptions;
+        const { id } = mergedOptions;
         let sceneParentElement = document.body;
         if (id) {
             const targetEl = document.getElementById(id);
@@ -85,13 +84,7 @@ class InspectorTools {
         script.src = './vendor/ar.js/aframe/build/aframe-ar.min.js';
         script.async = true;
         document.head.appendChild(script);
-        if (ar) {
-            script.onload = () => {
-                this.initARScene(sceneParentElement, options);
-            };
-        } else {
-            this.initScene(sceneParentElement, options);
-        }
+        this.initScene(sceneParentElement, options);
         this.init();
     }
 
@@ -122,39 +115,12 @@ class InspectorTools {
         EventTools.emit('sceneloaded', this.sceneEl);
         EventTools.emit('entityselect', this.sceneEl);
         this.scene = this.sceneEl.object3D;
+        // Remove scene default inspector
         this.container = document.querySelector('.a-canvas');
         this.initCamera();
         this.initShortcut();
         this.initViewport();
         this.initEvents();
-    }
-
-    /**
-     * @description Inital AR Scene
-     * @param {HTMLElement} inspector
-     * @param {IInsepctorOptions} options
-     */
-    initARScene = (inspector: HTMLElement, options: IInsepctorOptions) => {
-        const scene = document.createElement('a-scene') as IScene;
-        const assets = document.createElement('a-assets');
-        assets.id = 'assets';
-        scene.appendChild(assets);
-        this.loadAssets(scene);
-        this.loadPlayerCamera(scene, '<a-camera-static />');
-        scene.querySelector('a-assets').addEventListener('loaded', () => {
-            console.log('a-assets loaded');
-            // this.loadEntities(scene);
-            this.loadEntities(scene, this.exampleEntities());
-        });
-        inspector.appendChild(scene);
-        scene.setAttribute('embedded', true);
-        scene.setAttribute('arjs', 'debugUIEnabled: false; sourceType: webcam;');
-        scene.setAttribute('vr-mode-ui', false);
-        scene.id = 'scene';
-        scene.title = 'Scene';
-        scene.style.position = 'fixed';
-        scene.style.top = '0';
-        scene.style.left = '0';
     }
 
     /**
@@ -168,15 +134,21 @@ class InspectorTools {
         assets.id = 'assets';
         scene.appendChild(assets);
         this.loadAssets(scene);
+        // <a-sky src="https://ucarecdn.com/e1c757bc-73ee-4efe-b068-4f778ce212a3/" rotation="0 -20 0" />
         // this.loadAssets(scene, this.exampleAssets());
         const { playerCamera = true } = options;
         if (playerCamera) {
             this.loadPlayerCamera(scene);
         }
         scene.querySelector('a-assets').addEventListener('loaded', () => {
-            console.log('a-assets loaded');
+            console.debug('a-assets loaded');
             this.loadEntities(scene);
             // this.loadEntities(scene, this.exampleEntities());
+        });
+        scene.addEventListener('loaded', () => {
+            console.debug('scene loaded');
+            scene.removeAttribute('inspector');
+            scene.removeAttribute('keyboard-shortcuts');
         });
         inspector.appendChild(scene);
         scene.id = 'scene';

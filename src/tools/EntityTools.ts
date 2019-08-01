@@ -194,7 +194,8 @@ export const cloneEntity = (entity: Entity, deep?: boolean) => {
         selectEntity(clonedEntity);
         EventTools.emit('entityclone', clonedEntity);
     });
-    clonedEntity.setAttribute('scale', AFRAME.components.scale.schema.stringify(entity.object3D.scale));
+    const setAttribute = HTMLElement.prototype.setAttribute;
+    setAttribute.call(clonedEntity, 'scale', AFRAME.utils.coordinates.stringify(entity.object3D.scale));
     clonedEntity.id = `${entity.tagName.toLowerCase()}_${uuid()}`;
     AFRAME.INSPECTOR.sceneEl.appendChild(clonedEntity);
     return clonedEntity;
@@ -356,11 +357,11 @@ export const isInspector = (en: Entity) => {
 
 /**
  * Return the clipboard representation to be used to copy to the clipboard
- * @param  {Element} entity Entity to copy to clipboard
+ * @param  {Entity} entity Entity to copy to clipboard
  * @return {string} Entity clipboard representation
  */
-export function getEntityClipboardRepresentation(entity: Element) {
-    const clone = prepareForSerialization(entity) as Element;
+export function getEntityClipboardRepresentation(entity: Entity) {
+    const clone = prepareForSerialization(entity) as Entity;
     return clone.outerHTML;
 };
 
@@ -369,11 +370,11 @@ export function getEntityClipboardRepresentation(entity: Element) {
  * The process optimises component representation to avoid values coming from
  * primitive attributes, mixins and defaults.
  *
- * @param {Element} entity Root of the DOM hierarchy.
- * @return {Element} Copy of the DOM hierarchy ready for serialization.
+ * @param {Entity} entity Root of the DOM hierarchy.
+ * @return {Entity} Copy of the DOM hierarchy ready for serialization.
  */
-const prepareForSerialization = (entity: Element): Element => {
-    const clone = entity.cloneNode(false) as Element;
+const prepareForSerialization = (entity: Entity): Entity => {
+    const clone = entity.cloneNode(false) as Entity;
     const children = entity.childNodes;
     for (let i = 0, l = children.length; i < l; i++) {
         const child = children[i] as HTMLElement;
@@ -383,7 +384,7 @@ const prepareForSerialization = (entity: Element): Element => {
             !child.hasAttribute('data-aframe-inspector') &&
             !child.hasAttribute('data-aframe-canvas'))
         ) {
-            clone.appendChild(prepareForSerialization(children[i] as Entity));
+            clone.appendChild(prepareForSerialization(child as Entity));
         }
     }
     optimizeComponents(clone, entity);
@@ -394,10 +395,10 @@ const prepareForSerialization = (entity: Element): Element => {
  * Removes from copy those components or components' properties that comes from
  * primitive attributes, mixins, injected default components or schema defaults.
  *
- * @param {Element} copy   Destinatary element for the optimization.
- * @param {Element} source Element to be optimized.
+ * @param {Entity} copy   Destinatary element for the optimization.
+ * @param {Entity} source Element to be optimized.
  */
-const optimizeComponents = (copy: Element, source: Element) => {
+const optimizeComponents = (copy: Entity, source: Entity) => {
     const removeAttribute = HTMLElement.prototype.removeAttribute;
     const setAttribute = HTMLElement.prototype.setAttribute;
     const components = source.components || {};
@@ -421,6 +422,18 @@ const optimizeComponents = (copy: Element, source: Element) => {
             setAttribute.call(copy, name, value);
         }
     });
+    if (source.object3D && source.tagName.toLowerCase() !== 'a-scene') {
+        const { position, rotation, scale } = source.object3D;
+        if (position) {
+            setAttribute.call(copy, 'position', AFRAME.utils.coordinates.stringify(position));
+        }
+        if (rotation) {
+            setAttribute.call(copy, 'rotation', AFRAME.utils.coordinates.stringify(rotation));
+        }
+        if (scale) {
+            setAttribute.call(copy, 'scale', AFRAME.utils.coordinates.stringify(scale));
+        }
+    }
 };
 
 /**
@@ -435,7 +448,7 @@ const stringifyComponentValue = (schema: Schema<any>, data: any) => {
     }
     const multi = () => {
         const propertyBag = {} as Record;
-        Object.keys(data).forEach(function(name) {
+        Object.keys(data).forEach((name: string) => {
             if (schema[name]) {
                 propertyBag[name] = schema[name].stringify(data[name]);
             }
@@ -458,10 +471,10 @@ const stringifyComponentValue = (schema: Schema<any>, data: any) => {
  * overridden it explicitly.
  *
  * @param {Component} component Component to calculate the value of.
- * @param {Element}   source    Element owning the component.
+ * @param {Entity}   source    Element owning the component.
  * @return                      A pair with the computed value for the component of source and a flag indicating if the component is completely inherited from other sources (`true`) or genuinely owned by the source entity (`false`).
  */
-const getImplicitValue = (component: Component, source: any) => {
+const getImplicitValue = (component: Component, source: Entity) => {
     let isInherited = false;
     const single = () => {
         let value = getMixedValue(component, null, source);
@@ -517,12 +530,12 @@ const getImplicitValue = (component: Component, source: any) => {
  *
  * @param  {Component} component    Component to be found.
  * @param  {string}    propertyName Component's property to be found.
- * @param  {Element}   source       Element owning the component.
+ * @param  {Entity}   source       Element owning the component.
  * @return {any}                    The value of the component's property coming
  *                                  from the primitive's attribute if any or
  *                                  `undefined`, otherwise.
  */
-const getFromAttribute = (component: Component, propertyName: string, source: any) => {
+const getFromAttribute = (component: Component, propertyName: string, source: Entity) => {
     let value;
     const mappings = source.mappings || {};
     const route = component.name + '.' + propertyName;
@@ -553,11 +566,11 @@ const getFromAttribute = (component: Component, propertyName: string, source: an
  * @param {Component} component      Component to be found.
  * @param {string}    [propertyName] If provided, component's property to be
  *                                   found.
- * @param {Element}   source         Element owning the component.
+ * @param {Entity}   source         Element owning the component.
  * @return                           The value of the component or components'
  *                                   property coming from mixins of the source.
  */
-const getMixedValue = (component: Component, propertyName: string, source: any) => {
+const getMixedValue = (component: Component, propertyName: string, source: Entity) => {
     let value;
     const reversedMixins = source.mixinEls.reverse();
     for (let i = 0; value === undefined && i < reversedMixins.length; i++) {
@@ -580,11 +593,11 @@ const getMixedValue = (component: Component, propertyName: string, source: any) 
  * @param {Component} component      Component to be found.
  * @param {string}    [propertyName] If provided, component's property to be
  *                                   found.
- * @param {Element}   source         Element owning the component.
+ * @param {Entity}   source         Element owning the component.
  * @return                           The component value coming from the
  *                                   injected default components of source.
  */
-const getInjectedValue = (component: Component, propertyName: string, source: any) => {
+const getInjectedValue = (component: Component, propertyName: string, source: Entity) => {
     let value;
     const primitiveDefaults = source.defaultComponentsFromPrimitive || {};
     const aFrameDefaults = source.defaultComponents || {};
@@ -609,11 +622,11 @@ const getInjectedValue = (component: Component, propertyName: string, source: an
  * @param {Component} component      Component to be found.
  * @param {string}    [propertyName] If provided, component's property to be
  *                                   found.
- * @param {Element}   source         Element owning the component.
+ * @param {Entity}   source         Element owning the component.
  * @return                           The component value coming from the schema
  *                                   default.
  */
-const getDefaultValue = (component: Component, propertyName: string, source: any) => {
+const getDefaultValue = (component: Component, propertyName: string, source: Entity) => {
     if (!propertyName) {
         return component.schema.default;
     }
@@ -640,10 +653,10 @@ const getOptimalUpdate = (component: Component, implicit: any, reference: any) =
     }
     const optimal = {} as Record;
     Object.keys(reference).forEach(key => {
-        const needsUpdate = !UtilTools.equal(reference[key], implicit[key]);
-        if (needsUpdate) {
-            optimal[key] = reference[key];
-        }
+        // const needsUpdate = !UtilTools.equal(reference[key], implicit[key]);
+        // if (needsUpdate) {
+        optimal[key] = reference[key];
+        // }
     });
     return optimal;
 }
@@ -676,4 +689,27 @@ const getUniqueId = (baseId: string) => {
         i++;
     }
     return baseId + '-' + i;
+};
+
+export const exportToGLTF = (entity: Entity) => {
+    const { object3D, id, title } = entity;
+    const name = title || id;
+    filterHelpers(object3D, false);
+    AFRAME.INSPECTOR.exporters.gltf.parse(
+        object3D,
+        (buffer: BlobPart) => {
+            filterHelpers(object3D, true);
+            const blob = new Blob([buffer], { type: 'application/octet-stream' });
+            UtilTools.saveBlob(blob, name + '.gltf');
+        },
+        { binary: true },
+    );
+}
+
+const filterHelpers = (object3D: THREE.Object3D, visible: boolean) => {
+    object3D.traverse(o => {
+        if (o.userData.source === 'INSPECTOR') {
+            o.visible = visible;
+        }
+    });
 };

@@ -16,7 +16,6 @@ interface IState {
     selectedKeys: string[];
     spinning: boolean;
     searchPrimitives?: string;
-    searchCatalogs?: string;
 }
 
 class Assets extends Component<{}, IState> {
@@ -26,7 +25,6 @@ class Assets extends Component<{}, IState> {
         selectedKeys: [],
         spinning: true,
         searchPrimitives: '',
-        searchCatalogs: '',
     }
 
     componentDidMount() {
@@ -261,7 +259,7 @@ class Assets extends Component<{}, IState> {
     }
 
     render() {
-        const { assets, visible, spinning, selectedKeys, searchPrimitives, searchCatalogs } = this.state;
+        const { assets, visible, spinning, selectedKeys, searchPrimitives } = this.state;
         return (
             <SidebarContainer
                 titleStyle={{ border: 0 }}
