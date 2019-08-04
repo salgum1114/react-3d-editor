@@ -13,10 +13,16 @@ class App extends Component {
                     <link rel="manifest" href="./manifest.json" />
                     <link rel="shortcut icon" href="./favicon.ico" />
                     <link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" />
-                    {/* <script src="https://aframe.io/releases/0.8.2/aframe.min.js" /> */}
-                    {/* <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js" /> */}
-                    {/* <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.0/aframe/build/aframe-ar.js" /> */}
                     <title>React 3D Editor</title>
+                    <script async={true} src="https://www.googletagmanager.com/gtag/js?id=UA-97485289-1" />
+                    <script>
+                        {`
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+                        gtag('config', 'UA-97485289-1');
+                        `}
+                    </script>
                 </Helmet>
                 <Editor />
             </div>
