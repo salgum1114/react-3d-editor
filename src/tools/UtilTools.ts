@@ -134,6 +134,18 @@ export const b64toBlob = (b64Data: string, contentType: string = '', sliceSize: 
     return blob;
 }
 
+export const dataURLToBlob = (dataURL: string) => {
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0]
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    const bb = new Blob([ab], { type: mimeString });
+    return bb;
+}
+
 export const clibpoard = (text: string): void => {
     const textarea = document.createElement('textarea') as any;
     document.body.appendChild(textarea);

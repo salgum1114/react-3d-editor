@@ -102,7 +102,7 @@ class Editor extends Component<IProps, IState> {
                         maxSize={400}
                         onDragFinished={this.handleSettingPane}
                     >
-                        <Layout.Content style={{ position: 'relative' }}>
+                        <Layout.Content style={{ position: 'relative', height: '100%' }}>
                             <div className="editor-view-container">
                                 <Button className="editor-inspector-btn" block={true} onClick={this.handleScene} type="primary">
                                     {!inspectorEnabled ? 'Inspect Scene' : 'Back to the Scene'}

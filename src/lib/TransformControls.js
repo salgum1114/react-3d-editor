@@ -852,6 +852,7 @@
     }
 
     this.activate = function() {
+      console.debug('TransformControls activate');
       domElement.addEventListener('mousedown', onPointerDown, false);
       domElement.addEventListener('touchstart', onPointerDown, false);
 
@@ -871,6 +872,7 @@
     this.activate();
 
     this.dispose = function() {
+      console.debug('TransformControls dispose');
       domElement.removeEventListener('mousedown', onPointerDown);
       domElement.removeEventListener('touchstart', onPointerDown);
 

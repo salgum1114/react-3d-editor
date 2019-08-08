@@ -97,7 +97,7 @@ class Properties extends Component {
                     <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entityTitle}</div>
                 </div>
                 <div>
-                    {selectedEntity && <Icon style={{ marginRight: 4 }} name="save" className="editor-icon" onClick={this.handleExportToGLTF} />}
+                    {selectedEntity && <Icon style={{ marginRight: 4 }} name="gltf" className="editor-icon" onClick={this.handleExportToGLTF} />}
                     <Icon name="clipboard" className="editor-icon" onClick={this.handleEntityClipboard} />
                 </div>
             </>

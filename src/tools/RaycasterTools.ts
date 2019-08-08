@@ -100,10 +100,17 @@ class RaycasterTools {
     }
 
     onMouseEnter = (event: DetailEvent<Event>) => {
+        if (this.mouseCursor.components.cursor.intersectedEl.hasAttribute('material')) {
+            this.mouseCursor.components.cursor.intersectedEl.currentEmissive = this.mouseCursor.components.cursor.intersectedEl.getAttribute('material').emissive;
+            this.mouseCursor.components.cursor.intersectedEl.setAttribute('material', 'emissive', '#ff0000');
+        }
         EventTools.emit('raycastermouseenter', this.mouseCursor.components.cursor.intersectedEl);
     }
 
     onMouseLeave = (event: DetailEvent<Event>) => {
+        if (this.mouseCursor.components.cursor.intersectedEl.hasAttribute('material')) {
+            this.mouseCursor.components.cursor.intersectedEl.setAttribute('material', 'emissive', this.mouseCursor.components.cursor.intersectedEl.currentEmissive);
+        }
         EventTools.emit('raycastermouseleave', this.mouseCursor.components.cursor.intersectedEl);
     }
 
@@ -111,6 +118,7 @@ class RaycasterTools {
         if (event instanceof CustomEvent) {
             return;
         }
+        event.target.style.cursor = 'grabbing';
         event.preventDefault();
         const array = this.getMousePosition(
             this.inspector.container,
@@ -124,6 +132,7 @@ class RaycasterTools {
         if (event instanceof CustomEvent) {
             return;
         }
+        event.target.style.cursor = 'grab';
         event.preventDefault();
         const array = this.getMousePosition(
             this.inspector.container,

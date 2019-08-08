@@ -1,14 +1,15 @@
 import Icon from 'polestar-icons';
 import React, { Component } from 'react';
 import { Spin, Row, Col, Card, Button, Input, Select } from 'antd';
-import isEmpty from 'lodash/isEmpty';
 import { Entity } from 'aframe';
+import uuid from 'uuid/v4';
+import warning from 'warning';
 
 import AddEmpty from './AddEmpty';
 import Scrollbar from './Scrollbar';
 import Empty from './Empty';
-import { formatTime, formatBytes, b64toBlob } from '../../tools/UtilTools';
-import database from '../../database';
+import { formatTime, formatBytes } from '../../tools/UtilTools';
+import { ImageDatabase } from '../../database';
 
 export interface ITexture {
     id: string;
@@ -56,27 +57,28 @@ class Textures extends Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        database.save({
-            _id: 'images',
-        });
-        database.getById('images').then(response => {
-            const filelist = {} as FileList;
-            if (isEmpty(response._attachments)) {
+        ImageDatabase.allDocs().then(response => {
+            // const filelist = {} as FileList;
+            const { total_rows, rows } = response;
+            if (total_rows) {
+                const fileList = rows.reduce((prev, row, index) => {
+                    const { doc } = row;
+                    const { _attachments, title } = doc;
+                    const attachment = _attachments[title];
+                    const { data, content_type } = attachment;
+                    const file = new File([data], title, { type: content_type });
+                    return Object.assign(prev, {
+                        [index]: file,
+                    });
+                }, {}) as FileList;
+                this.handleAppendTexture(fileList, false);
+            } else {
                 this.setState({
                     loading: false,
                 });
-            } else {
-                Object.keys(response._attachments).forEach((key, index) => {
-                    const attachment = response._attachments[key];
-                    if (attachment.data instanceof Blob) {
-                        filelist[index] = new File([attachment.data], key, { type: attachment.content_type });
-                    } else {
-                        filelist[index] = new File([b64toBlob(attachment.data)], key, { type: attachment.content_type });
-                    }
-                });
-                this.handleAppendTexture(filelist, false);
             }
-        }).catch(() => {
+        }).catch(error => {
+            warning(true, error);
             this.setState({
                 loading: false,
             });
@@ -137,18 +139,20 @@ class Textures extends Component<IProps, IState> {
     private handleAppendTexture = (files: FileList, save: boolean = true) => {
         const length = Object.keys(files).length;
         if (save) {
-            const doc = Object.keys(files).reduce((prev, key) => {
+            const docs = Object.keys(files).map(key => {
                 const file = files[parseInt(key, 10)];
-                return Object.assign(prev, {
-                    _attachments: Object.assign(prev._attachments, {
+                return {
+                    _id: uuid(),
+                    title: file.name,
+                    _attachments: {
                         [file.name]: {
                             content_type: file.type.length ? file.type : 'application/octet-stream',
                             data: file,
                         },
-                    }),
-                });
-            }, { _id: 'images', _attachments: {} });
-            database.bulkBlobs(doc).catch(error => {
+                    },
+                };
+            });
+            ImageDatabase.bulkDocs(docs).catch(error => {
                 this.setState({
                     loading: false,
                 });
@@ -451,7 +455,7 @@ class Textures extends Component<IProps, IState> {
                                 {this.renderSearch()}
                                 {this.renderActions()}
                             </div>
-                            <div style={{ flex: 1}}>
+                            <div style={{ flex: 1 }}>
                                 {this.renderCardItems(textures, searchTexture, selectedFilterType)}
                             </div>
                         </div>

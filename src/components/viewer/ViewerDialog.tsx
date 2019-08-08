@@ -185,7 +185,8 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
                             width={width}
                             height={height}
                             scene={getEntityClipboardRepresentation(AFRAME.INSPECTOR.sceneEl)}
-                            ar={type === 'ar'}
+                            type={type}
+                            load={true}
                         />
                     </div>
                 </div>

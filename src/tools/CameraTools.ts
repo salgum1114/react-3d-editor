@@ -39,7 +39,7 @@ class CameraTools {
     }
 
     init(inspector: InspectorTools) {
-        const sceneEl = inspector.sceneEl;
+        const { sceneEl } = inspector;
         const originalCamera = inspector.currentCameraEl = sceneEl.camera.el;
         inspector.currentCameraEl.setAttribute(
             'data-aframe-inspector-original-camera',

@@ -241,7 +241,11 @@ class ViewportTools {
         EventTools.on('inspectortoggle', active => {
             if (active) {
                 this.enableControls();
-                AFRAME.scenes[0].camera = inspector.camera;
+                AFRAME.INSPECTOR.sceneEl.camera = inspector.camera;
+                inspector.cameras.original.setAttribute('camera', 'active', false);
+                if (inspector.cameras.original.hasAttribute('orbit-controls')) {
+                    inspector.cameras.original.setAttribute('orbit-controls', 'enabled', false);
+                }
                 Array.prototype.slice
                 .call(document.querySelectorAll('.a-enter-vr,.rs-base'))
                 .forEach(element => {
@@ -250,7 +254,10 @@ class ViewportTools {
             } else {
                 this.disableControls();
                 inspector.cameras.original.setAttribute('camera', 'active', true);
-                AFRAME.scenes[0].camera = inspector.cameras.original.getObject3D('camera') as ICamera;
+                if (inspector.cameras.original.hasAttribute('orbit-controls')) {
+                    inspector.cameras.original.setAttribute('orbit-controls', 'enabled', true);
+                }
+                AFRAME.INSPECTOR.sceneEl.camera = inspector.cameras.original.getObject3D('camera') as ICamera;
                 Array.prototype.slice
                 .call(document.querySelectorAll('.a-enter-vr,.rs-base'))
                 .forEach(element => {
@@ -285,6 +292,7 @@ class ViewportTools {
     enableControls() {
         this.mouseCursor.enable();
         this.transformControls.activate();
+        this.controls.activate();
         this.controls.enabled = true;
     }
 
@@ -296,6 +304,7 @@ class ViewportTools {
     disableControls() {
         this.mouseCursor.disable();
         this.transformControls.dispose();
+        this.controls.dispose();
         this.controls.enabled = false;
     }
 }

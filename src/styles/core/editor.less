@@ -9,6 +9,13 @@ html, body, #root, .container {
     overflow: hidden;
 }
 
+body {
+    cursor: default !important;
+    .a-canvas {
+        cursor: grab;
+    }
+}
+
 .container {
     display: flex;
 }
@@ -30,6 +37,19 @@ html, body, #root, .container {
     }
     .editor-view-content {
         flex: 1;
+        .inspector {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            iframe {
+                width: 100%;
+                height: 100%;
+                outline: none;
+                border: none;
+            }
+        }
     }
 }
 

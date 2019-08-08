@@ -158,6 +158,14 @@ export const primitives: IPrimitive[] = [
         title: 'Camera',
         description: 'The camera primitive determines what the user sees. We can change the viewport by modifying the camera entity’s position and rotation.',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-camera.html',
+        attributes: [],
+    },
+    {
+        key: 'a-camera-static',
+        type: 'a-camera-static',
+        title: 'Camera Static',
+        description: 'The camera primitive determines what the user sees. We can change the viewport by modifying the camera entity’s position and rotation.',
+        url: 'https://github.com/jeromeetienne/AR.js/tree/master/aframe',
         attributes: [
             {
                 attribute: 'camera',

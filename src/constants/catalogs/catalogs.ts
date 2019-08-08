@@ -57,27 +57,27 @@ export const catalogs: IPrimitive[] = [
             },
         ],
     },
-    {
-        key: 'player_camera',
-        type: '',
-        title: 'Player Camera',
-        description: 'First person narrative camera',
-        image: './catalogs/buster_drone/buster_drone.png',
-        fragment: {
-            entity: `
-            <a-entity id="playerCamera" position="0 1.6 8">
-                <a-entity id="camera" camera="active: false;" look-controls wasd-controls>
-                    <!-- Cursor. -->
-                    <a-entity id="cursor" position="0 0 -2"
-                                geometry="primitive: ring; radiusOuter: 0.016; radiusInner: 0.01"
-                                material="color: #ff9; shader: flat; transparent: true; opacity: 0.5"
-                                scale="2 2 2" raycaster>
-                    </a-entity>
-                </a-entity>
-            </a-entity>
-            `,
-        },
-    },
+    // {
+    //     key: 'player_camera',
+    //     type: '',
+    //     title: 'Player Camera',
+    //     description: 'First person narrative camera',
+    //     image: './catalogs/playercamera/playercamera.png',
+    //     fragment: {
+    //         entity: `
+    //         <a-entity id="playerCamera" position="0 1.6 8">
+    //             <a-entity id="camera" camera="active: false;" look-controls wasd-controls>
+    //                 <!-- Cursor. -->
+    //                 <a-entity id="cursor" position="0 0 -2"
+    //                             geometry="primitive: ring; radiusOuter: 0.016; radiusInner: 0.01"
+    //                             material="color: #ff9; shader: flat; transparent: true; opacity: 0.5"
+    //                             scale="2 2 2" raycaster>
+    //                 </a-entity>
+    //             </a-entity>
+    //         </a-entity>
+    //         `,
+    //     },
+    // },
     {
         key: 'sample_video',
         type: 'a-video',

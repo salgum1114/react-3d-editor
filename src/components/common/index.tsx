@@ -13,3 +13,5 @@ export { default as AutoComplete } from './AutoComplete';
 export { default as ShortcutHelp } from './ShortcutHelp';
 export { default as FramePortal } from './FramePortal';
 export { default as AframePortal } from './AframePortal';
+export { default as SavedList } from './SavedList';
+export { default as SaveSceneModal } from './SaveSceneModal';

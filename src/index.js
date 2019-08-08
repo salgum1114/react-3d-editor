@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 
-import 'aframe';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 

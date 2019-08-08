@@ -4,6 +4,7 @@ import { Entity } from 'aframe';
 import Icon from 'polestar-icons';
 import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
 import difference from 'lodash/difference';
+import { AntTreeNodeDropEvent } from 'antd/lib/tree/Tree';
 
 import { SidebarContainer, Scrollbar, Empty } from '../common';
 import { IEntity, IDetailEntity, IPrimitive, catalogs, primitives, getIcon } from '../../constants';
@@ -227,6 +228,32 @@ class Entities extends Component<{}, IState> {
         });
     }
 
+    private handleDropEntity = (options: AntTreeNodeDropEvent) => {
+        console.log('handleDropEntity', options);
+        const { dragNode, node, dropPosition } = options;
+        const source = dragNode.props.dataRef.entity;
+        const dest = node.props.dataRef.entity;
+        const sourceStr = EntityTools.getEntityClipboardRepresentation(source);
+        EntityTools.removeEntity(source);
+        if (dropPosition > -1) {
+            dest.appendChild(document.createRange().createContextualFragment(sourceStr));
+            const treeNodes = EntityTools.buildEntities(AFRAME.INSPECTOR.sceneEl);
+            this.setState({
+                treeNodes,
+            });
+        } else {
+            if (dest.id === 'scene') {
+                message.warn('Can not insert before scene.');
+                return;
+            }
+            dest.before(document.createRange().createContextualFragment(sourceStr));
+            const treeNodes = EntityTools.buildEntities(AFRAME.INSPECTOR.sceneEl);
+            this.setState({
+                treeNodes,
+            });
+        }
+    }
+
     /**
      * @description Render the tree node
      * @param {IEntity[]} treeNodes
@@ -268,7 +295,8 @@ class Entities extends Component<{}, IState> {
                         <Row gutter={16} style={{ margin: 0 }}>
                             {
                                 items
-                                .filter(item => item.title.includes(searchText.toLowerCase()) || item.description.includes(searchText.toLowerCase()))
+                                .filter(item => item.title.toLowerCase().includes(searchText.toLowerCase())
+                                || item.description.toLowerCase().includes(searchText.toLowerCase()))
                                 .map(item => {
                                     return (
                                         <Col key={item.key} md={24} lg={12} xl={6} onClick={() => this.handleAddEntity(item)}>
@@ -399,6 +427,8 @@ class Entities extends Component<{}, IState> {
                             onSelect={this.handleSelectEntity}
                             defaultExpandedKeys={['scene']}
                             defaultSelectedKeys={['scene']}
+                            draggable={true}
+                            onDrop={this.handleDropEntity}
                         >
                             {this.renderTreeNodes(treeNodes)}
                         </Tree>

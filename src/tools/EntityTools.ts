@@ -55,14 +55,14 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
         if (AFRAME.INSPECTOR.selectedEntity) {
             AFRAME.INSPECTOR.selectedEntity.appendChild(entity);
         } else {
-            AFRAME.scenes[0].appendChild(entity);
+            AFRAME.INSPECTOR.sceneEl.appendChild(entity);
         }
         return entity;
     }
     if (AFRAME.INSPECTOR.selectedEntity) {
         AFRAME.INSPECTOR.selectedEntity.appendChild(entity);
     } else {
-        AFRAME.scenes[0].appendChild(entity);
+        AFRAME.INSPECTOR.sceneEl.appendChild(entity);
     }
     return entity;
 };
@@ -159,10 +159,10 @@ export const removeEntity = (entity: Entity) => {
         alert('Does not delete Scene.');
         return;
     }
-    if (entity.children.length) {
-        alert('There are child entities.');
-        return;
-    }
+    // if (entity.children.length) {
+    //     alert('There are child entities.');
+    //     return;
+    // }
     const closest = findClosestEntity(entity) as Entity;
     AFRAME.INSPECTOR.removeObject(entity.object3D);
     entity.parentNode.removeChild(entity);
@@ -310,6 +310,8 @@ export const buildEntities = (scene: IScene) => {
             const en = treeNode.entity.children[i] as Entity;
             if (isInspector(en)) {
                 continue;
+            } else if (en.hasAttribute('orbit-controls')) {
+                continue;
             }
             if (!en.id) {
                 en.id = uuid();
@@ -350,6 +352,7 @@ export const buildEntities = (scene: IScene) => {
 export const isInspector = (en: Entity) => {
     return 'isInpsector' in en.dataset
     || 'aframeInspector' in en.dataset
+    || 'aframeInspectorOriginalCamera' in en.dataset
     || !en.isEntity
     || en.isInspector
     || en.hasAttribute('aframe-injected');
@@ -655,7 +658,14 @@ const getOptimalUpdate = (component: Component, implicit: any, reference: any) =
     Object.keys(reference).forEach(key => {
         // const needsUpdate = !UtilTools.equal(reference[key], implicit[key]);
         // if (needsUpdate) {
-        optimal[key] = reference[key];
+        if (reference[key]
+            && (key === 'src'
+            || key === 'mtl'
+            || key === 'obj')) {
+            optimal[key] = `url(${reference[key]})`;
+        } else {
+            optimal[key] = reference[key];
+        }
         // }
     });
     return optimal;

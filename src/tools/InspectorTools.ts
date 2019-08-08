@@ -1,5 +1,7 @@
+import 'aframe';
 import { Entity, Scene } from 'aframe';
 import 'aframe-extras';
+import 'aframe-orbit-controls';
 
 import { ObjectMapper, Omit } from '../types/utils';
 import {
@@ -10,6 +12,7 @@ import {
     HistoryTools,
 } from './';
 import Components from '../constants/components';
+import Systems from '../constants/systems';
 import '../lib/GLTFExporter';
 
 export interface ICameras {
@@ -28,15 +31,22 @@ export interface ICamera extends THREE.Camera {
 
 export interface IInsepctorOptions {
     id?: string;
+    target?: HTMLElement;
     playerCamera?: boolean;
     ar?: boolean;
+    orbitControls?: boolean;
+    sceneStr?: string;
+    assetsStr?: string;
+    entitiesStr?: string;
 }
 
 const defaultInspectorOptions: IInsepctorOptions = {
-    playerCamera: true,
+    playerCamera: false,
+    orbitControls: true,
 };
 
 Components.forEach(Comp => Comp());
+Systems.forEach(System => System());
 
 class InspectorTools {
     sceneEl?: IScene;
@@ -63,6 +73,8 @@ class InspectorTools {
     cameraTools?: CameraTools;
     viewportTools?: ViewportTools;
     selectedAsset?: Entity;
+    options: IInsepctorOptions;
+    targetEl: HTMLElement;
 
     constructor(options: IInsepctorOptions = {}) {
         this.exporters = { gltf: new AFRAME.THREE.GLTFExporter() };
@@ -72,7 +84,8 @@ class InspectorTools {
         this.on = EventTools.on;
         this.opened = false;
         const mergedOptions = Object.assign({}, defaultInspectorOptions, options);
-        const { id } = mergedOptions;
+        this.options = mergedOptions;
+        const { id, target } = mergedOptions;
         let sceneParentElement = document.body;
         if (id) {
             const targetEl = document.getElementById(id);
@@ -80,11 +93,11 @@ class InspectorTools {
                 sceneParentElement = targetEl;
             }
         }
-        const script = document.createElement('script') as any;
-        script.src = './vendor/ar.js/aframe/build/aframe-ar.min.js';
-        script.async = true;
-        document.head.appendChild(script);
-        this.initScene(sceneParentElement, options);
+        if (target) {
+            sceneParentElement = target;
+        }
+        this.targetEl = sceneParentElement;
+        this.initScene(sceneParentElement, mergedOptions);
         this.init();
     }
 
@@ -112,95 +125,52 @@ class InspectorTools {
             }, { once: true });
             return;
         }
+        // Remove scene default inspector
+        this.sceneEl.removeAttribute('inspector');
+        this.sceneEl.removeAttribute('keyboard-shortcuts');
         EventTools.emit('sceneloaded', this.sceneEl);
         EventTools.emit('entityselect', this.sceneEl);
         this.scene = this.sceneEl.object3D;
-        // Remove scene default inspector
-        this.container = document.querySelector('.a-canvas');
+        this.container = this.sceneEl.querySelector('.a-canvas');
         this.initCamera();
         this.initShortcut();
         this.initViewport();
         this.initEvents();
+        this.initARScript();
     }
 
     /**
      * @description Initial Scene
-     * @param {HTMLElement} inspector
+     * @param {HTMLElement} inspectorEl
      * @param {boolean} playCamera
      */
-    initScene = (inspector: HTMLElement, options: IInsepctorOptions) => {
+    initScene = (inspectorEl: HTMLElement, options: IInsepctorOptions) => {
+        const { playerCamera, orbitControls, sceneStr, assetsStr, entitiesStr } = options;
+        if (sceneStr) {
+            this.loadScene(inspectorEl, sceneStr);
+            inspectorEl.querySelector('a-scene');
+            return;
+        }
         const scene = document.createElement('a-scene') as IScene;
         const assets = document.createElement('a-assets');
         assets.id = 'assets';
         scene.appendChild(assets);
-        this.loadAssets(scene);
-        // <a-sky src="https://ucarecdn.com/e1c757bc-73ee-4efe-b068-4f778ce212a3/" rotation="0 -20 0" />
-        // this.loadAssets(scene, this.exampleAssets());
-        const { playerCamera = true } = options;
+        this.loadAssets(scene, assetsStr);
         if (playerCamera) {
             this.loadPlayerCamera(scene);
+        } else if (orbitControls) {
+            this.loadOrbitControls(scene);
         }
         scene.querySelector('a-assets').addEventListener('loaded', () => {
             console.debug('a-assets loaded');
-            this.loadEntities(scene);
-            // this.loadEntities(scene, this.exampleEntities());
+            this.loadEntities(scene, entitiesStr);
         });
-        scene.addEventListener('loaded', () => {
-            console.debug('scene loaded');
-            scene.removeAttribute('inspector');
-            scene.removeAttribute('keyboard-shortcuts');
-        });
-        inspector.appendChild(scene);
+        inspectorEl.appendChild(scene);
         scene.id = 'scene';
         scene.title = 'Scene';
         scene.style.position = 'fixed';
         scene.style.top = '0';
         scene.style.left = '0';
-    }
-
-    exampleAssets = () => {
-        return `
-            <a-mixin id="blue" material="color: #4CC3D9"></a-mixin>
-            <a-mixin id="blueBox" geometry="primitive: box; depth: 2; height: 5; width: 1" material="color: #4CC3D9"></a-mixin>
-            <a-mixin id="box" geometry="primitive: box; depth: 1; height: 1; width: 1"></a-mixin>
-            <a-mixin id="cylinder" geometry="primitive: cylinder; height: 0.3; radius: 0.75; segmentsRadial: 6"></a-mixin>
-            <a-mixin id="green" material="color: #7BC8A4"></a-mixin>
-            <a-mixin id="orange" material="color: #F16745"></a-mixin>
-            <a-mixin id="purple" material="color: #93648D"></a-mixin>
-            <a-mixin id="short" scale="1 0.5 1"></a-mixin>
-            <a-mixin id="yellow" material="color: #FFC65D"></a-mixin>
-            <img id="crateImg" src="https://aframe.io/sample-assets/assets/images/wood/crate.gif" crossOrigin="true">
-            <img id="floorImg" src="https://aframe.io/sample-assets/assets/images/terrain/grasslight-big.jpg" crossOrigin="true">
-            <a-asset-item id="buster_drone" src="/catalogs/buster_drone/scene.gltf" />
-        `;
-    }
-
-    exampleEntities = () => {
-        return `
-            <a-entity id="environment" environment="preset: forest; fog: false"></a-entity>
-            <!-- Meshes. -->
-            <a-entity id="blueBox" mixin="blueBox" position="0 8 0"></a-entity>
-            <a-entity id="shortOrangeBox" mixin="short orange box" position="-5 2 0"></a-entity>
-            <a-entity id="shortYellowBox" mixin="short yellow box" position="5 2 0"></a-entity>
-            <a-entity id="redBox" geometry="primitive: box" material="color:#f00" position="-4 1 0" animation="property: object3D.rotation.y; to: 360; loop: true; easing: linear; dur: 9600"></a-entity>
-            <a-entity id="yellowSphere" geometry="primitive: sphere" material="color:#ff0; metalness:0.0; roughness:1.0" position="-2 2 -2"></a-entity>
-            <a-box src="https://aframe.io/sample-assets/assets/images/bricks/brick_bump.jpg" position="-5 5 -2" width="1" color="#F16745"></a-box>
-            <a-box id="box" position="0 2 0" height="2" color="#FFC65D"></a-box>
-
-            <!-- Models. -->
-            <a-entity id="boxModel1" class="boxClass" geometry="primitive: box" material="src: #crateImg" position="3 4 0"></a-entity>
-            <a-entity id="boxModel2" class="boxClass" geometry="primitive: box" material="color: #0f0" position="4 2 4"></a-entity>
-
-            <!-- Floor. -->
-            <a-entity id="floor" geometry="primitive: box; height: .2; depth: 24; width: 24"
-                        material="src: #floorImg; color: #fafafa; metalness: .1; repeat: 50 20; roughness: 1"></a-entity>
-
-            <!-- Lights. -->
-            <a-entity id="pointLight" light="type: directional; intensity: 1" position="0 3 3"></a-entity>
-
-            <!-- Buster Drone -->
-            <a-entity gltf-model="#buster_drone" animation-mixer position="1 1 1" scale="0.01 0.01 0.01" />
-        `;
     }
 
     initCamera = () => {
@@ -258,6 +228,24 @@ class InspectorTools {
         });
     }
 
+    initARScript = () => {
+        const arScript = document.head.querySelector('#ar-script');
+        console.log(this.sceneEl.systems);
+        if (arScript) {
+            document.head.removeChild(arScript);
+            return;
+        }
+        const script = document.createElement('script') as any;
+        script.src = './vendor/ar.js/aframe/build/aframe-ar.min.js';
+        script.async = true;
+        script.id = 'ar-script';
+        document.head.appendChild(script);
+    }
+
+    loadScene = (inspectorEl: HTMLElement, fragment: string) => {
+        return inspectorEl.appendChild(document.createRange().createContextualFragment(fragment.trim()))
+    }
+
     loadEntities = (scene: IScene, fragment: string = '') => {
         return scene.appendChild(document.createRange().createContextualFragment(fragment.trim()));
     }
@@ -270,7 +258,7 @@ class InspectorTools {
         const playerCamera = document.createRange().createContextualFragment(
             fragment ? fragment.trim() : `
             <!-- Camera. -->
-            <a-entity id="playerCamera" position="0 1.6 8">
+            <a-entity position="0 1.6 8" aframe-injected>
                 <a-entity id="camera" camera look-controls wasd-controls>
                     <!-- Cursor. -->
                     <a-entity id="cursor" position="0 0 -2"
@@ -283,6 +271,20 @@ class InspectorTools {
             `.trim(),
         );
         return scene.appendChild(playerCamera);
+    }
+
+    loadOrbitControls = (scene: IScene, fragment?: string) => {
+        const orbitControls = document.createRange().createContextualFragment(
+            fragment ? fragment.trim() : `
+            <!-- Orbit Controls. -->
+            <a-entity
+                camera
+                look-controls="enabled: false"
+                orbit-controls="target: 0 0 0; minDistance: 0.5; maxDistance: 180; initialPosition: 0 10 15"
+            />
+            `.trim(),
+        );
+        return scene.appendChild(orbitControls);
     }
 
     removeObject = (object3D: THREE.Object3D) => {
@@ -478,6 +480,13 @@ class InspectorTools {
         document.body.classList.remove('aframe-inspector-opened');
         this.sceneEl.resize();
         this.shortcutTools.disable();
+    }
+
+    reload = (options: IInsepctorOptions) => {
+        this.targetEl.removeChild(this.sceneEl);
+        const mergedOptions = Object.assign({}, this.options, options);
+        this.initScene(this.targetEl, mergedOptions);
+        this.init();
     }
 }
 

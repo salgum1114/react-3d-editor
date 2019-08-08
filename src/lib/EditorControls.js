@@ -273,6 +273,7 @@ THREE.EditorControls = function(_object, domElement) {
   }
 
   this.dispose = function() {
+    console.debug('EditorControls dispose');
     domElement.removeEventListener('contextmenu', contextmenu, false);
     domElement.removeEventListener('mousedown', onMouseDown, false);
     domElement.removeEventListener('wheel', onMouseWheel, false);
@@ -286,9 +287,20 @@ THREE.EditorControls = function(_object, domElement) {
     domElement.removeEventListener('touchmove', touchMove, false);
   };
 
-  domElement.addEventListener('contextmenu', contextmenu, false);
-  domElement.addEventListener('mousedown', onMouseDown, false);
-  domElement.addEventListener('wheel', onMouseWheel, false);
+  this.activate = function() {
+    console.debug('EditorControls activate');
+    domElement.addEventListener('wheel', onMouseWheel, false);
+    domElement.addEventListener('contextmenu', contextmenu, false);
+    domElement.addEventListener('mousedown', onMouseDown, false);
+
+    // domElement.addEventListener('mousemove', onMouseMove, false);
+    // domElement.addEventListener('mouseup', onMouseUp, false);
+    // domElement.addEventListener('mouseout', onMouseUp, false);
+    // domElement.addEventListener('dblclick', onMouseUp, false);
+
+    domElement.addEventListener('touchstart', touchStart, false);
+    domElement.addEventListener('touchmove', touchMove, false);
+  }
 
   // touch
 
@@ -374,8 +386,9 @@ THREE.EditorControls = function(_object, domElement) {
     prevTouches[1].copy(touches[1]);
   }
 
-  domElement.addEventListener('touchstart', touchStart, false);
-  domElement.addEventListener('touchmove', touchMove, false);
+  this.activate();
+  // domElement.addEventListener('touchstart', touchStart, false);
+  // domElement.addEventListener('touchmove', touchMove, false);
 };
 
 THREE.EditorControls.prototype = Object.create(THREE.EventDispatcher.prototype);

@@ -1,4 +1,5 @@
-//////////////////////////////////////////////////////////////////////////////
+export default () => {
+    //////////////////////////////////////////////////////////////////////////////
 //		arjs-anchor
 //////////////////////////////////////////////////////////////////////////////
 AFRAME.registerComponent('arjs-anchor', {
@@ -192,7 +193,7 @@ AFRAME.registerComponent('arjs-anchor', {
 
 
     }
-});
+})
 
 //////////////////////////////////////////////////////////////////////////////
 //                define some primitives shortcuts
@@ -219,7 +220,7 @@ AFRAME.registerPrimitive('a-anchor', AFRAME.utils.extendDeep({}, AFRAME.primitiv
         'hit-testing-render-debug': 'arjs-hit-testing.renderDebug',
         'hit-testing-enabled': 'arjs-hit-testing.enabled',
     }
-}));
+}))
 
 
 
@@ -229,7 +230,7 @@ AFRAME.registerPrimitive('a-camera-static', AFRAME.utils.extendDeep({}, AFRAME.p
     },
     mappings: {
     }
-}));
+}))
 
 //////////////////////////////////////////////////////////////////////////////
 //		backward compatibility
@@ -256,7 +257,7 @@ AFRAME.registerPrimitive('a-marker', AFRAME.utils.extendDeep({}, AFRAME.primitiv
         'hit-testing-render-debug': 'arjs-hit-testing.renderDebug',
         'hit-testing-enabled': 'arjs-hit-testing.enabled',
     }
-}));
+}))
 
 AFRAME.registerPrimitive('a-marker-camera', AFRAME.utils.extendDeep({}, AFRAME.primitives.getMeshMixin(), {
     defaultComponents: {
@@ -274,4 +275,5 @@ AFRAME.registerPrimitive('a-marker-camera', AFRAME.utils.extendDeep({}, AFRAME.p
         'min-confidence': 'arjs-anchor.minConfidence',
         'marker-helpers': 'arjs-anchor.markerhelpers',
     }
-}));
+}))
+}
