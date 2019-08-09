@@ -105,6 +105,7 @@ class RaycasterTools {
             this.mouseCursor.components.cursor.intersectedEl.setAttribute('material', 'emissive', '#ff0000');
         }
         EventTools.emit('raycastermouseenter', this.mouseCursor.components.cursor.intersectedEl);
+        event.target.sceneEl.canvas.style.cursor = 'pointer';
     }
 
     onMouseLeave = (event: DetailEvent<Event>) => {
@@ -112,6 +113,7 @@ class RaycasterTools {
             this.mouseCursor.components.cursor.intersectedEl.setAttribute('material', 'emissive', this.mouseCursor.components.cursor.intersectedEl.currentEmissive);
         }
         EventTools.emit('raycastermouseleave', this.mouseCursor.components.cursor.intersectedEl);
+        event.target.sceneEl.canvas.style.cursor = 'grab';
     }
 
     onMouseDown = (event: MouseEvent) => {

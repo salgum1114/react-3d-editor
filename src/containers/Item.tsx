@@ -9,7 +9,7 @@ import { createPortal } from 'react-dom';
 import { Assets } from '../components/asset';
 import { Entities } from '../components/entity';
 import { Modal } from 'antd';
-import { ShortcutHelp, SavedList, SaveSceneModal, AframePortal } from '../components/common';
+import { ShortcutHelp, SavedList, SaveSceneModal, AframePortal, SavedListModal } from '../components/common';
 import { EventTools, EntityTools, UtilTools } from '../tools';
 import { ViewerDialog } from '../components/viewer';
 import { ISavedScene } from '../components/common/SavedList';
@@ -168,12 +168,9 @@ class Item extends Component<{}, IItemState> {
             <div className="editor-item-container">
                 <div className="editor-item-tools">
                     <div style={{ flex: 1 }}>
-                        <a target="_blank" href="https://github.com/salgum1114/react-3d-editor">
-                            <Icon name="github" style={{ fontSize: '1.25rem' }} />
-                        </a>
+                        <Icon className="editor-icon" name="list-alt" onClick={this.handleSavedListVisible} />
                     </div>
                     <div className="editor-item-tools-actions">
-                        <Icon className="editor-icon" name="list-alt" onClick={this.handleSavedListVisible} />
                         <Icon className="editor-icon" name="ar" onClick={this.handleARDialogVisible} />
                         <Icon className="editor-icon" name="eye"  onClick={this.handleDefaultDialogVisible} />
                         <Icon className="editor-icon" name="save" onClick={this.handleSaveSceneModalVisible} />
@@ -205,7 +202,7 @@ class Item extends Component<{}, IItemState> {
                 >
                     <ShortcutHelp />
                 </Modal>
-                <Modal
+                <SavedListModal
                     className="editor-item-modal"
                     title={'Saved list'}
                     closable={true}
@@ -214,9 +211,8 @@ class Item extends Component<{}, IItemState> {
                     onCancel={this.handleSavedListVisible}
                     width="75%"
                     style={{ height: '75%' }}
-                >
-                    <SavedList onClick={this.handleSelectScene} />
-                </Modal>
+                    onClickScene={this.handleSelectScene}
+                />
                 <SaveSceneModal
                     onOk={this.handleSaveScene}
                     onCancel={this.handleSaveSceneModalVisible}
@@ -224,17 +220,6 @@ class Item extends Component<{}, IItemState> {
                 />
                 <ViewerDialog type="ar" visible={arDialogVisible} onClose={this.handleARDialogVisible} />
                 <ViewerDialog type="default" visible={defaultDialogVisible} onClose={this.handleDefaultDialogVisible} />
-                {/* {
-                    saveSceneModalVisible && createPortal(
-                        <AframePortal
-                            ref={c => { this.aframePortal = c; }}
-                            width={2048}
-                            height={1024}
-                            style={{ visibility: 'hidden' }}
-                        />,
-                        document.body,
-                    )
-                } */}
             </div>
         );
     }

@@ -24,7 +24,7 @@ class SaveSceneModal extends Component<IProps> {
         const { form, visible, onCancel } = this.props;
         return (
             <Modal
-                title={'Scene info'}
+                title={'Save scene'}
                 visible={visible}
                 onOk={this.handleSaveScene}
                 onCancel={onCancel}

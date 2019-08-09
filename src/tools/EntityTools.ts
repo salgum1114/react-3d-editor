@@ -159,10 +159,6 @@ export const removeEntity = (entity: Entity) => {
         alert('Does not delete Scene.');
         return;
     }
-    // if (entity.children.length) {
-    //     alert('There are child entities.');
-    //     return;
-    // }
     const closest = findClosestEntity(entity) as Entity;
     AFRAME.INSPECTOR.removeObject(entity.object3D);
     entity.parentNode.removeChild(entity);
@@ -170,13 +166,15 @@ export const removeEntity = (entity: Entity) => {
 };
 
 export const cloneSelectedEntity = () => {
-    if (AFRAME.INSPECTOR.selectedEntity) {
+    if (AFRAME.INSPECTOR.selectedEntity
+    && AFRAME.INSPECTOR.selectedEntity.tagName.toLowerCase() !== 'a-scene') {
         cloneEntity(AFRAME.INSPECTOR.selectedEntity);
     }
 }
 
 export const removeSelectedEntity = () => {
-    if (AFRAME.INSPECTOR.selectedEntity) {
+    if (AFRAME.INSPECTOR.selectedEntity
+    && AFRAME.INSPECTOR.selectedEntity.tagName.toLowerCase() !== 'a-scene') {
         removeEntity(AFRAME.INSPECTOR.selectedEntity);
     }
 }

@@ -132,10 +132,6 @@ class Entities extends Component<{}, IState> {
                 title: 'Delete entity',
                 content: 'Are you sure want to delete this entity?',
                 onOk: () => {
-                    if (AFRAME.INSPECTOR.selectedEntity.children.length) {
-                        message.warn('There are child entities.');
-                        return;
-                    }
                     EntityTools.removeSelectedEntity();
                 },
             });
@@ -228,13 +224,23 @@ class Entities extends Component<{}, IState> {
         });
     }
 
+    /**
+     * @description Drop the entity
+     * @param {AntTreeNodeDropEvent} options
+     * @returns
+     */
     private handleDropEntity = (options: AntTreeNodeDropEvent) => {
-        console.log('handleDropEntity', options);
-        const { dragNode, node, dropPosition } = options;
-        const source = dragNode.props.dataRef.entity;
-        const dest = node.props.dataRef.entity;
+        const { dragNode, node } = options;
+        const source = dragNode.props.dataRef.entity as Entity;
+        const dest = node.props.dataRef.entity as Entity;
+        if (dest.id === 'scene') {
+            message.warn('Can not insert before scene.');
+            return;
+        }
         const sourceStr = EntityTools.getEntityClipboardRepresentation(source);
         EntityTools.removeEntity(source);
+        const dropPos = node.props.pos.split('-');
+        const dropPosition = options.dropPosition - Number(dropPos[dropPos.length - 1]);
         if (dropPosition > -1) {
             dest.appendChild(document.createRange().createContextualFragment(sourceStr));
             const treeNodes = EntityTools.buildEntities(AFRAME.INSPECTOR.sceneEl);
@@ -242,11 +248,9 @@ class Entities extends Component<{}, IState> {
                 treeNodes,
             });
         } else {
-            if (dest.id === 'scene') {
-                message.warn('Can not insert before scene.');
-                return;
-            }
-            dest.before(document.createRange().createContextualFragment(sourceStr));
+            const parent = dest.parentElement;
+            const createdSource = document.createRange().createContextualFragment(sourceStr);
+            parent.insertBefore(createdSource, dest);
             const treeNodes = EntityTools.buildEntities(AFRAME.INSPECTOR.sceneEl);
             this.setState({
                 treeNodes,

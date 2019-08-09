@@ -3,6 +3,7 @@ import Icon from 'polestar-icons';
 import { Entity } from 'aframe';
 import { Modal, Tree, Row, Col, Card, Tabs, Input } from 'antd';
 import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
+import { AntTreeNodeDropEvent } from 'antd/lib/tree/Tree';
 
 import { SidebarContainer, Scrollbar, Empty, AddEmpty, Textures } from '../common';
 import { EventTools, AssetTools } from '../../tools';
@@ -185,6 +186,26 @@ class Assets extends Component<{}, IState> {
     }
 
     /**
+     * @description Drop the asset
+     * @param {AntTreeNodeDropEvent} options
+     */
+    private handleDropAsset = (options: AntTreeNodeDropEvent) => {
+        const { dragNode, node } = options;
+        const source = dragNode.props.dataRef.entity as Entity;
+        const dest = node.props.dataRef.entity as Entity;
+        const dropPos = node.props.pos.split('-');
+        const dropPosition = options.dropPosition - Number(dropPos[dropPos.length - 1]);
+        if (dropPosition < 0) {
+            const parent = dest.parentElement;
+            parent.insertBefore(source, dest);
+            const assets = AssetTools.buildAssets(AFRAME.INSPECTOR.sceneEl);
+            this.setState({
+                assets,
+            });
+        }
+    }
+
+    /**
      * @description Render the tree node
      * @param {IEntity} item
      * @returns
@@ -280,6 +301,8 @@ class Assets extends Component<{}, IState> {
                             showIcon={true}
                             onSelect={this.handleSelectAsset}
                             selectedKeys={selectedKeys}
+                            draggable={true}
+                            onDrop={this.handleDropAsset}
                         >
                             {assets.map(asset => this.renderTreeNode(asset))}
                         </Tree>

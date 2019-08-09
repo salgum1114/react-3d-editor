@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
+import GithubCorner from 'react-github-corner';
 
 import Editor from './containers/Editor';
 
@@ -25,6 +26,13 @@ class App extends Component {
                     </script>
                 </Helmet>
                 <Editor />
+                <GithubCorner
+                    href="https://github.com/salgum1114/react-3d-editor"
+                    target="_blank"
+                    bannerColor="#08979c"
+                    size={60}
+                    svgStyle={{ bottom: 0, top: 'unset', transform: 'rotate(90deg)', zIndex: 9999 }}
+                />
             </div>
         );
     }

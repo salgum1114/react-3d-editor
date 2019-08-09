@@ -16,6 +16,7 @@ export interface ISavedScene {
 
 export interface SavedListProps {
     onClick?: (savedScene: ISavedScene) => void;
+    visible?: boolean;
 }
 
 interface IState {
@@ -32,6 +33,22 @@ class SavedList extends Component<SavedListProps, IState> {
     }
 
     componentDidMount() {
+        this.getSceneList();
+    }
+
+    componentWillReceiveProps(nextProps: SavedListProps) {
+        if (nextProps.visible) {
+            this.getSceneList();
+        }
+    }
+
+    /**
+     * @description Get scene list
+     */
+    private getSceneList = () => {
+        this.setState({
+            loading: true,
+        });
         SceneDatabase.allDocs().then(response => {
             const scenes = response.rows.map(row => {
                 const { doc } = row;

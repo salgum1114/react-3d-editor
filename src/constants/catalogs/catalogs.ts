@@ -83,6 +83,7 @@ export const catalogs: IPrimitive[] = [
         type: 'a-video',
         title: 'Big Buck Bunny',
         description: 'Big Buck Bunny',
+        image: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
         attributes: [
             {
                 attribute: 'material.src',
