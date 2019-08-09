@@ -4,13 +4,12 @@ import SplitPane from 'react-split-pane';
 import store from 'store';
 import uuid from 'uuid';
 import warning from 'warning';
-import { createPortal } from 'react-dom';
 
 import { Assets } from '../components/asset';
 import { Entities } from '../components/entity';
 import { Modal } from 'antd';
-import { ShortcutHelp, SavedList, SaveSceneModal, AframePortal, SavedListModal } from '../components/common';
-import { EventTools, EntityTools, UtilTools } from '../tools';
+import { ShortcutHelp, SaveSceneModal, AframePortal, SavedListModal } from '../components/common';
+import { EventTools, EntityTools } from '../tools';
 import { ViewerDialog } from '../components/viewer';
 import { ISavedScene } from '../components/common/SavedList';
 import { SceneDatabase } from '../database';
@@ -218,8 +217,18 @@ class Item extends Component<{}, IItemState> {
                     onCancel={this.handleSaveSceneModalVisible}
                     visible={saveSceneModalVisible}
                 />
-                <ViewerDialog type="ar" visible={arDialogVisible} onClose={this.handleARDialogVisible} />
-                <ViewerDialog type="default" visible={defaultDialogVisible} onClose={this.handleDefaultDialogVisible} />
+                <ViewerDialog
+                    type="ar"
+                    title="AR Preview"
+                    visible={arDialogVisible}
+                    onClose={this.handleARDialogVisible}
+                />
+                <ViewerDialog
+                    type="default"
+                    title="Default Preview"
+                    visible={defaultDialogVisible}
+                    onClose={this.handleDefaultDialogVisible}
+                />
             </div>
         );
     }

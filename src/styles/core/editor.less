@@ -278,6 +278,8 @@ body {
         z-index: 1000;
     }
     &-container {
+        display: flex;
+        flex-direction: column;
         position: fixed;
         top: 0;
         left: 0;
@@ -306,6 +308,7 @@ body {
     }
     &-content {
         display: flex;
+        flex: 1;
     }
     &-dragzone {
         cursor: move;

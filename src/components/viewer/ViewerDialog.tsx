@@ -20,13 +20,18 @@ interface IState {
     id: string;
     width: number;
     height: number;
-    top: string | number;
-    left: string | number;
+    top: string;
+    left: string;
     fullscreen: boolean;
 }
 
 class ViewerDialog extends Component<ViewerDialogProps, IState> {
     fullscreen: boolean;
+    pos1: number;
+    pos2: number;
+    pos3: number;
+    pos4: number;
+    element: HTMLElement;
 
     static defaultProps: ViewerDialogProps = {
         type: 'default',
@@ -37,98 +42,99 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         id: uuid(),
         width: 600,
         height: 400,
-        top: document.body.clientWidth / 2,
-        left: document.body.clientHeight / 2,
+        top: `${document.body.clientWidth / 2}px`,
+        left: `${document.body.clientHeight / 2}px`,
         fullscreen: false,
     }
 
     componentDidMount() {
         this.initPosition();
+        const dialogEl = document.getElementById(this.state.id);
+        this.element = dialogEl;
+
     }
 
-    componentDidUpdate() {
-        if (this.props.visible) {
+    componentDidUpdate(prevProps: ViewerDialogProps) {
+        if (this.props.visible && (prevProps.visible !== this.props.visible)) {
             const { id } = this.state;
-            const dialogElement = document.getElementById(id);
-            this.handleDragElement(dialogElement);
+            const dialogEl = document.getElementById(id);
+            this.element = dialogEl;
+            this.handleDragElement(dialogEl);
         }
     }
 
     private initPosition = () => {
         this.setState({
-            left: (document.body.clientWidth / 2) - (this.state.width / 2),
-            top: (document.body.clientHeight / 2) - (this.state.height / 2),
+            left: `${(document.body.clientWidth / 2) - (this.state.width / 2)}px`,
+            top: `${(document.body.clientHeight / 2) - (this.state.height / 2)}px`,
+        });
+    }
+
+    private handleMouseMove = (e: MouseEvent) => {
+        if (this.fullscreen) {
+            return;
+        }
+        e = e || window.event;
+        e.preventDefault();
+        // calculate the new cursor position:
+        this.pos1 = this.pos3 - e.clientX;
+        this.pos2 = this.pos4 - e.clientY;
+        this.pos3 = e.clientX;
+        this.pos4 = e.clientY;
+        // set the element's new position:
+        this.element.style.top = `${(this.element.offsetTop - this.pos2)}px`;
+        this.element.style.left = `${(this.element.offsetLeft - this.pos1)}px`;
+    }
+
+    private handleMouseDown = (e: MouseEvent) => {
+        if (e.target.tagName.toLowerCase() === 'i') {
+            return;
+        }
+        e = e || window.event;
+        e.preventDefault();
+        // get the mouse cursor position at startup:
+        this.pos3 = e.clientX;
+        this.pos4 = e.clientY;
+        this.element.addEventListener('mousemove', this.handleMouseMove);
+        this.element.addEventListener('mouseup', this.handleMouseUp);
+    }
+
+    private handleMouseUp = (e: MouseEvent) => {
+        /* stop moving when mouse button is released:*/
+        this.element.removeEventListener('mouseup', this.handleMouseUp);
+        this.element.removeEventListener('mousemove', this.handleMouseMove);
+        if (this.fullscreen) {
+            return;
+        }
+        let { top, left } = this.element.style;
+        if (this.element.offsetLeft < 0) {
+            left = '0px';
+            this.element.style.left = left;
+        }
+        if (this.element.offsetTop < 0) {
+            top = '0px';
+            this.element.style.top = top;
+        }
+        if (document.body.clientWidth < (this.element.offsetLeft + this.element.clientWidth)) {
+            left = `${document.body.clientWidth - this.element.clientWidth}px`;
+            this.element.style.left = left;
+        }
+        if (document.body.clientHeight < (this.element.offsetTop + this.element.clientHeight)) {
+            top = `${document.body.clientHeight - this.element.clientHeight}px`;
+            this.element.style.top = top;
+        }
+        this.setState({
+            left,
+            top,
         });
     }
 
     private handleDragElement = (element: HTMLElement) => {
-        const dragMouseDown = (e: MouseEvent) => {
-            if (e.target.tagName.toLowerCase() === 'i') {
-                return;
-            }
-            this.fullscreen = false;
-            e = e || window.event;
-            e.preventDefault();
-            // get the mouse cursor position at startup:
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            // call a function whenever the cursor moves:
-            document.onmousemove = elementDrag;
-        }
-        const elementDrag = (e: MouseEvent) => {
-            e = e || window.event;
-            e.preventDefault();
-            // calculate the new cursor position:
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            // set the element's new position:
-            element.style.top = `${(element.offsetTop - pos2)}px`;
-            element.style.left = `${(element.offsetLeft - pos1)}px`;
-        }
-        const closeDragElement = (e: MouseEvent) => {
-            if (this.fullscreen) {
-                return;
-            }
-            let { top, left } = element.style;
-            if (element.offsetLeft < 0) {
-                left = `0px`;
-                element.style.left = left;
-            }
-            if (element.offsetTop < 0) {
-                top = `0px`;
-                element.style.top = top;
-            }
-            if (document.body.clientWidth < (element.offsetLeft + element.clientWidth)) {
-                left = `${document.body.clientWidth - element.clientWidth}px`;
-                element.style.left = left;
-            }
-            if (document.body.clientHeight < (element.offsetTop + element.clientHeight)) {
-                top = `${document.body.clientHeight - element.clientHeight}px`;
-                element.style.top = top;
-            }
-            /* stop moving when mouse button is released:*/
-            document.onmouseup = null;
-            document.onmousemove = null;
-            this.setState({
-                left,
-                top,
-            });
-        }
-        let pos1 = 0;
-        let pos2 = 0;
-        let pos3 = 0;
-        let pos4 = 0;
-        const dragzoneElement = element.querySelector('.editor-dialog-dragzone') as HTMLElement;
-        if (dragzoneElement) {
-            /* if present, the header is where you move the DIV from:*/
-            dragzoneElement.onmousedown = dragMouseDown;
-        } else {
-            /* otherwise, move the DIV from anywhere inside the DIV:*/
-            element.onmousedown = dragMouseDown;
-        }
+        this.pos1 = 0;
+        this.pos2 = 0;
+        this.pos3 = 0;
+        this.pos4 = 0;
+        element.addEventListener('mousedown', this.handleMouseDown);
     }
 
     private handleCloseVisible = () => {
@@ -139,12 +145,12 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
     }
 
     private handleFullescreen = () => {
-        this.fullscreen = true;
         const { fullscreen, id, width, height, left, top } = this.state;
+        this.fullscreen = !fullscreen;
         const dialogElement = document.getElementById(id);
         if (fullscreen) {
-            dialogElement.style.left = `${left}px`;
-            dialogElement.style.top = `${top}px`;
+            dialogElement.style.left = left;
+            dialogElement.style.top = top;
             dialogElement.style.width = `${width}px`;
             dialogElement.style.height = `${height}px`;
         } else {
@@ -164,7 +170,7 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         return (
             <div className="editor-dialog">
                 {maskable && <div className="editor-dialog-mask" />}
-                <div id={id} className="editor-dialog-container" style={{ top, left }}>
+                <div id={id} className="editor-dialog-container" style={{ width, height, top, left }}>
                     <div className="editor-dialog-title">{title}</div>
                     <div className="editor-dialog-dragzone">
                         <Icon
@@ -182,8 +188,7 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
                     </div>
                     <div className="editor-dialog-content">
                         <AframePortal
-                            width={width}
-                            height={height}
+                            style={{ width: '100%', height: '100%' }}
                             scene={getEntityClipboardRepresentation(AFRAME.INSPECTOR.sceneEl)}
                             type={type}
                             load={true}
