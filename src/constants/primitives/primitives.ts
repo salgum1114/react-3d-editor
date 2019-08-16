@@ -145,6 +145,14 @@ export const primitives: IPrimitive[] = [
         attributes: [],
     },
     {
+        key: 'a-anchor',
+        type: 'a-anchor',
+        title: 'Anchor',
+        description: '',
+        url: 'https://github.com/jeromeetienne/AR.js/tree/master/aframe',
+        attributes: [],
+    },
+    {
         key: 'a-box',
         type: 'a-box',
         title: 'Box',

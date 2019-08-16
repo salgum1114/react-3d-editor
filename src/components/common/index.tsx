@@ -16,3 +16,7 @@ export { default as AframePortal } from './AframePortal';
 export { default as SavedList } from './SavedList';
 export { default as SavedListModal } from './SavedListModal';
 export { default as SaveSceneModal } from './SaveSceneModal';
+export { default as Markers } from './Markers';
+export { default as CreateMarker } from './CreateMarker';
+export { default as MarkerPicker } from './MarkerPicker';
+export { default as InputScript } from './InputScript';

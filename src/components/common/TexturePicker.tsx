@@ -44,7 +44,7 @@ class TexturePicker extends PureComponent<IProps, IState> {
     }
 
     componentWillReceiveProps(nextProps: IProps) {
-        if (nextProps.data !== this.props.data) {
+        if (nextProps.entity.id !== this.props.entity.id) {
             this.setState({
                 value: nextProps.data instanceof HTMLElement ? nextProps.data.id : (nextProps.data || ''),
             });
@@ -181,7 +181,10 @@ class TexturePicker extends PureComponent<IProps, IState> {
      * @param {*} value
      */
     private handleSelectSrc = (value: any) => {
-        this.debouncedChangeSrc(`#${value}`);
+        const assetItem = document.getElementById(value);
+        if (assetItem) {
+            this.debouncedChangeSrc(`#${value}`);
+        }
     }
 
     render() {

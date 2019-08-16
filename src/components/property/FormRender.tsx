@@ -3,7 +3,7 @@ import { Form, Input, InputNumber, Switch, Col, Select, Row } from 'antd';
 import { Entity } from 'aframe';
 import { FormComponentProps } from 'antd/lib/form';
 
-import { ColorPicker, TexturePicker, AudioPicker, VideoPicker, ImagePicker } from '../common';
+import { ColorPicker, TexturePicker, AudioPicker, VideoPicker, ImagePicker, MarkerPicker } from '../common';
 import { capitalize } from '../../tools/UtilTools';
 
 interface IProps extends FormComponentProps {
@@ -34,9 +34,19 @@ class FormRender extends Component<IProps> {
                     componentName={componentName}
                 />
             );
-        }
-        if (schemaKey === 'loop') {
+        } else if (schemaKey === 'loop') {
             return <Switch />;
+        } else if (schemaKey === 'patternUrl') {
+            return (
+                <MarkerPicker
+                    schema={schema}
+                    data={data}
+                    form={form}
+                    entity={entity}
+                    schemaKey={schemaKey}
+                    componentName={componentName}
+                />
+            );
         }
         switch (schema.type) {
             case 'number':

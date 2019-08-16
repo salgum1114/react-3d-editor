@@ -18,7 +18,7 @@ class AframePortal extends PureComponent<AframePortalProps> {
     static defaultProps: AframePortalProps = {
         scene: '',
         load: false,
-        type: 'ar',
+        type: 'default',
     }
 
     constructor(props: AframePortalProps) {
@@ -28,7 +28,7 @@ class AframePortal extends PureComponent<AframePortalProps> {
     }
 
     componentDidMount() {
-        const { load, type } = this.props;
+        const { load, type, scene } = this.props;
         this.head = this.iframeEl.contentDocument.head;
         const aframeScript = document.createElement('script') as any;
         aframeScript.src = 'https://aframe.io/releases/0.9.2/aframe.min.js';
@@ -41,7 +41,7 @@ class AframePortal extends PureComponent<AframePortalProps> {
             aframeExtraScript.async = true;
             aframeExtraScript.onload = () => {
                 if (load) {
-                    this.handleAppendScene();
+                    this.handleAppendScene(scene);
                 }
             }
             this.head.appendChild(aframeExtraScript);
@@ -55,7 +55,7 @@ class AframePortal extends PureComponent<AframePortalProps> {
                 aframeARScript.async = true;
                 aframeARScript.onload = () => {
                     if (load) {
-                        this.handleAppendScene();
+                        this.handleAppendScene(scene);
                     }
                 };
                 this.head.appendChild(aframeARScript);
@@ -72,19 +72,26 @@ class AframePortal extends PureComponent<AframePortalProps> {
      * @param {Element} sceneEl
      */
     handleCameraControls = (sceneEl: Element) => {
+        const { type } = this.props;
         sceneEl.addEventListener('loaded', () => {
             if (sceneEl.camera.el.hasAttribute('orbit-controls')) {
                 sceneEl.camera.el.setAttribute('orbit-controls', 'enabled', true);
             }
-            sceneEl.camera.el.setAttribute('camera', 'active', true);
+            if (type === 'ar') {
+                // sceneEl.removeAttribute('vr-mode-ui');
+                sceneEl.removeAttribute('screenshot');
+                sceneEl.removeAttribute('inspector');
+                sceneEl.removeAttribute('keyboard-shortcuts');
+            } else {
+                sceneEl.camera.el.setAttribute('camera', 'active', true);
+            }
         });
     }
 
     /**
      * @description Append scene
      */
-    handleAppendScene = () => {
-        const { scene } = this.props;
+    handleAppendScene = (scene: string) => {
         this.viewerEl.innerHTML = scene;
         const sceneEl = this.viewerEl.querySelector('a-scene');
         this.handleCameraControls(sceneEl);

@@ -10,6 +10,7 @@ import Scrollbar from './Scrollbar';
 import Empty from './Empty';
 import { formatTime, formatBytes } from '../../tools/UtilTools';
 import { ImageDatabase } from '../../database';
+import { UtilTools } from '../../tools';
 
 export interface ITexture {
     id: string;
@@ -21,6 +22,7 @@ export interface ITexture {
     height?: number;
     duration?: number;
     file?: Blob;
+    thumbnail?: Blob | string;
 }
 
 type FilterType = 'all' | 'image' | 'video' | 'audio' | 'image/video' | 'etc' | string;
@@ -54,11 +56,17 @@ class Textures extends Component<IProps, IState> {
     }
 
     componentDidMount() {
+        this.getTextures();
+    }
+
+    /**
+     * @description Get textures
+     */
+    private getTextures = () => {
         this.setState({
             loading: true,
         });
         ImageDatabase.allDocs().then(response => {
-            // const filelist = {} as FileList;
             const { total_rows, rows } = response;
             if (total_rows) {
                 const fileList = rows.reduce((prev, row, index) => {
@@ -91,7 +99,7 @@ class Textures extends Component<IProps, IState> {
     private handleAddTexture = () => {
         const { type } = this.props;
         const { selectedFilterType } = this.state;
-        const allTypes = ['image/*', 'video/*', 'audio/*', '.obj', '.mtl', '.gltf', '.glb'];
+        const allTypes = ['image/*', 'video/*', 'audio/*', '.obj', '.mtl', '.gltf', '.glb', '.patt'];
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
         const setAcceptType = (type: string, input: Entity) => {
@@ -279,6 +287,35 @@ class Textures extends Component<IProps, IState> {
     }
 
     /**
+     * @description Render card actions
+     * @param {ITexture} texture
+     * @returns
+     */
+    private renderCardActions = (texture: ITexture) => {
+        return [
+            <Icon
+                key="download"
+                name="download"
+                onClick={e => {
+                    e.stopPropagation();
+                    UtilTools.saveBlob(texture.file, texture.name);
+                }}
+            />,
+            <Icon
+                key="delete"
+                name="trash"
+                onClick={e => {
+                    e.stopPropagation();
+                    ImageDatabase.delete(texture.id)
+                    .then(() => {
+                        this.getTextures();
+                    });
+                }}
+            />
+        ];
+    }
+
+    /**
      * @description Render textures on card
      * @param {ITexture[]} textures
      * @param {string} searchTexture
@@ -350,9 +387,10 @@ class Textures extends Component<IProps, IState> {
                                         <Col key={texture.id} md={24} lg={12} xl={6} onClick={() => this.handleSelectTexture(texture)}>
                                             <Card
                                                 hoverable={true}
-                                                style={{ marginBottom: 16, height: 280 }}
+                                                style={{ marginBottom: 16 }}
                                                 bodyStyle={{ height: 100 }}
                                                 cover={cover}
+                                                actions={this.renderCardActions(texture)}
                                             >
                                                 <Card.Meta
                                                     title={texture.name}

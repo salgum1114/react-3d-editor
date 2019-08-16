@@ -22,6 +22,16 @@ class AddComponent extends Component<IProps, IState> {
 
     handleSelect = (value: any) => {
         const { entity } = this.props;
+        if (value === 'event-set') {
+            Modal.info({
+                title: 'Please input ID for the component',
+                content: (
+                    <Input onChange={e => { this.setState({ componentId: e.target.value })}} />
+                ),
+                onOk: () => this.state.componentId.length ? this.handleAddComponent(`${value}__${this.state.componentId}`) : null,
+            });
+            return;
+        }
         if (entity.components) {
             if (entity.components[value]) {
                 Modal.info({

@@ -2,6 +2,7 @@ import 'aframe';
 import { Entity, Scene } from 'aframe';
 import 'aframe-extras';
 import 'aframe-orbit-controls';
+import 'aframe-event-set-component';
 
 import { ObjectMapper, Omit } from '../types/utils';
 import {
@@ -45,8 +46,8 @@ const defaultInspectorOptions: IInsepctorOptions = {
     orbitControls: true,
 };
 
-Components.forEach(Comp => Comp());
 Systems.forEach(System => System());
+Components.forEach(Comp => Comp());
 
 class InspectorTools {
     sceneEl?: IScene;
@@ -230,9 +231,7 @@ class InspectorTools {
 
     initARScript = () => {
         const arScript = document.head.querySelector('#ar-script');
-        console.log(this.sceneEl.systems);
         if (arScript) {
-            document.head.removeChild(arScript);
             return;
         }
         const script = document.createElement('script') as any;
@@ -280,7 +279,7 @@ class InspectorTools {
             <a-entity
                 camera
                 look-controls="enabled: false"
-                orbit-controls="target: 0 0 0; minDistance: 0.5; maxDistance: 180; initialPosition: 0 10 15"
+                orbit-controls="target: 0 0 0; minDistance: 0.5; maxDistance: 180; initialPosition: 0 5 10"
             />
             `.trim(),
         );
@@ -483,6 +482,21 @@ class InspectorTools {
     }
 
     reload = (options: IInsepctorOptions) => {
+        // const arScript = document.head.querySelector('#ar-script');
+        // if (arScript) {
+        //     document.head.removeChild(arScript);
+            // Object.keys(AFRAME.components).forEach(componentName => {
+            //     if (componentName.includes('arjs')) {
+            //         delete AFRAME.components[componentName];
+            //     }
+            // });
+            // console.log(window.customElements.get('a-anchor'));
+            // delete AFRAME.primitives.primitives['a-anchor'];
+            // delete AFRAME.primitives.primitives['a-marker'];
+            // delete AFRAME.primitives.primitives['a-marker-camera'];
+            // delete AFRAME.primitives.primitives['a-camera-static'];
+            // delete AFRAME.systems.arjs;
+        // }
         this.targetEl.removeChild(this.sceneEl);
         const mergedOptions = Object.assign({}, this.options, options);
         this.initScene(this.targetEl, mergedOptions);

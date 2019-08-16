@@ -85,7 +85,7 @@ export const injectJS = (url: string, onLoad: () => void, onError: () => void) =
     document.head.appendChild(link);
 };
 
-export const saveString = (text: string, filename: string, mimeType: string) => {
+export const saveString = (text: string, filename: string, mimeType = 'text/plain') => {
     saveBlob(new Blob([text], { type: mimeType }), filename);
 };
 

@@ -40,17 +40,19 @@ export const createEntity = (primitive: IPrimitive, callback?: (...args: any) =>
             callback(entity);
         }
     })
-    attributes.forEach(attr => {
-        if (attr.default) {
-            let splitName;
-            if (attr.attribute.indexOf('.') !== -1) {
-                splitName = attr.attribute.split('.');
-                entity.setAttribute(splitName[0], splitName[1], attr.default);
-            } else {
-                entity.setAttribute(attr.attribute, attr.default);
+    if (attributes) {
+        attributes.forEach(attr => {
+            if (attr.default) {
+                let splitName;
+                if (attr.attribute.indexOf('.') !== -1) {
+                    splitName = attr.attribute.split('.');
+                    entity.setAttribute(splitName[0], splitName[1], attr.default);
+                } else {
+                    entity.setAttribute(attr.attribute, attr.default);
+                }
             }
-        }
-    });
+        });
+    }
     if (type === 'a-entity') {
         if (AFRAME.INSPECTOR.selectedEntity) {
             AFRAME.INSPECTOR.selectedEntity.appendChild(entity);
@@ -361,8 +363,12 @@ export const isInspector = (en: Entity) => {
  * @param  {Entity} entity Entity to copy to clipboard
  * @return {string} Entity clipboard representation
  */
-export function getEntityClipboardRepresentation(entity: Entity) {
-    const clone = prepareForSerialization(entity) as Entity;
+export function getEntityClipboardRepresentation(entity: Entity, ar?: boolean) {
+    const clone = prepareForSerialization(entity, ar) as Entity;
+    if (ar) {
+        clone.setAttribute('arjs', 'sourceType: webcam; debugUIEnabled: true; trackingMethod: best; patternRatio: 0.75;');
+        clone.appendChild(document.createRange().createContextualFragment('<a-camera-static />'));
+    }
     return clone.outerHTML;
 };
 
@@ -374,11 +380,16 @@ export function getEntityClipboardRepresentation(entity: Entity) {
  * @param {Entity} entity Root of the DOM hierarchy.
  * @return {Entity} Copy of the DOM hierarchy ready for serialization.
  */
-const prepareForSerialization = (entity: Entity): Entity => {
+const prepareForSerialization = (entity: Entity, ar?: boolean): Entity => {
     const clone = entity.cloneNode(false) as Entity;
     const children = entity.childNodes;
     for (let i = 0, l = children.length; i < l; i++) {
         const child = children[i] as HTMLElement;
+        if (ar) {
+            if (child.hasAttribute && child.hasAttribute('camera')) {
+                continue;
+            }
+        }
         if (
             child.nodeType !== Node.ELEMENT_NODE ||
             (!child.hasAttribute('aframe-injected') &&
@@ -660,7 +671,11 @@ const getOptimalUpdate = (component: Component, implicit: any, reference: any) =
             && (key === 'src'
             || key === 'mtl'
             || key === 'obj')) {
-            optimal[key] = `url(${reference[key]})`;
+            let optimalValue = reference[key];
+            if (optimalValue instanceof HTMLElement) {
+                optimalValue = reference[key].getAttribute(key);
+            }
+            optimal[key] = `url(${optimalValue})`;
         } else {
             optimal[key] = reference[key];
         }

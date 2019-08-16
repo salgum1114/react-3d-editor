@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Spin, Input, Row, Col, Card } from 'antd';
 import warning from 'warning';
+import Icon from 'polestar-icons';
 
 import Empty from './Empty';
 import Scrollbar from './Scrollbar';
 import { SceneDatabase } from '../../database';
+import { UtilTools } from '../../tools';
 
 export interface ISavedScene {
     id: string;
@@ -106,6 +108,35 @@ class SavedList extends Component<SavedListProps, IState> {
     }
 
     /**
+     * @description Render card actions
+     * @param {ISavedScene} scene
+     * @returns
+     */
+    private renderCardActions = (scene: ISavedScene) => {
+        return [
+            <Icon
+                key="download"
+                name="download"
+                onClick={e => {
+                    e.stopPropagation();
+                    UtilTools.saveString(scene.scene, scene.name);
+                }}
+            />,
+            <Icon
+                key="delete"
+                name="trash"
+                onClick={e => {
+                    e.stopPropagation();
+                    SceneDatabase.delete(scene.id)
+                    .then(() => {
+                        this.getSceneList();
+                    });
+                }}
+            />
+        ];
+    }
+
+    /**
      * @description Render scenes on card
      * @param {ISavedScene[]} scenes
      * @param {string} searchScene
@@ -126,9 +157,10 @@ class SavedList extends Component<SavedListProps, IState> {
                                         <Col key={scene.id} md={24} lg={12} xl={6} onClick={() => this.handleSelectScene(scene)}>
                                             <Card
                                                 hoverable={true}
-                                                style={{ marginBottom: 16, height: 280 }}
+                                                style={{ marginBottom: 16 }}
                                                 bodyStyle={{ height: 100 }}
                                                 cover={<img src={scene.thumbnail} />}
+                                                actions={this.renderCardActions(scene)}
                                             >
                                                 <Card.Meta
                                                     title={scene.name}

@@ -8,7 +8,7 @@ import warning from 'warning';
 import { Assets } from '../components/asset';
 import { Entities } from '../components/entity';
 import { Modal } from 'antd';
-import { ShortcutHelp, SaveSceneModal, AframePortal, SavedListModal } from '../components/common';
+import { ShortcutHelp, SaveSceneModal, SavedListModal } from '../components/common';
 import { EventTools, EntityTools } from '../tools';
 import { ViewerDialog } from '../components/viewer';
 import { ISavedScene } from '../components/common/SavedList';
@@ -25,11 +25,8 @@ interface IItemState {
 }
 
 class Item extends Component<{}, IItemState> {
-    aframePortal: AframePortal;
-
     constructor(props: {}) {
         super(props);
-        this.aframePortal = null;
     }
 
     state: IItemState = {
@@ -124,12 +121,10 @@ class Item extends Component<{}, IItemState> {
      * @param {ISavedScene} savedScene
      */
     private handleSelectScene = (savedScene: ISavedScene) => {
-        console.log('savedScene', savedScene);
         AFRAME.INSPECTOR.reload({
             sceneStr: savedScene.scene,
         });
         this.handleSavedListVisible();
-        console.log(AFRAME.scenes);
     }
 
     /**

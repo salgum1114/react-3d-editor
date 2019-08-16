@@ -39,11 +39,13 @@ export const createAsset = (item: IPrimitive, callback?: (...args: any) => void)
     if (type !== 'a-mixin') {
         asset.setAttribute('src', '');
     }
-    attributes.forEach(attr => {
-        if (attr.default) {
-            asset.setAttribute(attr.attribute, `${attr.default}`);
-        }
-    });
+    if (attributes) {
+        attributes.forEach(attr => {
+            if (attr.default) {
+                asset.setAttribute(attr.attribute, `${attr.default}`);
+            }
+        });
+    }
     document.getElementsByTagName('a-assets')[0].appendChild(asset);
     EventTools.emit('assetcreate', asset);
     if (callback) {

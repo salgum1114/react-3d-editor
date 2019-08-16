@@ -5,11 +5,12 @@ import { Modal, Tree, Row, Col, Card, Tabs, Input } from 'antd';
 import { AntTreeNodeSelectedEvent } from 'antd/lib/tree';
 import { AntTreeNodeDropEvent } from 'antd/lib/tree/Tree';
 
-import { SidebarContainer, Scrollbar, Empty, AddEmpty, Textures } from '../common';
+import { SidebarContainer, Scrollbar, Empty, AddEmpty, Textures, Markers } from '../common';
 import { EventTools, AssetTools } from '../../tools';
 import { IScene } from '../../tools/InspectorTools';
 import { IEntity, IDetailEntity, IPrimitive, assetPrimitives, getIcon } from '../../constants';
 import { ITexture } from '../common/Textures';
+import { IMarker } from '../common/Markers';
 
 interface IState {
     assets: IEntity[];
@@ -17,6 +18,7 @@ interface IState {
     selectedKeys: string[];
     spinning: boolean;
     searchPrimitives?: string;
+    searchMarkers?: string;
 }
 
 class Assets extends Component<{}, IState> {
@@ -26,6 +28,7 @@ class Assets extends Component<{}, IState> {
         selectedKeys: [],
         spinning: true,
         searchPrimitives: '',
+        searchMarkers: '',
     }
 
     componentDidMount() {
@@ -155,6 +158,10 @@ class Assets extends Component<{}, IState> {
                     attribute: 'src',
                     default: texture.url,
                 },
+                {
+                    attribute: 'crossorigin',
+                    default: 'anonymous',
+                },
             ],
         };
         if (texture.type.includes('image')) {
@@ -203,6 +210,25 @@ class Assets extends Component<{}, IState> {
                 assets,
             });
         }
+    }
+
+    /**
+     * @description Click to marker
+     * @param {IMarker} marker
+     */
+    private handleClickMarker = (marker: IMarker) => {
+        this.handleAddAsset({
+            title: marker.name,
+            key: 'a-asset-item',
+            type: 'a-asset-item',
+            icon: getIcon('a-asset-item'),
+            attributes: [
+                {
+                    attribute: 'src',
+                    default: window.URL.createObjectURL(marker.pattern),
+                },
+            ],
+        });
     }
 
     /**
@@ -273,7 +299,7 @@ class Assets extends Component<{}, IState> {
      */
     private renderSearch = (callback: (value: string) => void) => {
         return (
-            <div style={{ flex: 1, paddingRight: 16 }}>
+            <div style={{ flex: 1 }}>
                 <Input allowClear={true} placeholder="Search for Asset..." onChange={e => callback(e.target.value)} />
             </div>
         )
@@ -330,6 +356,9 @@ class Assets extends Component<{}, IState> {
                         </Tabs.TabPane>
                         <Tabs.TabPane key="textures" tab="Textures">
                             <Textures onClick={this.handleClickTexture} />
+                        </Tabs.TabPane>
+                        <Tabs.TabPane key="markers" tab="Markers">
+                            <Markers onClick={this.handleClickMarker} />
                         </Tabs.TabPane>
                     </Tabs>
                 </Modal>

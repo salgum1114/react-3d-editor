@@ -40,8 +40,8 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
 
     state: IState = {
         id: uuid(),
-        width: 600,
-        height: 400,
+        width: 640,
+        height: 480,
         top: `${document.body.clientWidth / 2}px`,
         left: `${document.body.clientHeight / 2}px`,
         fullscreen: false,
@@ -63,6 +63,9 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         }
     }
 
+    /**
+     * @description After mounted component, set initial position
+     */
     private initPosition = () => {
         this.setState({
             left: `${(document.body.clientWidth / 2) - (this.state.width / 2)}px`,
@@ -70,6 +73,11 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         });
     }
 
+    /**
+     * @description Mouse move event in dialog element
+     * @param {MouseEvent} e
+     * @returns
+     */
     private handleMouseMove = (e: MouseEvent) => {
         if (this.fullscreen) {
             return;
@@ -86,6 +94,11 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         this.element.style.left = `${(this.element.offsetLeft - this.pos1)}px`;
     }
 
+    /**
+     * @description Mouse down event in dialog element
+     * @param {MouseEvent} e
+     * @returns
+     */
     private handleMouseDown = (e: MouseEvent) => {
         if (e.target.tagName.toLowerCase() === 'i') {
             return;
@@ -99,7 +112,12 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         this.element.addEventListener('mouseup', this.handleMouseUp);
     }
 
-    private handleMouseUp = (e: MouseEvent) => {
+    /**
+     * @description Mouse up event in dailog element
+     * @param {MouseEvent} e
+     * @returns
+     */
+    private handleMouseUp = (e: MouseEvent) => { 
         /* stop moving when mouse button is released:*/
         this.element.removeEventListener('mouseup', this.handleMouseUp);
         this.element.removeEventListener('mousemove', this.handleMouseMove);
@@ -129,6 +147,10 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         });
     }
 
+    /**
+     * @description Set drag event
+     * @param {HTMLElement} element
+     */
     private handleDragElement = (element: HTMLElement) => {
         this.pos1 = 0;
         this.pos2 = 0;
@@ -137,6 +159,9 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         element.addEventListener('mousedown', this.handleMouseDown);
     }
 
+    /**
+     * @description Close callback
+     */
     private handleCloseVisible = () => {
         const { onClose } = this.props;
         if (onClose) {
@@ -144,9 +169,17 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         }
     }
 
+    /**
+     * @description Change to fullsreen mode
+     */
     private handleFullescreen = () => {
         const { fullscreen, id, width, height, left, top } = this.state;
         this.fullscreen = !fullscreen;
+        if (this.fullscreen) {
+            AFRAME.INSPECTOR.shortcutTools.disable();
+        } else {
+            AFRAME.INSPECTOR.shortcutTools.enable();
+        }
         const dialogElement = document.getElementById(id);
         if (fullscreen) {
             dialogElement.style.left = left;
@@ -164,6 +197,10 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
         });
     }
 
+    /**
+     * @description Render the container
+     * @returns {React.ReactNode}
+     */
     private renderContainer = () => {
         const { type, maskable, title } = this.props;
         const { id, width, height, top, left, fullscreen } = this.state;
@@ -189,7 +226,7 @@ class ViewerDialog extends Component<ViewerDialogProps, IState> {
                     <div className="editor-dialog-content">
                         <AframePortal
                             style={{ width: '100%', height: '100%' }}
-                            scene={getEntityClipboardRepresentation(AFRAME.INSPECTOR.sceneEl)}
+                            scene={getEntityClipboardRepresentation(AFRAME.INSPECTOR.sceneEl, type === 'ar')}
                             type={type}
                             load={true}
                         />

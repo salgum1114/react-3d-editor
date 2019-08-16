@@ -203,6 +203,7 @@ body {
     &-form {
         display: flex;
         margin: 8px;
+        flex-direction: column;
     }
     &-preview {
         display: flex;
@@ -219,6 +220,12 @@ body {
             height: 100%;
             object-fit: contain;
             object-position: center;
+        }
+    }
+    &-actions {
+        margin: 8px;
+        .ant-form-item {
+            margin-bottom: 4px;
         }
     }
 }

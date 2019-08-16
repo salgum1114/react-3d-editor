@@ -105,7 +105,7 @@ class Editor extends Component<IProps, IState> {
                         <Layout.Content style={{ position: 'relative', height: '100%' }}>
                             <div className="editor-view-container">
                                 <Button className="editor-inspector-btn" block={true} onClick={this.handleScene} type="primary">
-                                    {!inspectorEnabled ? 'Inspect Scene' : 'Back to the Scene'}
+                                    {!inspectorEnabled ? 'Back to the Inspector' : 'Play the Scene'}
                                 </Button>
                                 <div className={classnames('editor-view-header', { collapsed: !inspectorEnabled })}>
                                     <Toolbar />
