@@ -23,7 +23,7 @@ class ColorPicker extends Component<IProps> {
         color: this.props.value || 'rgba(255, 255, 255, 1)',
     }
 
-    componentWillReceiveProps(nextProps: IProps) {
+    UNSAFE_componentWillReceiveProps(nextProps: IProps) {
         this.setState({
             color: nextProps.value || this.state.color,
         });

@@ -20,7 +20,7 @@ interface IProps extends FormComponentProps {
 };
 
 class Property extends Component<IProps> {
-    componentWillReceiveProps(nextProps: IProps) {
+    UNSAFE_componentWillReceiveProps(nextProps: IProps) {
         const { entity: nextEntity, form } = nextProps;
         const { entity: currentEntity } = this.props;
         if ((nextEntity && currentEntity) && (nextEntity.id !== currentEntity.id)) {
@@ -106,7 +106,17 @@ export default Form.create({
                 updateEntity(entity, changedComponentName, changedValues[changedComponentName]);
                 return;
             }
-            const { schema, isSingleProp } = AFRAME.components[changedComponentName] as any;
+            let schema;
+            let isSingleProp;
+            if (changedComponentName.includes('animation')
+            || changedComponentName.includes('event-set')) {
+                const componentName = changedComponentName.split('__')[0];
+                schema = AFRAME.components[componentName].schema;
+                isSingleProp = AFRAME.components[componentName].isSingleProp;
+            } else {
+                schema = AFRAME.components[changedComponentName] as any;
+                isSingleProp = AFRAME.components[changedComponentName] as any;
+            }
             if (!isSingleProp) {
                 const changedSchemaKey = Object.keys(changedValues[changedComponentName])[0];
                 if (schema[changedSchemaKey]) {

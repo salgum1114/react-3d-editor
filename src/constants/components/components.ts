@@ -3,6 +3,7 @@ export type GeneralComponentType = 'position'
 | 'scale'
 | 'visible'
 | 'name'
+| 'class'
 ;
 
-export const GeneralComponents: GeneralComponentType[] = ['name', 'position', 'rotation', 'scale', 'visible'];
+export const GeneralComponents: GeneralComponentType[] = ['name', 'class', 'position', 'rotation', 'scale', 'visible'];

@@ -63,7 +63,7 @@ class Components extends Component<IProps, IState> {
                     entity.components ? Object.keys(entity.components)
                     .filter(component => !generalComponents.some(comp => comp === component))
                     .map(key => {
-                        const { schema, data, isSingleProperty } = entity.components[key] as any;
+                        const { schema, data, isSingleProperty } = entity.components[key];
                         return (
                             <Collapse.Panel
                                 key={key}

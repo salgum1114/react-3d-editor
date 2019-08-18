@@ -31,7 +31,7 @@ class Mixins extends PureComponent<IProps, IState> {
         });
     }
 
-    componentWillReceiveProps(nextProps: IProps) {
+    UNSAFE_componentWillReceiveProps(nextProps: IProps) {
         this.buildMixins(nextProps.entity);
     }
 

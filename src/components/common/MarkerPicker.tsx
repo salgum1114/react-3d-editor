@@ -43,7 +43,7 @@ class MarkerPicker extends Component<IProps, IState> {
         });
     }
 
-    componentWillReceiveProps(nextProps: IProps) {
+    UNSAFE_componentWillReceiveProps(nextProps: IProps) {
         if (nextProps.entity.id !== this.props.entity.id) {
             this.setState({
                 value: nextProps.data,

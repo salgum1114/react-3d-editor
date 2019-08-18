@@ -38,7 +38,7 @@ class SavedList extends Component<SavedListProps, IState> {
         this.getSceneList();
     }
 
-    componentWillReceiveProps(nextProps: SavedListProps) {
+    UNSAFE_componentWillReceiveProps(nextProps: SavedListProps) {
         if (nextProps.visible) {
             this.getSceneList();
         }

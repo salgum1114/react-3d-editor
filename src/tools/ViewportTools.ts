@@ -302,7 +302,7 @@ class ViewportTools {
      * @memberof ViewportTools
      */
     disableControls() {
-        this.mouseCursor.disable();
+        // this.mouseCursor.disable();
         this.transformControls.dispose();
         this.controls.dispose();
         this.controls.enabled = false;

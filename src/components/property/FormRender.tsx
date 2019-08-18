@@ -47,6 +47,8 @@ class FormRender extends Component<IProps> {
                     componentName={componentName}
                 />
             );
+        } else if (componentName.includes('event-set')) {
+            return <Input.TextArea />;
         }
         switch (schema.type) {
             case 'number':
