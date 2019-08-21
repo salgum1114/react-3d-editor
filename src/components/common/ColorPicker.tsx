@@ -5,6 +5,7 @@ import { SketchPicker, Color } from 'react-color';
 interface IProps {
     onChange?: (color: Color) => void;
     value?: any;
+    disabled?: boolean;
 }
 
 class ColorPicker extends Component<IProps> {
@@ -38,7 +39,7 @@ class ColorPicker extends Component<IProps> {
                 placement="bottom"
                 style={{ zIndex: 9999 }}
                 overlayStyle={{ zIndex: 9999 }}
-                content={<SketchPicker color={color} onChange={onChange} />}
+                content={<SketchPicker disableAlpha={true} color={color} onChange={onChange} />}
             >
                 <div style={{ display: 'flex', flex: 1, alignItems: 'center', cursor: 'pointer' }}>
                     <Button style={{ background: color }} shape="circle" />

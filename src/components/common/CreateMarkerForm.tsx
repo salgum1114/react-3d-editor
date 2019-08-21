@@ -22,22 +22,22 @@ class CreateMarkerForm extends Component<IProps> {
                 <Form.Item label={'Pattern Ratio'}>
                     {
                         form.getFieldDecorator('patternRatio', {
-                            initialValue: 0.5,
-                        })(<Slider step={0.01} min={0.10} max={0.90} />)
+                            initialValue: 0.75,
+                        })(<Slider disabled={true} step={0.01} min={0.10} max={0.90} />)
                     }
                 </Form.Item>
                 <Form.Item label={'Image Size'}>
                     {
                         form.getFieldDecorator('imageSize', {
                             initialValue: 512,
-                        })(<Slider min={150} max={2500} />)
+                        })(<Slider disabled={true} min={150} max={2500} />)
                     }
                 </Form.Item>
                 <Form.Item label={'Border Color'}>
                     {
                         form.getFieldDecorator('borderColor', {
-                            initialValue: '#fff',
-                        })(<ColorPicker />)
+                            initialValue: '#000',
+                        })(<ColorPicker disabled={true} />)
                     }
                 </Form.Item>
             </Form>
