@@ -14,6 +14,7 @@ import {
 } from './';
 import Components from '../constants/components';
 import Systems from '../constants/systems';
+import Primitives from '../constants/primitives';
 import '../lib/GLTFExporter';
 
 export interface ICameras {
@@ -48,6 +49,7 @@ const defaultInspectorOptions: IInsepctorOptions = {
 
 Systems.forEach(System => System());
 Components.forEach(Comp => Comp());
+Primitives.forEach(Prim => Prim());
 
 class InspectorTools {
     sceneEl?: IScene;

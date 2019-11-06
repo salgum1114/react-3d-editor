@@ -28,6 +28,7 @@ export type PrimitiveType = 'a-box'
 | 'a-triangle'
 | 'a-video'
 | 'a-videosphere'
+| 'a-icon'
 ;
 
 export type ArType = 'a-marker'
@@ -396,6 +397,14 @@ export const primitives: IPrimitive[] = [
         title: 'Videosphere',
         description: 'The videosphere primitive plays 360° videos in the background of the scene. Videospheres are a large sphere with the video texture mapped to the inside.',
         url: 'https://aframe.io/docs/0.8.0/primitives/a-videosphere.html',
+        attributes: [],
+    },
+    {
+        key: 'a-icon',
+        type: 'a-icon',
+        title: 'Icon',
+        description: 'The Icon.',
+        url: '',
         attributes: [],
     },
 ];

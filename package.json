@@ -39,7 +39,7 @@
     "css-element-queries": "^1.1.1",
     "interactjs": "^1.5.4",
     "lodash": "^4.17.11",
-    "polestar-icons": "^0.9.56",
+    "polestar-icons": "^0.9.60",
     "pouchdb": "^7.1.1",
     "qrcode": "^1.4.1",
     "react": "^16.9.0",

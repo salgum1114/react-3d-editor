@@ -10,7 +10,6 @@
       "indent": false,
       "prefer-for-of": false,
       "no-console": false,
-      "member-access": false,
       "member-ordering": false,
       "jsx-no-multiline-js": false,
       "semicolon": false,
