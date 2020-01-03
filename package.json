@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -p --config webpack.prod.js",
+    "build": "node clean && webpack -p --config webpack.prod.js",
     "start": "npm install && npm run start:dev",
     "start:dev": "webpack-dev-server --colors --config webpack.dev.js --inline",
     "tsc": "tsc",
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/salgum1114/react-3d-editor#readme",
   "dependencies": {
-    "aframe": "^0.9.2",
+    "aframe": "^1.0.3",
     "aframe-event-set-component": "^5.0.0",
     "aframe-extras": "^6.0.0",
     "aframe-orbit-controls": "^1.2.0",
@@ -88,8 +88,8 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-dynamic-import-webpack": "^1.1.0",
     "babel-plugin-import": "^1.11.0",
-    "clean-webpack-plugin": "^1.0.1",
     "css-loader": "^2.1.0",
+    "del": "^5.1.0",
     "eslint": "^5.12.1",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-import-resolver-typescript": "^1.1.1",

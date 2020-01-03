@@ -3,18 +3,10 @@ const path = require('path');
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
 const baseConfig = require('./webpack.common.js');
 
-const pathsToClean = [
-    'js',
-];
-const cleanOptions = {
-    root: path.resolve(__dirname, 'public'),
-    verbose: true,
-};
 const plugins = [
     // 로더들에게 옵션을 넣어주는 플러그인
     new webpack.LoaderOptionsPlugin({
@@ -24,12 +16,14 @@ const plugins = [
     new HtmlWebpackPlugin({
         filename: 'index.html',
         title: 'React 3D Editor',
+        meta: {
+            description: `A-Frame based 3D visualization editing tool.`,
+        },
     }),
     new WorkboxPlugin.InjectManifest({
         swSrc: './src/sw.js',
         swDest: 'sw.js',
     }),
-    new CleanWebpackPlugin(pathsToClean, cleanOptions),
 ];
 module.exports = merge(baseConfig, {
     mode: 'production',
@@ -43,7 +37,7 @@ module.exports = merge(baseConfig, {
     },
     output: {
         // entry에 존재하는 app.js, vendor.js로 뽑혀 나온다.
-        path: path.resolve(__dirname, 'public'),
+        path: path.resolve(__dirname, 'docs'),
         filename: 'js/[name].[chunkhash:16].js',
         chunkFilename: 'js/[id].[chunkhash:16].js',
         publicPath: './',
