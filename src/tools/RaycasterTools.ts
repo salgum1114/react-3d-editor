@@ -4,179 +4,167 @@ import { Entity, DetailEvent } from 'aframe';
 import { EventTools, InspectorTools } from '.';
 
 export interface IRaycaster {
-    el?: Entity;
-    enable?(): void;
-    disable?(): void;
+	el?: Entity;
+	enable?(): void;
+	disable?(): void;
 }
 
 class RaycasterTools {
-    inspector?: InspectorTools;
-    mouseCursor?: Entity;
-    onDownPosition?: THREE.Vector2;
-    onUpPosition?: THREE.Vector2;
-    onDoubleClickPosition?: THREE.Vector2;
+	inspector?: InspectorTools;
+	mouseCursor?: Entity;
+	onDownPosition?: THREE.Vector2;
+	onUpPosition?: THREE.Vector2;
+	onDoubleClickPosition?: THREE.Vector2;
 
-    constructor(inspector?: InspectorTools) {
-        this.inspector = inspector;
-        this.onDownPosition = new AFRAME.THREE.Vector2();
-        this.onUpPosition = new AFRAME.THREE.Vector2();
-        this.onDoubleClickPosition = new AFRAME.THREE.Vector2();
-    }
+	constructor(inspector?: InspectorTools) {
+		this.inspector = inspector;
+		this.onDownPosition = new AFRAME.THREE.Vector2();
+		this.onUpPosition = new AFRAME.THREE.Vector2();
+		this.onDoubleClickPosition = new AFRAME.THREE.Vector2();
+	}
 
-    init = (inspector?: InspectorTools) => {
-        // Use cursor="rayOrigin: mouse".
-        const mouseCursor = document.createElement('a-entity');
-        mouseCursor.setAttribute('id', 'aframeInspectorMouseCursor');
-        mouseCursor.setAttribute('cursor', 'rayOrigin', 'mouse');
-        mouseCursor.setAttribute('data-aframe-inspector', true);
-        mouseCursor.setAttribute('raycaster', {
-            interval: 100,
-            objects: 'a-scene :not([data-aframe-inspector])',
-        });
-        this.mouseCursor = mouseCursor;
+	init = (inspector?: InspectorTools) => {
+		// Use cursor="rayOrigin: mouse".
+		const mouseCursor = document.createElement('a-entity');
+		mouseCursor.setAttribute('id', 'aframeInspectorMouseCursor');
+		mouseCursor.setAttribute('cursor', 'rayOrigin', 'mouse');
+		mouseCursor.setAttribute('data-aframe-inspector', true);
+		mouseCursor.setAttribute('raycaster', {
+			interval: 100,
+			objects: 'a-scene :not([data-aframe-inspector])',
+		});
+		this.mouseCursor = mouseCursor;
 
-        // Only visible objects.
-        const raycaster = mouseCursor.components.raycaster;
-        const refreshObjects = raycaster.refreshObjects;
-        const overrideRefresh = () => {
-            refreshObjects.call(raycaster);
-            const objects = raycaster.objects;
-            raycaster.objects = objects.filter(node => {
-                while (node) {
-                    if (!node.visible) { return false; }
-                    node = node.parent;
-                }
-                return true;
-            });
-        };
-        raycaster.refreshObjects = overrideRefresh;
+		// Only visible objects.
+		const raycaster = mouseCursor.components.raycaster;
+		const refreshObjects = raycaster.refreshObjects;
+		const overrideRefresh = () => {
+			refreshObjects.call(raycaster);
+			const objects = raycaster.objects;
+			raycaster.objects = objects.filter(node => {
+				while (node) {
+					if (!node.visible) {
+						return false;
+					}
+					node = node.parent;
+				}
+				return true;
+			});
+		};
+		raycaster.refreshObjects = overrideRefresh;
 
-        inspector.sceneEl.appendChild(mouseCursor);
-        inspector.cursor = mouseCursor;
+		inspector.sceneEl.appendChild(mouseCursor);
+		inspector.cursor = mouseCursor;
 
-        inspector.sceneEl.addEventListener(
-            'child-attached',
-            debounce(() => {
-                mouseCursor.components.raycaster.refreshObjects();
-            }, 250),
-        );
+		inspector.sceneEl.addEventListener(
+			'child-attached',
+			debounce(() => {
+				mouseCursor.components.raycaster.refreshObjects();
+			}, 250),
+		);
 
-        mouseCursor.addEventListener('click', this.onClick);
-        mouseCursor.addEventListener('mouseenter', this.onMouseEnter);
-        mouseCursor.addEventListener('mouseleave', this.onMouseLeave);
-        inspector.container.addEventListener('mousedown', this.onMouseDown);
-        inspector.container.addEventListener('mouseup', this.onMouseUp);
-        inspector.container.addEventListener('dblclick', this.onDoubleClick);
+		mouseCursor.addEventListener('click', this.onClick);
+		mouseCursor.addEventListener('mouseenter', this.onMouseEnter);
+		mouseCursor.addEventListener('mouseleave', this.onMouseLeave);
+		inspector.container.addEventListener('mousedown', this.onMouseDown);
+		inspector.container.addEventListener('mouseup', this.onMouseUp);
+		inspector.container.addEventListener('dblclick', this.onDoubleClick);
 
-        inspector.sceneEl.canvas.addEventListener('mouseleave', () => {
-            setTimeout(() => {
-                EventTools.emit('raycastermouseleave', null);
-            });
-        });
+		inspector.sceneEl.canvas.addEventListener('mouseleave', () => {
+			setTimeout(() => {
+				EventTools.emit('raycastermouseleave', null);
+			});
+		});
 
-        return {
-            el: mouseCursor,
-            enable: () => {
-                mouseCursor.setAttribute('raycaster', 'enabled', true);
-            },
-            disable: () => {
-                mouseCursor.setAttribute('raycaster', 'enabled', false);
-            },
-        };
-    }
+		return {
+			el: mouseCursor,
+			enable: () => {
+				mouseCursor.setAttribute('raycaster', 'enabled', true);
+			},
+			disable: () => {
+				mouseCursor.setAttribute('raycaster', 'enabled', false);
+			},
+		};
+	};
 
-    getMousePosition(dom: HTMLElement, x: number, y: number) {
-        const rect = dom.getBoundingClientRect();
-        return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
-    }
+	getMousePosition(dom: HTMLElement, x: number, y: number) {
+		const rect = dom.getBoundingClientRect();
+		return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
+	}
 
-    onClick = (event: DetailEvent<Event>) => {
-        // Check to make sure not dragging.
-        const DRAG_THRESHOLD = 0.03;
-        if (this.onDownPosition.distanceTo(this.onUpPosition) >= DRAG_THRESHOLD) {
-            return;
-        }
-        this.inspector.selectEntity(event.detail.intersectedEl);
-    }
+	onClick = (event: DetailEvent<Event>) => {
+		// Check to make sure not dragging.
+		const DRAG_THRESHOLD = 0.03;
+		if (this.onDownPosition.distanceTo(this.onUpPosition) >= DRAG_THRESHOLD) {
+			return;
+		}
+		this.inspector.selectEntity(event.detail.intersectedEl);
+	};
 
-    onMouseEnter = (event: DetailEvent<Event>) => {
-        if (this.mouseCursor.components.cursor.intersectedEl.hasAttribute('material')) {
-            this.mouseCursor.components.cursor.intersectedEl.currentEmissive = this.mouseCursor.components.cursor.intersectedEl.getAttribute('material').emissive;
-            this.mouseCursor.components.cursor.intersectedEl.setAttribute('material', 'emissive', '#ff0000');
-        }
-        EventTools.emit('raycastermouseenter', this.mouseCursor.components.cursor.intersectedEl);
-        event.target.sceneEl.canvas.style.cursor = 'pointer';
-    }
+	onMouseEnter = (event: DetailEvent<Event>) => {
+		if (this.mouseCursor.components.cursor.intersectedEl.hasAttribute('material')) {
+			this.mouseCursor.components.cursor.intersectedEl.currentEmissive = this.mouseCursor.components.cursor.intersectedEl.getAttribute(
+				'material',
+			).emissive;
+			this.mouseCursor.components.cursor.intersectedEl.setAttribute('material', 'emissive', '#ff0000');
+		}
+		EventTools.emit('raycastermouseenter', this.mouseCursor.components.cursor.intersectedEl);
+		event.target.sceneEl.canvas.style.cursor = 'pointer';
+	};
 
-    onMouseLeave = (event: DetailEvent<Event>) => {
-        if (this.mouseCursor.components.cursor.intersectedEl.hasAttribute('material')) {
-            this.mouseCursor.components.cursor.intersectedEl.setAttribute('material', 'emissive', this.mouseCursor.components.cursor.intersectedEl.currentEmissive);
-        }
-        EventTools.emit('raycastermouseleave', this.mouseCursor.components.cursor.intersectedEl);
-        event.target.sceneEl.canvas.style.cursor = 'grab';
-    }
+	onMouseLeave = (event: DetailEvent<Event>) => {
+		if (this.mouseCursor.components.cursor.intersectedEl.hasAttribute('material')) {
+			this.mouseCursor.components.cursor.intersectedEl.setAttribute(
+				'material',
+				'emissive',
+				this.mouseCursor.components.cursor.intersectedEl.currentEmissive,
+			);
+		}
+		EventTools.emit('raycastermouseleave', this.mouseCursor.components.cursor.intersectedEl);
+		event.target.sceneEl.canvas.style.cursor = 'grab';
+	};
 
-    onMouseDown = (event: MouseEvent) => {
-        if (event instanceof CustomEvent) {
-            return;
-        }
-        event.target.style.cursor = 'grabbing';
-        event.preventDefault();
-        const array = this.getMousePosition(
-            this.inspector.container,
-            event.clientX,
-            event.clientY,
-        );
-        this.onDownPosition.fromArray(array);
-    }
+	onMouseDown = (event: MouseEvent) => {
+		if (event instanceof CustomEvent) {
+			return;
+		}
+		event.target.style.cursor = 'grabbing';
+		event.preventDefault();
+		const array = this.getMousePosition(this.inspector.container, event.clientX, event.clientY);
+		this.onDownPosition.fromArray(array);
+	};
 
-    onMouseUp = (event: MouseEvent) => {
-        if (event instanceof CustomEvent) {
-            return;
-        }
-        event.target.style.cursor = 'grab';
-        event.preventDefault();
-        const array = this.getMousePosition(
-            this.inspector.container,
-            event.clientX,
-            event.clientY,
-        );
-        this.onUpPosition.fromArray(array);
-    }
+	onMouseUp = (event: MouseEvent) => {
+		if (event instanceof CustomEvent) {
+			return;
+		}
+		event.target.style.cursor = 'grab';
+		event.preventDefault();
+		const array = this.getMousePosition(this.inspector.container, event.clientX, event.clientY);
+		this.onUpPosition.fromArray(array);
+	};
 
-    onDoubleClick = (event: MouseEvent) => {
-        const array = this.getMousePosition(
-            this.inspector.container,
-            event.clientX,
-            event.clientY,
-        );
-        this.onDoubleClickPosition.fromArray(array);
-        const intersectedEl = this.mouseCursor.components.cursor.intersectedEl;
-        if (!intersectedEl) {
-            return;
-        }
-        EventTools.emit('objectfocus', intersectedEl.object3D);
-    }
+	onDoubleClick = (event: MouseEvent) => {
+		const array = this.getMousePosition(this.inspector.container, event.clientX, event.clientY);
+		this.onDoubleClickPosition.fromArray(array);
+		const intersectedEl = this.mouseCursor.components.cursor.intersectedEl;
+		if (!intersectedEl) {
+			return;
+		}
+		EventTools.emit('objectfocus', intersectedEl.object3D);
+	};
 
-    onTouchStart = (event: TouchEvent) => {
-        const touch = event.changedTouches[0];
-        const array = this.getMousePosition(
-            this.inspector.container,
-            touch.clientX,
-            touch.clientY,
-        );
-        this.onDownPosition.fromArray(array);
-    }
+	onTouchStart = (event: TouchEvent) => {
+		const touch = event.changedTouches[0];
+		const array = this.getMousePosition(this.inspector.container, touch.clientX, touch.clientY);
+		this.onDownPosition.fromArray(array);
+	};
 
-    onTouchEnd = (event: TouchEvent) => {
-        const touch = event.changedTouches[0];
-        const array = this.getMousePosition(
-          this.inspector.container,
-          touch.clientX,
-          touch.clientY,
-        );
-        this.onUpPosition.fromArray(array);
-    }
+	onTouchEnd = (event: TouchEvent) => {
+		const touch = event.changedTouches[0];
+		const array = this.getMousePosition(this.inspector.container, touch.clientX, touch.clientY);
+		this.onUpPosition.fromArray(array);
+	};
 }
 
 export default RaycasterTools;

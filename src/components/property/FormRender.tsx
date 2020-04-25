@@ -115,7 +115,6 @@ class FormRender extends Component<IProps> {
 
 	renderFormItem = () => {
 		const { schema, data, form, schemaKey, componentName } = this.props;
-		console.log(schemaKey, schema, data);
 		switch (schema.type) {
 			case 'vec2':
 				return this.renderVec2FormItem();
@@ -145,7 +144,7 @@ class FormRender extends Component<IProps> {
 		const ckey = schemaKey ? `${componentName}.${schemaKey}` : componentName;
 		return (
 			<Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
-				{Object.keys(schema.default).map((key) => {
+				{Object.keys(schema.default).map(key => {
 					return (
 						<Col key={`${ckey}.${key}`} span={12}>
 							<Form.Item>
@@ -166,7 +165,7 @@ class FormRender extends Component<IProps> {
 		return (
 			<Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
 				<Row gutter={8}>
-					{Object.keys(schema.default).map((key) => {
+					{Object.keys(schema.default).map(key => {
 						return (
 							<Col key={`${ckey}.${key}`} md={24} lg={8}>
 								<Form.Item>
@@ -188,7 +187,7 @@ class FormRender extends Component<IProps> {
 		return (
 			<Form.Item colon={false} label={capitalize(schemaKey) || capitalize(componentName)}>
 				<Row gutter={8}>
-					{Object.keys(schema.default).map((key) => {
+					{Object.keys(schema.default).map(key => {
 						return (
 							<Col key={`${ckey}.${key}`} md={24} lg={6}>
 								<Form.Item>
