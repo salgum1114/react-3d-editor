@@ -1,15 +1,15 @@
 {
-    "short_name": "React 3D Editor",
-    "name": "React 3D Editor",
-    "icons": [
-        {
-            "src": "favicon.ico",
-            "sizes": "64x64",
-            "type": "image/png"
-        }
-    ],
-    "start_url": "./index.html",
-    "display": "standalone",
-    "theme_color": "#000000",
-    "background_color": "#ffffff"
+	"short_name": "React 3D Editor",
+	"name": "React 3D Editor",
+	"icons": [
+		{
+			"src": "favicon.ico",
+			"sizes": "64x64",
+			"type": "image/png"
+		}
+	],
+	"start_url": "/",
+	"display": "standalone",
+	"theme_color": "#000000",
+	"background_color": "#ffffff"
 }

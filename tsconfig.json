@@ -1,31 +1,22 @@
 {
-    "compilerOptions": {
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noImplicitAny": true,
-        "declaration": true,
-        "skipLibCheck": true,
-        "strict": true,
-        "strictNullChecks": false,
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "jsx": "react",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "target": "esnext",
-        "outDir": "lib",
-        "lib": [
-            "dom",
-            "esnext"
-        ]
-    },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "lib"
-    ]
+	"compilerOptions": {
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noImplicitAny": true,
+		"declaration": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": false,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"jsx": "react",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"target": "esnext",
+		"outDir": "lib",
+		"lib": ["dom", "esnext"]
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "docs", "lib"]
 }

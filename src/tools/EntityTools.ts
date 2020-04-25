@@ -74,6 +74,7 @@ export const createFragment = (fragment: string) => {
 };
 
 export const updateEntity = (entity: Entity, propertyName: string, value: any) => {
+    console.log(entity, propertyName, value);
     let splitName;
     if (propertyName.indexOf('.') !== -1) {
         // Multi-prop
