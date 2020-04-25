@@ -83,8 +83,8 @@ export type EntityType = PrimitiveType | CoreType | string;
 export interface IAttribute {
 	attribute: string;
 	componentMapping?: string;
-	default?: string | number | boolean;
-	value?: string | number | boolean;
+	default?: any;
+	value?: any;
 }
 
 export interface IAttributes {

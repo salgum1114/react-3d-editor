@@ -11,7 +11,7 @@ export const catalogs: IPrimitive[] = [
 		attributes: [
 			{
 				attribute: 'gltf-model',
-				default: '/catalogs/buster_drone/scene.gltf',
+				default: './catalogs/buster_drone/scene.gltf',
 			},
 			{
 				attribute: 'scale',
@@ -45,7 +45,7 @@ export const catalogs: IPrimitive[] = [
 		attributes: [
 			{
 				attribute: 'gltf-model',
-				default: '/catalogs/black_dragon/scene.gltf',
+				default: './catalogs/black_dragon/scene.gltf',
 			},
 			{
 				attribute: 'scale',
@@ -68,8 +68,8 @@ export const catalogs: IPrimitive[] = [
 			{
 				attribute: 'obj-model',
 				default: {
-					obj: '/catalogs/transformer/Transformer.obj',
-					mtl: '/catalogs/transformer/Transformer.mtl',
+					obj: './catalogs/transformer/Transformer.obj',
+					mtl: './catalogs/transformer/Transformer.mtl',
 				},
 			},
 			{

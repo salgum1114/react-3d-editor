@@ -1,15 +1,1 @@
-importScripts("./precache-manifest.c28a6a502062a07795cfb07a57742f8e.js", "https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
-
-workbox.skipWaiting();
-workbox.clientsClaim();
-
-self.addEventListener('push', (event) => {
-    const title = 'Get Started With Workbox';
-    const options = {
-        body: event.data.text(),
-    };
-    event.waitUntil(self.registration.showNotification(title, options));
-});
-
-workbox.precaching.precacheAndRoute(self.__precacheManifest);
-
+if(!self.define){const e=e=>{"require"!==e&&(e+=".js");let r=Promise.resolve();return s[e]||(r=new Promise(async r=>{if("document"in self){const s=document.createElement("script");s.src=e,document.head.appendChild(s),s.onload=r}else importScripts(e),r()})),r.then(()=>{if(!s[e])throw new Error(`Module ${e} didn’t register its module`);return s[e]})},r=(r,s)=>{Promise.all(r.map(e)).then(e=>s(1===e.length?e[0]:e))},s={require:Promise.resolve(r)};self.define=(r,f,b)=>{s[r]||(s[r]=Promise.resolve().then(()=>{let s={};const i={uri:location.origin+r.slice(1)};return Promise.all(f.map(r=>{switch(r){case"exports":return s;case"module":return i;default:return e(r)}})).then(e=>{const r=b(...e);return s.default||(s.default=r),s})}))}}define("./sw.js",["./workbox-1bbb3e0e"],(function(e){"use strict";self.addEventListener("message",e=>{e.data&&"SKIP_WAITING"===e.data.type&&self.skipWaiting()}),e.precacheAndRoute([{url:"./fonts/04355a52bd0c7bfbd3e08ba2e823ecba.woff",revision:"8fd09b9f17a8417a71d9a68f87a27a27"},{url:"./fonts/45a91b859a14828c8099bad2e8b51f04.ttf",revision:"ef0b34b4de309c9b5b6e5f99b74468c7"},{url:"./fonts/4c91e3c9f807d50de276f59b54605837.png",revision:"bcb23ed4918ef8650e20e3d3feebe987"},{url:"./fonts/591e610fa5a5396a23ab2cd2523fd81a.woff2",revision:"93b7cb520e7aefc6ec635bbe0c90285f"},{url:"./fonts/813c90d00d580f1d8c8dc3e9b4aad359.eot",revision:"b3c0ca0cd0e5285221379821b5593086"},{url:"./index.html",revision:"bae53e17bbb8a14d698d147d6d17819e"},{url:"./js/1.baa9b8e103d81930.js.LICENSE.txt",revision:"6fb53c852274bc6d66c68770e476daf6"},{url:"./js/app.6a5860ffeb0573df.js",revision:"ef5a0241d4402c4b0162113ab7d73f3d"}],{})}));
