@@ -1,15 +1,14 @@
 import 'aframe';
-import { Entity, Scene } from 'aframe';
 import 'aframe-extras';
 import 'aframe-orbit-controls';
 import 'aframe-event-set-component';
-
-import { ObjectMapper, Omit } from '../types/utils';
-import { ShortcutTools, EventTools, CameraTools, ViewportTools, HistoryTools } from './';
-import Components from '../constants/components';
-import Systems from '../constants/systems';
-import Primitives from '../constants/primitives';
 import '../lib/GLTFExporter';
+import { Entity, Scene } from 'aframe';
+
+import { ShortcutTools, EventTools, CameraTools, ViewportTools, HistoryTools } from './';
+import systems from '../aframe/systems';
+import components from '../aframe/components';
+import primitives from '../aframe/primitives';
 
 export interface ICameras {
 	perspective?: THREE.PerspectiveCamera;
@@ -41,9 +40,9 @@ const defaultInspectorOptions: IInsepctorOptions = {
 	orbitControls: true,
 };
 
-Systems.forEach(System => System());
-Components.forEach(Comp => Comp());
-Primitives.forEach(Prim => Prim());
+systems.forEach(System => System());
+components.forEach(Comp => Comp());
+primitives.forEach(Prim => Prim());
 
 class InspectorTools {
 	sceneEl?: IScene;
@@ -53,13 +52,13 @@ class InspectorTools {
 	currentCameraEl?: Entity;
 	cameras?: ICameras;
 	sceneHelpers?: THREE.Scene;
-	helpers?: ObjectMapper;
+	helpers?: Record<any, any>;
 	cursor?: Entity;
-	modules?: ObjectMapper;
+	modules?: Record<any, any>;
 	history?: HistoryTools;
 	isFirstOpen?: boolean;
 	opened?: boolean;
-	exporters?: ObjectMapper;
+	exporters?: Record<any, any>;
 	on?: any;
 	inspectorActive?: boolean;
 	cameraHelper?: THREE.CameraHelper;

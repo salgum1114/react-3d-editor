@@ -10,7 +10,7 @@ import AddComponent from './AddComponent';
 import Components from './Components';
 import { EntityTools } from '../../tools';
 import { Empty } from '../common';
-import { GeneralComponents, GeneralComponentType } from '../../constants/components/components';
+import { GeneralComponentType, GeneralComponents } from '../../models/component';
 
 type EntityType = 'entity' | 'asset';
 

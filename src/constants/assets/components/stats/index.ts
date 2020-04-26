@@ -1,12 +1,12 @@
-import { IComponentDescriptor } from '../components';
+import { IComponentDescriptor } from '../../../../models/component';
 
 const stats: IComponentDescriptor = {
-    isSingleProp: true,
-    name: 'stats',
-    schema: {
-        type: 'boolean',
-        default: true,
-    },
+	isSingleProp: true,
+	name: 'stats',
+	schema: {
+		type: 'boolean',
+		default: true,
+	},
 };
 
 export default stats;

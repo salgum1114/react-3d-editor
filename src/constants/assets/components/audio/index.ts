@@ -1,11 +1,11 @@
-import { IComponentDescriptor } from '../components';
+import { IComponentDescriptor } from '../../../../models/component';
 
 const audio: IComponentDescriptor = {
-    isSingleProp: true,
-    name: 'audio',
-    schema: {
-        type: 'audio',
-    },
+	isSingleProp: true,
+	name: 'audio',
+	schema: {
+		type: 'audio',
+	},
 };
 
 export default audio;

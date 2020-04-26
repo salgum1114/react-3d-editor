@@ -1,21 +1,21 @@
-import { IComponentDescriptor } from '../components';
+import { IComponentDescriptor } from '../../../../models/component';
 
 const screenshot: IComponentDescriptor = {
-    isSingleProp: false,
-    name: 'screenshot',
-    schema: {
-        camera: {
-            type: 'selector',
-        },
-        width: {
-            type: 'number',
-            default: 4096,
-        },
-        height: {
-            type: 'number',
-            default: 2048,
-        },
-    },
+	isSingleProp: false,
+	name: 'screenshot',
+	schema: {
+		camera: {
+			type: 'selector',
+		},
+		width: {
+			type: 'number',
+			default: 4096,
+		},
+		height: {
+			type: 'number',
+			default: 2048,
+		},
+	},
 };
 
 export default screenshot;

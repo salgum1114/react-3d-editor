@@ -1,12 +1,13 @@
 import uuid from 'uuid/v4';
 import { Entity, Schema, Component } from 'aframe';
 
-import { IPrimitive, IEntity } from '../constants/primitives/primitives';
 import EventTools from './EventTools';
 import { IScene } from './InspectorTools';
 import { getIcon } from '../constants';
 import { Record } from '../types/utils';
 import { UtilTools } from '.';
+import { IPrimitive } from '../models/primitive';
+import { IEntity } from '../models/entity';
 
 export const createEntity = (primitive: IPrimitive, callback?: (...args: any) => void) => {
 	const { type, title, attributes, fragment } = primitive;

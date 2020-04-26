@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Spin, Row, Col, Card, Button, Input, Select } from 'antd';
 import { Entity } from 'aframe';
 import uuid from 'uuid/v4';
-import warning from 'warning';
 
 import AddEmpty from './AddEmpty';
 import Scrollbar from './Scrollbar';
@@ -30,6 +29,7 @@ type FilterType = 'all' | 'image' | 'video' | 'audio' | 'image/video' | 'etc' | 
 interface IProps {
 	onClick?: (value?: any) => void;
 	type?: FilterType;
+	visible?: boolean;
 }
 
 interface IState {
@@ -59,46 +59,51 @@ class Textures extends Component<IProps, IState> {
 		this.getTextures();
 	}
 
+	componentDidUpdate(prevProps: IProps) {
+		if (this.props.visible && this.props.visible !== prevProps.visible) {
+			this.getTextures();
+		}
+	}
+
 	/**
 	 * @description Get textures
 	 */
-	private getTextures = () => {
+	private getTextures = async () => {
 		this.setState({
 			loading: true,
 		});
-		ImageDatabase.allDocs()
-			.then(response => {
-				const { total_rows, rows } = response;
-				if (total_rows) {
-					const fileList = rows.reduce((prev, row, index) => {
-						const { doc, id } = row;
-						const { _attachments, title } = doc;
-						const attachment = _attachments[title];
-						const { data, content_type } = attachment;
-						const file = new File([data], title, { type: content_type });
-						return Object.assign(prev, {
-							[index]: {
-								id,
-								file,
-							},
-						});
-					}, {}) as { [key: string]: { id: string; file: File } };
-					this.handleAppendTexture(fileList);
-					this.setState({
-						loading: false,
+		try {
+			const response = await ImageDatabase.allDocs();
+			const { total_rows, rows } = response;
+			if (total_rows) {
+				const fileList = rows.reduce((prev, row, index) => {
+					const { doc, id } = row;
+					const { _attachments, title } = doc;
+					const attachment = _attachments[title];
+					const { data, content_type } = attachment;
+					const file = new File([data], title, { type: content_type });
+					return Object.assign(prev, {
+						[index]: {
+							id,
+							file,
+						},
 					});
-				} else {
-					this.setState({
-						loading: false,
-					});
-				}
-			})
-			.catch(error => {
-				warning(true, error);
+				}, {}) as { [key: string]: { id: string; file: File } };
+				await this.handleAppendTexture(fileList);
 				this.setState({
 					loading: false,
 				});
+			} else {
+				this.setState({
+					loading: false,
+				});
+			}
+		} catch (error) {
+			this.setState({
+				loading: false,
 			});
+			console.error(error.toString());
+		}
 	};
 
 	/**
@@ -154,13 +159,15 @@ class Textures extends Component<IProps, IState> {
 							},
 						};
 					});
-					await ImageDatabase.bulkDocs(docs).catch(error => {
+					try {
+						await ImageDatabase.bulkDocs(docs);
+						await this.getTextures();
+					} catch (error) {
 						this.setState({
 							loading: false,
 						});
-						throw new Error(error);
-					});
-					await this.getTextures();
+						console.error(error.toString());
+					}
 				},
 			);
 		};
@@ -173,93 +180,87 @@ class Textures extends Component<IProps, IState> {
 	 * @description Append textures
 	 * @param {{ id: string, file: File }[]} files
 	 */
-	private handleAppendTexture = (files: { [key: string]: { id: string; file: File } }) => {
-		Object.keys(files).forEach((value: string, index: number) => {
-			const { file, id } = files[parseInt(value, 10)];
-			console.log(file);
-			const reader = new FileReader();
-			const type = file.type.length ? file.type : 'application/octet-stream';
-			reader.onloadend = () => {
-				const url = window.URL.createObjectURL(file);
-				if (file.type.includes('image')) {
-					const image = new Image();
-					image.src = url;
-					image.onload = () => {
-						const texture: ITexture = {
-							id,
-							name: file.name,
-							size: file.size,
-							type,
-							width: image.width,
-							height: image.height,
-							url,
-							file,
-						};
-						this.setState({
-							textures: this.state.textures.concat(texture),
-						});
+	private handleAppendTexture = async (files: { [key: string]: { id: string; file: File } }) => {
+		const textures = (await Promise.all(
+			Object.keys(files).map((value: string, index: number) => {
+				return new Promise((resolve, reject) => {
+					const { file, id } = files[parseInt(value, 10)];
+					const reader = new FileReader();
+					const type = file.type.length ? file.type : 'application/octet-stream';
+					reader.onloadend = () => {
+						const url = window.URL.createObjectURL(file);
+						if (file.type.includes('image')) {
+							const image = new Image();
+							image.src = url;
+							image.onload = () => {
+								const texture: ITexture = {
+									id,
+									name: file.name,
+									size: file.size,
+									type,
+									width: image.width,
+									height: image.height,
+									url,
+									file,
+								};
+								resolve(texture);
+							};
+						} else if (file.type.includes('video')) {
+							const video = document.createElement('video') as any;
+							video.src = url;
+							video.onloadedmetadata = () => {
+								const texture: ITexture = {
+									id,
+									name: file.name,
+									size: file.size,
+									type,
+									width: video.videoWidth,
+									height: video.videoHeight,
+									url,
+									file,
+									duration: video.duration,
+								};
+								resolve(texture);
+							};
+						} else if (file.type.includes('audio')) {
+							const audio = new Audio();
+							audio.src = url;
+							audio.onloadedmetadata = () => {
+								const texture: ITexture = {
+									id,
+									name: file.name,
+									size: file.size,
+									type,
+									url,
+									file,
+									duration: audio.duration,
+								};
+								resolve(texture);
+							};
+						} else {
+							const texture: ITexture = {
+								id,
+								name: file.name,
+								size: file.size,
+								type,
+								url,
+								file,
+							};
+							resolve(texture);
+						}
+						if (length === index + 1) {
+							this.setState({
+								loading: false,
+							});
+						}
 					};
-				} else if (file.type.includes('video')) {
-					const video = document.createElement('video') as any;
-					video.src = url;
-					video.onloadedmetadata = () => {
-						const texture: ITexture = {
-							id,
-							name: file.name,
-							size: file.size,
-							type,
-							width: video.videoWidth,
-							height: video.videoHeight,
-							url,
-							file,
-							duration: video.duration,
-						};
-						this.setState({
-							textures: this.state.textures.concat(texture),
-						});
-					};
-				} else if (file.type.includes('audio')) {
-					const audio = new Audio();
-					audio.src = url;
-					audio.onloadedmetadata = () => {
-						const texture: ITexture = {
-							id,
-							name: file.name,
-							size: file.size,
-							type,
-							url,
-							file,
-							duration: audio.duration,
-						};
-						this.setState({
-							textures: this.state.textures.concat(texture),
-						});
-					};
-				} else {
-					const texture: ITexture = {
-						id,
-						name: file.name,
-						size: file.size,
-						type,
-						url,
-						file,
-					};
-					this.setState({
-						textures: this.state.textures.concat(texture),
-					});
-				}
-				if (length === index + 1) {
-					this.setState({
-						loading: false,
-					});
-				}
-			};
-			reader.onerror = () => {
-				this.setState({
-					loading: false,
+					reader.onerror = reject;
+					reader.readAsBinaryString(file);
 				});
-			};
-			reader.readAsBinaryString(file);
+			}),
+		)) as ITexture[];
+		this.setState({
+			textures,
 		});
 	};
 
@@ -312,11 +313,10 @@ class Textures extends Component<IProps, IState> {
 			<Icon
 				key="delete"
 				name="trash"
-				onClick={e => {
+				onClick={async e => {
 					e.stopPropagation();
-					ImageDatabase.delete(texture.id).then(() => {
-						this.getTextures();
-					});
+					await ImageDatabase.delete(texture.id);
+					this.getTextures();
 				}}
 			/>,
 		];
